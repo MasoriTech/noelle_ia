@@ -1,0 +1,34 @@
+0) src/launcher_view.html
+   -> src/launcher_bootstrap.js
+
+Noelle Companion 2026 - cadeia principal
+1) main.js
+   -> loadFile(src/avatar_view.html)
+   -> loadFile(src/controls.html)
+
+2) src/avatar_view.html
+   -> src/avatar_bootstrap.js
+   -> src/renderer/avatar_window_app.js
+
+3) src/controls.html
+   -> src/controls_bootstrap.js
+   -> src/renderer/controls_window_app.js
+
+4) preload.js
+   -> ponte entre renderer e Electron
+   -> assetExists / readJsonAsset / getAssetFileUrl
+   -> getAvatarRuntimeUrl / importAvatarVrmNative / getStructureSnapshot
+
+5) avatar runtime
+   -> usa importmap
+   -> usa local_assets.js
+   -> lê VRM por caminho resolvido pelo main.js
+
+6) assets críticos
+   -> src/assets/Noelle.vrm
+   -> src/assets/fallback/Noelle_backup.vrm
+   -> src/vendor/*
+
+7) runtime shims
+   -> src/renderer/runtime_shims/*
+   -> gerados de node_modules ou src/vendor

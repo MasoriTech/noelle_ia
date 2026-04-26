@@ -1,0 +1,136 @@
+NOELLECORE IA INTEGRADA - 2026
+================================
+
+O que mudou
+-----------
+A Yoru foi absorvida como NoelleCore dentro do codigo da Noelle.
+Agora a Noelle nao depende de um servidor Python separado para conversar.
+
+Fluxo atual:
+Noelle Companion (Electron)
+  -> processo principal main.js
+  -> NoelleCore interno
+  -> Ollama local em 127.0.0.1:11434
+  -> modelo ativo
+
+Primeiro objetivo
+-----------------
+Ligar apenas o chat de texto.
+Voz, animacoes e reacoes do avatar ficam para a proxima fase, depois que o texto estiver estavel.
+
+Onde fica a IA
+--------------
+Arquivos modificados:
+
+- main.js
+  Contem o NoelleCore interno:
+  - persona
+  - modelos
+  - perfis de desempenho
+  - chamada ao Ollama
+  - memoria simples
+  - historico curto
+  - diagnostico
+  - unload/preload de modelo
+
+- preload.js
+  Expoe as funcoes seguras para a interface:
+  - noelleCoreStatus()
+  - noelleCoreChat()
+  - noelleCoreSetModel()
+  - noelleCoreSetProfile()
+  - noelleCorePreload()
+  - noelleCoreUnload()
+  - noelleCoreReset()
+  - noelleCoreRemember()
+  - noelleCoreMemories()
+
+- src/controls.html
+  Nova aba: Chat IA
+
+- src/renderer/controls_window_app.js
+  Interface do chat e botoes de status, modelo, perfil, memoria e bench.
+
+Persona
+-------
+A persona atual da Noelle e:
+
+- nobre
+- rica
+- elegante
+- confiante
+- educada
+- direta
+- pt-BR
+- Brasil
+- ano/contexto 2026
+
+Ela responde curto por padrao para nao pesar no PC fraco.
+
+Modelos
+-------
+Principal:
+- qwen3:0.6b
+
+Opcionais:
+- gemma4:e2b
+- hermes3:3b
+
+Importante:
+- thinking fica desligado: think:false
+- auto-router fica desligado
+- apenas 1 modelo por vez
+
+Perfis
+------
+Rapido:
+- mantem o modelo carregado por alguns minutos
+- melhor para conversa
+
+Minimo:
+- respostas menores
+- contexto menor
+
+Economico:
+- tenta descarregar depois
+- melhor para economizar RAM, mas pode ficar mais lento na primeira resposta
+
+Como testar
+-----------
+1. Instale o Ollama.
+2. Execute BAIXAR_MODELOS_IA.bat.
+3. Baixe primeiro apenas qwen3:0.6b.
+4. Execute iniciar.bat.
+5. Abra a aba Chat IA.
+6. Clique em Status.
+7. Teste:
+   oi
+   qual ano estamos?
+
+Se der erro
+-----------
+Execute DIAGNOSTICO_IA_OLLAMA.bat.
+
+Erros comuns:
+
+"Ollama nao respondeu"
+- Abra o Ollama.
+- Verifique se ele esta rodando em 127.0.0.1:11434.
+
+"Modelo ativo nao instalado"
+- Rode BAIXAR_MODELOS_IA.bat.
+- Baixe qwen3:0.6b.
+
+"Primeira resposta lenta"
+- Normal em PC fraco, pois carrega o modelo.
+- Use o botao Pre-carregar.
+- Use perfil Rapido.
+
+Proxima fase
+------------
+Depois do chat de texto funcionar:
+
+1. Criar eventos de humor da Noelle com base na resposta.
+2. Ligar respostas a emotes do avatar.
+3. Ligar voz/TTS.
+4. Fazer a Noelle falar e animar ao mesmo tempo.

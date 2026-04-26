@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noelle Companion Windows</title>
+  <style>
+    html, body {
+      margin: 0; width: 100%; height: 100%; overflow: hidden;
+      background: transparent; user-select: none; font-family: Arial, sans-serif;
+    }
+    #stage { position: fixed; inset: 0; background: transparent; cursor: grab; }
+    #stage:active { cursor: grabbing; }
+    canvas { display: block; width: 100% !important; height: 100% !important; background: transparent !important; }
+
+    #status {
+      position: fixed; left: 12px; bottom: 12px; font-size: 13px;
+      color: rgba(255,255,255,.92); background: rgba(0,0,0,.40);
+      padding: 8px 12px; border-radius: 999px; backdrop-filter: blur(6px);
+      pointer-events: none; z-index: 70; transition: opacity .18s ease;
+    }
+    #errorBox {
+      position: fixed; left: 12px; top: 12px; right: 12px; max-height: 180px; overflow: auto;
+      background: rgba(80,10,10,.80); color: #fff; border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px; padding: 10px 12px; font-size: 12px; white-space: pre-wrap;
+      display: none; z-index: 80;
+    }
+
+    #topbar {
+      position: fixed; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 75; opacity: 1;
+    }
+
+    .chrome-btn, .menu-item, #wheelCenter, .wheel-item, .tab-btn, .inventory-card, .list-item, .item-menu-btn {
+      border: 1px solid rgba(255,255,255,.14); background: rgba(15,15,15,.40); color: white; backdrop-filter: blur(8px);
+    }
+    .chrome-btn {
+      height: 34px; min-width: 34px; border-radius: 999px; padding: 0 10px; cursor: pointer;
+    }
+    .chrome-btn:hover, .menu-item:hover, #wheelCenter:hover, .wheel-item:hover, .tab-btn:hover, .inventory-card:hover, .list-item:hover, .item-menu-btn:hover {
+      background: rgba(255,255,255,.14);
+    }
+    .chrome-btn.active { border-color: rgba(255,196,64,.85); box-shadow: 0 0 0 1px rgba(255,196,64,.25) inset; }
+
+    .panel {
+      position: fixed; top: 56px; right: 12px; z-index: 74; display: none;
+      width: 260px; max-height: 560px; overflow: hidden;
+      background: rgba(10,10,10,.62); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; padding: 10px; backdrop-filter: blur(10px);
+    }
+    .panel.open { display: block; }
+    .panel-title { font-size: 12px; color: rgba(255,255,255,.80); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+    .settings-note, .panel-note { margin-top: 8px; font-size: 12px; color: rgba(255,255,255,.82); line-height: 1.35; }
+
+    .badge {
+      font-size: 12px; color: rgba(255,255,255,.95); background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 11px;
+      backdrop-filter: blur(6px); max-width: 100%; margin-bottom: 8px;
+    }
+
+    #cameraPresets, #motionList {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .menu-item, .list-item {
+      height: 30px; border-radius: 999px; padding: 0 10px; cursor: pointer; text-align: left;
+    }
+
+    #libraryTabs { display: flex; gap: 8px; margin-bottom: 8px; }
+    .tab-btn { height: 30px; border-radius: 999px; padding: 0 12px; cursor: pointer; }
+    .tab-btn.active { border-color: rgba(255,196,64,.85); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    #inventoryGrid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 340px; overflow: auto; padding-right: 4px;
+    }
+    .inventory-card {
+      border-radius: 14px; padding: 8px; text-align: left; cursor: pointer; min-height: 118px;
+    }
+    .inventory-card.equipped { border-color: rgba(0,220,140,.75); box-shadow: 0 0 0 1px rgba(0,220,140,.18) inset; }
+    .inventory-thumb {
+      width: 100%; height: 54px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+      border-radius: 10px; background: rgba(255,255,255,.06); margin-bottom: 6px;
+    }
+    .inventory-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .inventory-name { font-size: 12px; font-weight: 600; line-height: 1.2; margin-bottom: 4px; }
+    .inventory-slot { font-size: 11px; color: rgba(255,255,255,.72); }
+
+    #itemMenu {
+      position: fixed; z-index: 90; display: none; flex-direction: column; gap: 6px; width: 200px;
+      background: rgba(10,10,10,.82); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px; padding: 8px; backdrop-filter: blur(12px);
+    }
+    #itemMenu.open { display: flex; }
+    .item-menu-btn { height: 32px; border-radius: 999px; cursor: pointer; text-align: left; padding: 0 10px; }
+
+    #wheelRoot {
+      position: fixed; right: 24px; bottom: 24px; width: 260px; height: 220px; z-index: 72;
+      opacity: 0; pointer-events: none; transition: opacity .16s ease; display:block;
+    }
+    #wheelRoot.open { opacity: 1; pointer-events: auto; }
+
+    #wheelCenter {
+      position: absolute; left: 50%; top: 50%; width: 82px; height: 82px; margin-left: -41px; margin-top: -41px;
+      border-radius: 999px; cursor: pointer; font-weight: 700;
+    }
+    .wheel-item {
+      position: absolute; left: 50%; top: 50%; width: 92px; height: 48px; margin-left: -46px; margin-top: -24px;
+      border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 0 8px;
+    }
+    .wheel-emoji { font-size: 16px; }
+    .wheel-label { font-size: 11px; line-height: 1.0; }
+
+    #leftDock {
+      position: fixed; top: 76px; left: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 60;
+      opacity: 0; transition: opacity .16s ease;
+    }
+    body:hover #leftDock, body:hover #wheelRoot { opacity: 1; }
+
+    #clickThroughNote { display:none; }
+
+    .kbd {
+      display:inline-block; border:1px solid rgba(255,255,255,.2); border-radius:6px; padding:1px 6px; font-size:11px; margin-left:2px;
+    }
+  
+    #expressionOverlay {
+      position: fixed;
+      left: 18px;
+      bottom: 54px;
+      width: 210px;
+      height: 210px;
+      z-index: 65;
+      opacity: 0;
+      transform: translateY(16px) scale(.94);
+      transition: opacity .28s ease, transform .28s ease;
+      pointer-events: none;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+    }
+    #expressionOverlay.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    #expressionOverlay img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.28));
+    }
+    #expressionBadge {
+      position: fixed;
+      left: 20px;
+      bottom: 22px;
+      z-index: 66;
+      opacity: 0;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(10,10,10,.55);
+      color: rgba(255,255,255,.95);
+      backdrop-filter: blur(8px);
+      font-size: 12px;
+      transition: opacity .22s ease;
+      pointer-events: none;
+    }
+    #expressionBadge.show { opacity: 1; }
+
+  </style>
+
+  <script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/",
+    "@pixiv/three-vrm": "./vendor/three-vrm.module.js",
+    "@pixiv/three-vrm-animation": "./vendor/three-vrm-animation.module.js"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="status">Iniciando...</div>
+  <div id="errorBox"></div>
+
+  <div id="leftDock">
+    <div class="badge" id="motionBadge">Greeting</div>
+    <div class="badge" id="inventorySummary">Nenhum item equipado</div>
+  </div>
+
+  <div id="settingsPanel" class="panel">
+    <div class="panel-title">Configurações</div>
+    <div class="panel-note">✕ agora minimiza para a bandeja. Use ⎋ para sair de verdade.</div>
+    <div class="badge" id="presetBadge">Meio corpo</div>
+    <div id="cameraPresets"></div>
+    <div class="settings-note">Use "Corpo inteiro" para ver os pés melhor. Ajustei a câmera e o alvo para a cabeça não parecer baixa.</div>
+    <div id="clickThroughNote" class="settings-note">Clique atravessável ligado. Para desligar sem clicar, use <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">X</span>.</div>
+  </div>
+
+  <div id="libraryPanel" class="panel">
+    <div class="panel-title">Biblioteca</div>
+    <div id="libraryTabs">
+      <button class="tab-btn active" id="tabItemsBtn">Itens</button>
+      <button class="tab-btn" id="tabMotionsBtn">Emotes</button>
+    </div>
+    <div id="tabItems" class="tab-content active">
+      <div id="inventoryGrid"></div>
+      <div class="panel-note">Clique em um item para abrir as opções de equipar ou desequipar.</div>
+    </div>
+    <div id="tabMotions" class="tab-content">
+      <div id="motionList"></div>
+      <div class="panel-note">Você agora tem mais animações além do pack inicial.</div>
+    </div>
+  </div>
+
+  <div id="topbar">
+    <button class="chrome-btn" id="settingsBtn" title="Configurações">⚙</button>
+    <button class="chrome-btn" id="inventoryBtn" title="Inventário e emotes">🎒</button>
+    <button class="chrome-btn" id="emoteBtn" title="Emote wheel">☺</button>
+    <button class="chrome-btn" id="replayBtn" title="Repetir último emote">↺</button>
+    <button class="chrome-btn" id="pauseBtn" title="Pausar/retomar emote">⏸</button>
+    <button class="chrome-btn" id="stopBtn" title="Parar emote">■</button>
+    <button class="chrome-btn" id="clickThroughBtn" title="Clique atravessável">🖱</button>
+    <button class="chrome-btn" id="pinBtn" title="Sempre no topo">📌</button>
+    <button class="chrome-btn" id="resetBtn" title="Resetar posição">⌂</button>
+    <button class="chrome-btn" id="zoomResetBtn" title="Resetar zoom">100%</button>
+    <button class="chrome-btn" id="closeBtn" title="Minimizar para bandeja">✕</button>
+    <button class="chrome-btn" id="quitBtn" title="Sair do programa">⎋</button>
+  </div>
+
+  <div id="wheelRoot">
+    <button id="wheelCenter">Emotes</button>
+    <div id="emoteWheel"></div>
+  </div>
+
+  <div id="itemMenu"></div>
+
+  <div id="expressionOverlay" aria-hidden="true"><img id="expressionImage" alt="Expressão aleatória da Noelle"></div>
+  <div id="expressionBadge"></div>
+
+  <script type="module" src="./renderer/app.js"></script>
+  <script>
+    const tabItemsBtn = document.getElementById('tabItemsBtn');
+    const tabMotionsBtn = document.getElementById('tabMotionsBtn');
+    const tabItems = document.getElementById('tabItems');
+    const tabMotions = document.getElementById('tabMotions');
+
+    function setTab(name) {
+      const itemsActive = name === 'items';
+      tabItemsBtn.classList.toggle('active', itemsActive);
+      tabMotionsBtn.classList.toggle('active', !itemsActive);
+      tabItems.classList.toggle('active', itemsActive);
+      tabMotions.classList.toggle('active', !itemsActive);
+    }
+
+    tabItemsBtn.addEventListener('click', () => setTab('items'));
+    tabMotionsBtn.addEventListener('click', () => setTab('motions'));
+  </script>
+</body>
+</html>

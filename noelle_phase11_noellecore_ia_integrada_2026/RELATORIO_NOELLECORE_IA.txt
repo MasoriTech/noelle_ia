@@ -1,0 +1,49 @@
+RELATORIO DO PACK - NOELLE PHASE 11 NOELLECORE IA INTEGRADA
+================================================================
+
+Objetivo:
+- Absorver a Yoru dentro do codigo da Noelle como NoelleCore.
+- Nao usar servidor Python separado.
+- Primeiro conectar somente chat de texto.
+- Deixar voz e animacoes para proxima fase.
+
+Implementado:
+- NoelleCore interno em main.js.
+- Chamada direta ao Ollama local via processo principal do Electron.
+- Nova aba "Chat IA" em src/controls.html.
+- UI de chat em src/renderer/controls_window_app.js.
+- Funcoes seguras expostas em preload.js.
+- Persona da Noelle: nobre, rica, elegante, confiante, Brasil, pt-BR, 2026.
+- Modelo principal: qwen3:0.6b.
+- Thinking desligado: think:false.
+- Gemma 4 E2B opcional: gemma4:e2b.
+- Hermes opcional: hermes3:3b.
+- Um modelo por vez.
+- Auto-router desligado.
+- Perfis: rapido, minimo e economico.
+- Historico curto por sessao.
+- Memoria simples.
+- Botoes: Status, Pre-carregar, Descarregar, Limpar conversa, Memoria, Bench rapido.
+- BAIXAR_MODELOS_IA.bat.
+- DIAGNOSTICO_IA_OLLAMA.bat.
+- iniciar.bat ajustado para modo IA/PC fraco.
+
+Validação feita:
+- node --check main.js: OK
+- node --check preload.js: OK
+- node --check src/renderer/controls_window_app.js: OK
+- node scripts/syntax-scan.js: OK
+- node scripts/checkup-ui.js: OK
+
+Limitação:
+- Nao testei chamada real ao Ollama daqui, porque precisa do Ollama rodando no seu Windows.
+- O bundle renderer precisa ser gerado no seu PC com dependencies.bat ou iniciar.bat, igual o projeto ja fazia.
+
+Teste recomendado:
+1. Rode dependencies.bat se ainda nao instalou dependencias.
+2. Rode BAIXAR_MODELOS_IA.bat.
+3. Baixe qwen3:0.6b.
+4. Rode iniciar.bat.
+5. Abra a aba Chat IA.
+6. Clique em Status.
+7. Teste "oi" e "qual ano estamos".

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noelle Avatar</title>
+  <style>
+    :root{
+      --frame:#131924;
+      --frame-2:#171e2b;
+      --line:rgba(255,255,255,.08);
+      --line-strong:rgba(255,255,255,.14);
+      --text:rgba(247,249,253,.96);
+      --muted:rgba(198,208,226,.74);
+      --accent:rgba(137,109,255,.96);
+      --accent-soft:rgba(137,109,255,.14);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0; width:100%; height:100%; overflow:hidden; background:transparent; user-select:none; font-family:Inter, Arial, sans-serif; color:var(--text)}
+    body.reduced-transparency #avatarChrome,
+    body.reduced-transparency #status,
+    body.reduced-transparency #hint{backdrop-filter:none !important; box-shadow:none !important}
+    #avatarShell{
+      position:fixed; inset:0; padding:8px;
+      background:
+        radial-gradient(circle at top, rgba(120,84,255,.18), transparent 34%),
+        linear-gradient(180deg, rgba(10,12,18,.08), rgba(10,12,18,0));
+    }
+    #avatarChrome{
+      position:absolute; inset:8px; border-radius:24px;
+      background:linear-gradient(180deg, rgba(18,23,34,.58), rgba(14,18,27,.34));
+      border:1px solid var(--line);
+      box-shadow:0 20px 36px rgba(0,0,0,.24), inset 0 0 0 1px rgba(255,255,255,.03);
+      backdrop-filter:blur(12px);
+      pointer-events:none;
+    }
+    #stage{
+      position:fixed; inset:12px; border-radius:20px; overflow:hidden; cursor:grab;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,.04), transparent 24%),
+        linear-gradient(180deg, rgba(20,24,34,.18), rgba(12,15,20,.08));
+    }
+    #stage:active{cursor:grabbing}
+    canvas{display:block; width:100% !important; height:100% !important; background:transparent !important; border-radius:20px}
+    #topPills{
+      position:fixed; left:16px; right:16px; top:12px; display:flex; justify-content:space-between; gap:8px; z-index:44; pointer-events:none;
+    }
+    .pill{
+      min-height:28px; padding:0 10px; border-radius:999px; display:inline-flex; align-items:center; gap:8px;
+      background:rgba(14,18,28,.54); border:1px solid var(--line); backdrop-filter:blur(10px); font-size:11px; font-weight:700;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+    .dot{width:8px; height:8px; border-radius:999px; background:var(--accent); box-shadow:0 0 0 4px var(--accent-soft)}
+    #status{
+      position:fixed; left:14px; right:14px; bottom:12px; z-index:40;
+      min-height:34px; padding:0 12px; border-radius:16px; display:flex; align-items:center; justify-content:center; text-align:center;
+      font-size:11px; color:var(--text); background:rgba(12,15,24,.56); border:1px solid var(--line); backdrop-filter:blur(12px);
+      box-shadow:0 12px 22px rgba(0,0,0,.16);
+    }
+    #hint{
+      position:fixed; right:14px; top:48px; z-index:42; border-radius:14px; padding:8px 10px; font-size:10px; line-height:1.3;
+      background:rgba(12,14,22,.48); border:1px solid var(--line); backdrop-filter:blur(10px); pointer-events:none; color:var(--muted);
+      box-shadow:0 10px 20px rgba(0,0,0,.12); text-align:right; max-width:92px;
+    }
+    #errorBox{
+      position:fixed; left:14px; right:14px; top:52px; max-height:160px; overflow:auto; display:none; z-index:80;
+      background:rgba(120,28,28,.92); border:1px solid rgba(255,255,255,.16); border-radius:16px; padding:12px;
+      font-size:12px; white-space:pre-wrap; color:#fff; box-shadow:0 14px 24px rgba(0,0,0,.18);
+    }
+    #errorActions{
+      position:fixed; left:14px; right:14px; top:220px; z-index:81; gap:8px; flex-wrap:wrap; display:none;
+    }
+    .error-btn{
+      border:none; border-radius:14px; min-height:34px; padding:0 12px; background:rgba(255,255,255,.12); color:#fff; cursor:pointer;
+      font-size:12px; font-weight:700;
+    }
+    #avatarSourceNote{
+      position:fixed; left:14px; right:14px; bottom:48px; z-index:41; font-size:10px; color:var(--muted); text-align:center;
+    }
+    #expressionOverlay{
+      position:fixed; left:12px; bottom:56px; width:130px; height:130px; z-index:65; opacity:0; transform:translateY(12px) scale(.94);
+      transition:opacity .28s ease, transform .28s ease; pointer-events:none; display:flex; align-items:end; justify-content:center;
+    }
+    #expressionOverlay.show{opacity:1; transform:translateY(0) scale(1)}
+    #expressionOverlay img{max-width:100%; max-height:100%; object-fit:contain; filter:drop-shadow(0 8px 20px rgba(0,0,0,.22))}
+    #expressionBadge{
+      position:fixed; left:16px; bottom:28px; z-index:66; opacity:0; padding:5px 9px; border-radius:999px; border:1px solid var(--line);
+      background:rgba(10,10,10,.55); color:rgba(255,255,255,.95); backdrop-filter:blur(8px); font-size:11px; transition:opacity .22s ease; pointer-events:none;
+    }
+    #expressionBadge.show{opacity:1}
+  
+    /* Fase 1 — moldura do avatar no tema Noelle */
+    body{
+      background:
+        radial-gradient(circle at 50% 88%, rgba(194,80,255,.34), transparent 22%),
+        radial-gradient(circle at 50% 20%, rgba(49,92,255,.12), transparent 38%),
+        linear-gradient(180deg,#0a0d1b,#070914) !important;
+    }
+    #avatarShell{
+      position:fixed; inset:0; pointer-events:none;
+      border:1px solid rgba(226,93,255,.30);
+      border-radius:22px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 24px 70px rgba(0,0,0,.42);
+    }
+    #topPills .pill{
+      background:rgba(10,13,26,.78);
+      border:1px solid rgba(226,93,255,.20);
+      box-shadow:0 0 18px rgba(154,69,255,.16);
+    }
+    #topPills .pill:last-child{
+      display:none;
+    }
+    #hint{
+      background:rgba(10,13,26,.68);
+      border:1px solid rgba(226,93,255,.16);
+      border-radius:18px;
+    }
+    #status{
+      bottom:18px !important;
+      left:50% !important;
+      right:auto !important;
+      transform:translateX(-50%);
+      padding:12px 18px !important;
+      border-radius:16px !important;
+      border:1px solid rgba(226,93,255,.22) !important;
+      background:rgba(10,13,26,.78) !important;
+      box-shadow:0 0 22px rgba(194,80,255,.20);
+      font-weight:800;
+    }
+    #status::before{
+      content:"";
+      display:inline-block;
+      width:10px;height:10px;border-radius:999px;
+      margin-right:10px;
+      background:#44e08f;
+      box-shadow:0 0 12px rgba(68,224,143,.6);
+    }
+
+  
+    /* Fase 2 — janela do avatar no tema da Noelle VRM */
+    body{
+      background:
+        radial-gradient(circle at 50% 86%, rgba(194,80,255,.48), transparent 18%),
+        radial-gradient(circle at 48% 50%, rgba(194,80,255,.10), transparent 42%),
+        linear-gradient(180deg,#080a16,#070914) !important;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      left:18%; right:18%; bottom:70px; height:34px;
+      border-radius:50%;
+      background:radial-gradient(ellipse at center, rgba(194,80,255,.48), rgba(194,80,255,.12) 55%, transparent 70%);
+      filter:blur(2px);
+      pointer-events:none;
+      z-index:0;
+    }
+    #avatarShell{
+      border:1px solid rgba(226,93,255,.34) !important;
+      border-radius:22px !important;
+      background:
+        radial-gradient(circle at top, rgba(200,88,255,.06), transparent 28%),
+        linear-gradient(180deg, rgba(12,15,30,.70), rgba(7,9,18,.82));
+      box-shadow:0 28px 70px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.06) !important;
+    }
+    #topPills{
+      top:12px !important;
+      left:14px !important;
+      right:14px !important;
+      justify-content:flex-start !important;
+    }
+    #topPills .pill{
+      border-radius:14px !important;
+      background:rgba(9,11,22,.78) !important;
+      border:1px solid rgba(226,93,255,.20) !important;
+      box-shadow:0 0 18px rgba(143,69,255,.16);
+      font-weight:850;
+    }
+    #topPills .pill:last-child{display:none !important}
+    #status{
+      bottom:22px !important;
+      left:50% !important;
+      right:auto !important;
+      transform:translateX(-50%);
+      min-width:172px;
+      text-align:center;
+      padding:12px 18px !important;
+      border-radius:16px !important;
+      background:rgba(10,13,26,.82) !important;
+      border:1px solid rgba(226,93,255,.24) !important;
+      color:#f8f4ff !important;
+      box-shadow:0 0 24px rgba(194,80,255,.22);
+      font-weight:850;
+    }
+    #status::before{
+      content:"";
+      display:inline-block;
+      width:10px;height:10px;border-radius:999px;
+      margin-right:10px;
+      background:#44e08f;
+      box-shadow:0 0 12px rgba(68,224,143,.62);
+    }
+    #hint{display:none !important}
+    #avatarSourceNote{
+      display:none !important;
+    }
+
+  
+    /* Fase 3 — status inferior fiel ao mockup */
+    #status{
+      min-width:188px !important;
+      max-width:240px !important;
+      bottom:20px !important;
+      font-size:15px !important;
+      letter-spacing:-.01em;
+    }
+    #status::after{
+      content:"⌄";
+      margin-left:10px;
+      color:#d9d0ff;
+      font-size:15px;
+    }
+    #topPills .pill:first-child::before{
+      content:"✦";
+      color:#d95dff;
+      margin-right:4px;
+    }
+    #stage{
+      inset:44px 0 58px 0 !important;
+    }
+
+  
+    /* Polimento: temas e avatar centralizado por padrão */
+    body.theme-light{
+      color:#24293a !important;
+      background:
+        radial-gradient(circle at 50% 86%, rgba(143,69,255,.20), transparent 18%),
+        linear-gradient(180deg,#f4f6fb,#ffffff) !important;
+    }
+    body.theme-light #avatarShell{
+      background:linear-gradient(180deg, rgba(255,255,255,.84), rgba(244,246,252,.88)) !important;
+      border-color:rgba(143,69,255,.28) !important;
+    }
+    body.theme-light #status,
+    body.theme-light #topPills .pill{
+      background:rgba(255,255,255,.86) !important;
+      color:#24293a !important;
+      border-color:rgba(143,69,255,.22) !important;
+    }
+    body.theme-dark{
+      background:
+        radial-gradient(circle at 50% 86%, rgba(125,92,255,.36), transparent 18%),
+        linear-gradient(180deg,#080a14,#050710) !important;
+    }
+    body.theme-dark #avatarShell{
+      border-color:rgba(159,135,255,.28) !important;
+    }
+    body.theme-noelle #avatarShell{
+      border-color:rgba(226,93,255,.34) !important;
+    }
+    #stage{
+      inset:44px 0 64px 0 !important;
+    }
+    #status{
+      pointer-events:none;
+    }
+
+    body.theme-noelle-classic{
+      background:
+        radial-gradient(circle at 50% 86%, rgba(215,44,85,.34), transparent 18%),
+        linear-gradient(180deg,#060609,#0b0c12) !important;
+    }
+    body.theme-noelle-classic #avatarShell{
+      border-color:rgba(215,44,85,.46) !important;
+      background:
+        radial-gradient(circle at top, rgba(215,44,85,.08), transparent 28%),
+        linear-gradient(180deg, rgba(12,12,18,.72), rgba(5,5,9,.86)) !important;
+      box-shadow:0 28px 70px rgba(0,0,0,.50), inset 0 1px 0 rgba(255,255,255,.06) !important;
+    }
+    body.theme-noelle-classic #status,
+    body.theme-noelle-classic #topPills .pill{
+      background:rgba(9,9,13,.84) !important;
+      border-color:rgba(215,44,85,.30) !important;
+      color:#fff8f8 !important;
+    }
+    body.theme-noelle-classic #topPills .pill:first-child::before{
+      color:#ff496e !important;
+    }
+
+  </style>
+  <link rel="stylesheet" href="./styles/responsive.css" />
+</head>
+<body class="theme-noelle-classic">
+  <div id="avatarShell"><div id="avatarChrome"></div></div>
+
+  <div id="topPills">
+    <div class="pill"><span class="dot"></span><span>Noelle</span></div>
+    <div class="pill">Widget</div>
+  </div>
+
+  <div id="stage"></div>
+  <div id="hint">spawnY<br>scale<br>frameY</div>
+  <div id="status">Iniciando...</div>
+  <div id="errorBox"></div>
+  <div id="errorActions">
+    <button id="importAvatarAgainBtn" class="error-btn">Importar VRM novamente</button>
+    <button id="reloadAvatarBtn" class="error-btn">Tentar de novo</button>
+  </div>
+  <div id="avatarSourceNote"></div>
+  <div id="avatarModuleNote" style="position:fixed; left:14px; right:14px; bottom:62px; z-index:41; font-size:10px; color:rgba(255,255,255,.60); text-align:center;"></div>
+  <div id="expressionOverlay" aria-hidden="true"><img id="expressionImage" alt="Expressão aleatória da Noelle"></div>
+  <div id="expressionBadge"></div>
+
+  
+<script>
+  try {
+    const avatarInfo = window.desktopWidget?.getAvatarRuntimeUrlSync?.();
+    if (avatarInfo?.ok && avatarInfo.url) {
+      window.__NOELLE_AVATAR_INFO__ = avatarInfo;
+      window.__NOELLE_VRM_URL__ = avatarInfo.url;
+      const note = document.getElementById("avatarSourceNote");
+      if (note) note.textContent = `Avatar: ${avatarInfo.name || "Noelle"} • ${avatarInfo.kind || "vrm"}`;
+    }
+  } catch (err) {
+    const errorBox = document.getElementById("errorBox");
+    if (errorBox) {
+      errorBox.style.display = "block";
+      errorBox.textContent = String(err);
+    }
+  }
+</script>
+  <script type="module" src="./renderer_dist/avatar.bundle.js"></script>
+</body>
+</html>

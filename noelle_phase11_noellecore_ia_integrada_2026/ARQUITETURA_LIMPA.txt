@@ -1,0 +1,32 @@
+Noelle Companion 2026 - Arquitetura limpa
+
+Fluxo final:
+1) main.js abre:
+   - src/launcher_view.html
+   - src/avatar_view.html
+   - src/controls.html
+
+2) Cada HTML carrega um bundle:
+   - launcher_view.html -> src/renderer_dist/launcher.bundle.js
+   - avatar_view.html   -> src/renderer_dist/avatar.bundle.js
+   - controls.html      -> src/renderer_dist/controls.bundle.js
+
+3) O avatar é empacotado pelo esbuild direto do node_modules:
+   - three
+   - three/addons/loaders/GLTFLoader.js
+   - three/addons/controls/OrbitControls.js
+   - @pixiv/three-vrm
+   - @pixiv/three-vrm-animation
+
+Removido do fluxo:
+- importmap
+- src/vendor
+- src/renderer/runtime_shims
+- avatar_bootstrap.js
+- controls_bootstrap.js
+- import dinâmico do runtime do avatar
+
+Comandos:
+- dependencies.bat
+- iniciar.bat
+- reparar_avatar.bat

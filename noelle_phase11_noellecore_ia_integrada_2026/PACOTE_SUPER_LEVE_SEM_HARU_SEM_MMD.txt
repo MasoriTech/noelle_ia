@@ -1,0 +1,17 @@
+Noelle Companion 2026 - Pacote super leve
+
+Removido:
+- Haru Live2D
+- pasta src/assets/live2d
+- qualquer resto de MMD/VMD
+- suporte experimental Live2D do código
+- filtros de importação .model3.json
+
+Mantido:
+- Noelle
+- Arisa
+- seletor de avatares
+- exportar avatar VRM/GLB
+- correção dos sliders
+- layout responsivo
+- inventário e modo duas mãos

@@ -1,0 +1,175 @@
+{
+  "version": 4,
+  "items": [
+    {
+      "id": "basketball",
+      "label": "Basketball",
+      "file": "basketball.glb",
+      "slot": "right_hand",
+      "default_interaction": "auto",
+      "notes": "Bola esportiva para a Yoru segurar na mão ou mostrar na cena.",
+      "category": "hand",
+      "thumbnail": "thumbnails/basketball.png"
+    },
+    {
+      "id": "kendo_shinai_blade",
+      "label": "Shinai Blade",
+      "file": "kendo_shinai_blade.glb",
+      "slot": "back_mount",
+      "default_interaction": "back_sheath",
+      "notes": "Shinai de treino estilizado para cosplay, pose samurai e customização artística do avatar.",
+      "category": "hand",
+      "target_size": 1.02,
+      "inventory_group": "Esporte & fantasia",
+      "supported_modes": [
+        "back_sheath",
+        "hand_right",
+        "hand_left",
+        "two_hand_blade"
+      ],
+      "thumbnail": "thumbnails/kendo_shinai_blade.png"
+    },
+    {
+      "id": "iphone_14_pro",
+      "label": "iPhone 14 Pro",
+      "file": "iphone_14_pro.glb",
+      "slot": "left_hand",
+      "default_interaction": "auto",
+      "notes": "Celular para pose de consulta, chat ou selfie.",
+      "category": "hand",
+      "thumbnail": "thumbnails/iphone_14_pro.png"
+    },
+    {
+      "id": "d20",
+      "label": "Dado de 20 lados",
+      "file": "dado_de_20_lados.glb",
+      "slot": "right_hand",
+      "default_interaction": "roll_item",
+      "notes": "d20 para segurar ou girar como item de mesa.",
+      "category": "hand",
+      "thumbnail": "thumbnails/d20.png"
+    },
+    {
+      "id": "dice",
+      "label": "Dado comum",
+      "file": "dado_obj.glb",
+      "slot": "right_hand",
+      "default_interaction": "roll_item",
+      "notes": "Dado clássico para teste rápido de interação.",
+      "category": "hand",
+      "thumbnail": "thumbnails/dice.png"
+    },
+    {
+      "id": "office_desk",
+      "label": "Mesa de escritório",
+      "file": "office_desk.glb",
+      "slot": "scene_front",
+      "default_interaction": "desk_sit",
+      "notes": "Mesa de escritório com cadeira simples procedural para compor a cena em frente da Yoru.",
+      "category": "scene",
+      "thumbnail": "thumbnails/office_desk.png"
+    },
+    {
+      "id": "agua",
+      "label": "Água",
+      "file": "agua.glb",
+      "slot": "right_hand",
+      "default_interaction": "auto",
+      "notes": "Item extra para a Yoru segurar na mão.",
+      "category": "hand",
+      "thumbnail": "thumbnails/agua.png"
+    },
+    {
+      "id": "cafe",
+      "label": "Café",
+      "file": "cafe.glb",
+      "slot": "right_hand",
+      "default_interaction": "hand_right",
+      "notes": "Caneca/copo de café para cenas casuais e de mesa.",
+      "category": "hand",
+      "target_size": 0.16,
+      "thumbnail": "thumbnails/cafe.png"
+    },
+    {
+      "id": "tablet",
+      "label": "Tablet",
+      "file": "tablet.glb",
+      "slot": "left_hand",
+      "default_interaction": "hand_left",
+      "notes": "Tablet para pose de leitura, consulta e stream.",
+      "category": "hand",
+      "target_size": 0.26,
+      "thumbnail": "thumbnails/tablet.png"
+    },
+    {
+      "id": "microfone",
+      "label": "Microfone",
+      "file": "microfone.glb",
+      "slot": "right_hand",
+      "default_interaction": "hand_right",
+      "notes": "Microfone de mão para live, voz e apresentação.",
+      "category": "hand",
+      "target_size": 0.24,
+      "thumbnail": "thumbnails/microfone.png"
+    },
+    {
+      "id": "acoustic_guitar_black",
+      "label": "Violão preto",
+      "file": "acoustic_guitar_black.glb",
+      "slot": "right_hand",
+      "default_interaction": "two_hand_guitar",
+      "notes": "Violão em modo especial de duas mãos.",
+      "category": "hand",
+      "target_size": 0.86,
+      "thumbnail": "thumbnails/acoustic_guitar_black.png"
+    },
+    {
+      "id": "grand_piano",
+      "label": "Piano de cauda",
+      "file": "grand_piano.glb",
+      "slot": "scene_front",
+      "default_interaction": "scene_front",
+      "notes": "Piano de cauda para compor o cenário editável.",
+      "category": "scene",
+      "target_size": 1.38,
+      "spawn_preset": "piano_left_stage",
+      "thumbnail": "thumbnails/grand_piano.png"
+    },
+    {
+      "id": "escritorio_vintage_room",
+      "label": "Escritório vintage",
+      "file": "escritorio-vintage.glb",
+      "slot": "scene_front",
+      "default_interaction": "room_focus",
+      "notes": "Ambiente de escritório vintage para o modo cenário, com enquadramento mais aberto e avatar levemente deslocado.",
+      "category": "scene",
+      "target_size": 5.2,
+      "spawn_preset": "room_vintage_wide",
+      "inventory_group": "Ambientes",
+      "supported_modes": [
+        "scene_front",
+        "room_focus",
+        "room_seated"
+      ],
+      "thumbnail": "thumbnails/escritorio_vintage_room.png"
+    },
+    {
+      "id": "quarto_finalizado_room",
+      "label": "Quarto finalizado",
+      "file": "cenario_do_meu_quarto_finalizado.glb",
+      "slot": "scene_front",
+      "default_interaction": "room_focus",
+      "notes": "Quarto completo para o modo cenário com câmera focada na personagem e espaço para composição de fundo.",
+      "category": "scene",
+      "target_size": 5.4,
+      "spawn_preset": "room_bedroom_center",
+      "inventory_group": "Ambientes",
+      "supported_modes": [
+        "scene_front",
+        "room_focus",
+        "room_seated"
+      ],
+      "thumbnail": "thumbnails/quarto_finalizado_room.png"
+    }
+  ]
+}

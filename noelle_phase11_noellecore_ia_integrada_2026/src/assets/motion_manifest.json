@@ -1,0 +1,92 @@
+[
+  {
+    "id": "VRMA_02",
+    "label": "Greeting",
+    "file": "VRMA_02.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_03",
+    "label": "Peace sign",
+    "file": "VRMA_03.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_06",
+    "label": "Model pose",
+    "file": "VRMA_06.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_05",
+    "label": "Spin",
+    "file": "VRMA_05.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_01",
+    "label": "Show full body",
+    "file": "VRMA_01.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_04",
+    "label": "Shoot",
+    "file": "VRMA_04.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_07",
+    "label": "Squat",
+    "file": "VRMA_07.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "001_motion_pose",
+    "label": "Motion pose",
+    "file": "001_motion_pose.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "002_dogeza",
+    "label": "Dogeza",
+    "file": "002_dogeza.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "003_humidai",
+    "label": "Humidai",
+    "file": "003_humidai.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "004_hello_1",
+    "label": "Hello 1",
+    "file": "004_hello_1.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "005_smartphone",
+    "label": "Smartphone",
+    "file": "005_smartphone.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "006_drinkwater",
+    "label": "Drink water",
+    "file": "006_drinkwater.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "007_gekirei",
+    "label": "Gekirei",
+    "file": "007_gekirei.vrma",
+    "source": "fm"
+  },
+  {
+    "id": "008_gatan",
+    "label": "Gatan",
+    "file": "008_gatan.vrma",
+    "source": "fm"
+  }
+]

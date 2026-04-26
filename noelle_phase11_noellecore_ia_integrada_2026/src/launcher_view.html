@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noelle Companion</title>
+  <style>
+    :root{
+      --bg:#070913;
+      --panel:#0d1020;
+      --panel-2:#12162a;
+      --card:#151a31;
+      --card-2:#101425;
+      --text:#f7f3ff;
+      --muted:#aeb5d6;
+      --muted-2:#7f86a8;
+      --violet:#8d4dff;
+      --violet-2:#c250ff;
+      --pink:#ff6bd6;
+      --red:#d62955;
+      --green:#44e08f;
+      --line:rgba(223,204,255,.12);
+      --line-2:rgba(194,80,255,.34);
+      --shadow:0 28px 70px rgba(0,0,0,.46);
+      --glow:0 0 22px rgba(194,80,255,.32);
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0; min-height:100%; overflow:hidden;
+      font-family:Inter, Segoe UI, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 78% 12%, rgba(49,92,255,.22), transparent 30%),
+        radial-gradient(circle at 14% 98%, rgba(194,80,255,.14), transparent 34%),
+        linear-gradient(180deg,#070913 0%,#090c18 100%);
+    }
+    body{padding:8px}
+    .window{
+      height:calc(100vh - 16px);
+      border-radius:26px;
+      border:1px solid var(--line-2);
+      background:
+        radial-gradient(circle at top left, rgba(194,80,255,.10), transparent 32%),
+        linear-gradient(180deg, rgba(16,19,38,.97), rgba(8,11,22,.98));
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+      overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .titlebar{
+      height:46px; padding:0 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid var(--line);
+      -webkit-app-region:drag; app-region:drag; user-select:none;
+      background:rgba(7,9,18,.38);
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-size:14px; font-weight:800}
+    .spark{
+      width:24px; height:24px; border-radius:9px;
+      display:grid; place-items:center;
+      background:radial-gradient(circle, var(--pink), var(--violet) 60%, rgba(93,52,197,.35));
+      box-shadow:var(--glow);
+      font-size:15px;
+    }
+    .win-controls{display:flex; gap:16px; color:#d9def5; font-size:13px;}
+    .body{
+      flex:1; min-height:0;
+      padding:18px 20px 16px;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .status-row{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .status-pill{
+      min-height:38px; padding:0 16px;
+      display:flex; align-items:center; gap:10px;
+      border-radius:15px; border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      font-weight:800;
+    }
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--green);box-shadow:0 0 12px rgba(68,224,143,.55)}
+    .status-text{font-size:12px; color:var(--muted); line-height:1.35; flex:1}
+    .hero{
+      display:grid; grid-template-columns:92px 1fr; gap:16px; align-items:center;
+      padding:13px; border-radius:18px; border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+    }
+    .avatar-ring{
+      width:82px; height:82px; border-radius:24px; display:grid; place-items:center;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255,255,255,.24), transparent 28%),
+        linear-gradient(135deg, rgba(194,80,255,.34), rgba(214,41,85,.15));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:var(--glow);
+      overflow:hidden;
+    }
+    .avatar-ring img{width:72px;height:72px;object-fit:cover;border-radius:18px}
+    h1{margin:0 0 6px; font-size:22px; letter-spacing:-.035em}
+    .subtitle{margin:0; color:var(--muted); font-size:13px; line-height:1.45}
+    .avatar-select{
+      display:flex; flex-direction:column; gap:10px;
+      padding:13px; border-radius:18px; border:1px solid var(--line);
+      background:rgba(255,255,255,.035);
+    }
+    .section-label{
+      display:flex; align-items:center; gap:9px;
+      font-size:13px; color:#dfe5ff; font-weight:800;
+    }
+    .avatar-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .menu{
+      display:flex; flex-direction:column; gap:10px; margin-top:2px;
+    }
+    .menu-btn,.small-btn{
+      border:1px solid var(--line);
+      color:var(--text);
+      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+      cursor:pointer; transition:.15s ease;
+      -webkit-app-region:no-drag; app-region:no-drag;
+    }
+    .menu-btn{
+      min-height:54px; border-radius:17px;
+      display:flex; align-items:center; gap:12px; padding:0 16px;
+      font-size:15px; font-weight:800;
+    }
+    .menu-btn.primary{
+      background:linear-gradient(180deg, rgba(141,77,255,.98), rgba(96,44,198,.96));
+      border-color:rgba(194,80,255,.72);
+      box-shadow:0 0 24px rgba(141,77,255,.28);
+    }
+    .menu-btn:hover,.small-btn:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.22)}
+    .icon{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.08);
+      color:#e9ddff;
+      font-size:17px;
+    }
+    .label{flex:1;text-align:left}
+    .small-btn{
+      min-height:38px; border-radius:14px; padding:0 12px;
+      font-size:13px; font-weight:800;
+    }
+    .small-btn.import{
+      border-color:rgba(214,41,85,.38);
+      background:linear-gradient(180deg, rgba(214,41,85,.15), rgba(141,77,255,.08));
+    }
+    .footer{
+      text-align:center; color:var(--muted-2); font-size:12px; padding-top:2px;
+    }
+  
+    .menu{padding-top:2px}
+    .menu-btn:last-child{margin-bottom:0}
+    .footer{
+      margin-top:2px;
+      padding:8px 10px 0;
+      border-top:1px solid rgba(230,210,255,.08);
+      line-height:1.35;
+    }
+    .avatar-select{box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+
+  
+    .party-panel{
+      gap:12px;
+      padding:14px;
+    }
+    .party-grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:10px;
+      min-height:128px;
+    }
+    .avatar-card{
+      min-height:124px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(circle at top, rgba(194,80,255,.15), transparent 52%),
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02));
+      color:var(--text);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+    .avatar-card:hover{
+      border-color:rgba(255,255,255,.24);
+      transform:translateY(-1px);
+    }
+    .avatar-card.active{
+      border-color:rgba(194,80,255,.82);
+      box-shadow:0 0 24px rgba(194,80,255,.24), inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+    .avatar-card.active::after{
+      content:"◆";
+      position:absolute;
+      top:8px;
+      right:9px;
+      color:#f4d8ff;
+      text-shadow:0 0 12px rgba(194,80,255,.85);
+      font-size:13px;
+    }
+    .avatar-card-visual{
+      width:54px;
+      height:54px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      font-weight:900;
+      background:
+        radial-gradient(circle at 35% 26%, rgba(255,255,255,.30), transparent 32%),
+        linear-gradient(135deg, rgba(194,80,255,.65), rgba(214,41,85,.25));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 0 20px rgba(194,80,255,.22);
+    }
+    .avatar-card-name{
+      max-width:100%;
+      padding:0 6px;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .avatar-card-kind{
+      font-size:10px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .add-card .avatar-card-visual{
+      background:rgba(255,255,255,.06);
+      color:#e8d9ff;
+    }
+    .avatar-warning{
+      color:#ffc7d4;
+      font-size:11px;
+      line-height:1.3;
+      padding:8px 10px;
+      border-radius:12px;
+      background:rgba(214,41,85,.10);
+      border:1px solid rgba(214,41,85,.18);
+    }
+    @media (max-height: 610px){
+      .party-grid{grid-template-columns:repeat(2, minmax(0,1fr)); min-height:0}
+      .avatar-card{min-height:96px}
+      .avatar-card-visual{width:42px;height:42px;border-radius:15px;font-size:22px}
+    }
+
+  
+    @media (min-width: 620px){
+      .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:0}
+      .menu-btn{min-height:52px;padding:0 12px}
+      .menu-btn .icon{width:30px;height:30px}
+      .hero{grid-template-columns:82px 1fr}
+      .party-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+
+  
+    body.theme-noelle-classic{
+      --bg:#07070b;
+      --window:#0b0c12;
+      --window-2:#111018;
+      --card:#12131b;
+      --card-2:#181821;
+      --text:#fff8f8;
+      --muted:#d8ccd0;
+      --line:rgba(255,255,255,.13);
+      --line-strong:rgba(215,44,85,.52);
+      --violet:#d72c55;
+      --violet-2:#ffffff;
+      --pink:#ff496e;
+      --red:#d72c55;
+      --shadow:0 28px 70px rgba(0,0,0,.54);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(215,44,85,.18), transparent 30%),
+        linear-gradient(180deg,#050509,#0b0c12);
+    }
+    body.theme-noelle-classic .window{
+      background:
+        radial-gradient(circle at top left, rgba(215,44,85,.13), transparent 32%),
+        linear-gradient(180deg, rgba(12,12,18,.98), rgba(5,5,9,.99));
+      border-color:rgba(215,44,85,.48);
+    }
+    body.theme-noelle-classic .menu-btn.primary,
+    body.theme-noelle-classic .avatar-card.active,
+    body.theme-noelle-classic .status-pill{
+      border-color:rgba(215,44,85,.50);
+      box-shadow:0 0 20px rgba(215,44,85,.20);
+    }
+
+  </style>
+  <link rel="stylesheet" href="./styles/responsive.css" />
+</head>
+<body class="theme-noelle-classic">
+  <div class="window">
+    <div class="titlebar">
+      <div class="brand"><div class="spark">✦</div><span>Noelle Companion</span></div>
+      <div class="win-controls"><span>—</span><span>□</span><span>✕</span></div>
+    </div>
+
+    <div class="body">
+      <div class="status-row">
+        <div class="status-pill"><span class="dot"></span><span>Ativa</span></div>
+        <div id="launcherStatus" class="status-text">Noelle pronta. Escolha uma ação para começar.</div>
+      </div>
+
+      <div class="hero">
+        <div class="avatar-ring"><img src="../assets/icons/noelle_256.png" alt="Noelle"></div>
+        <div>
+          <h1>Menu inicial</h1>
+          <p class="subtitle">Launcher compacto com tema inspirado nas cores da Noelle: preto, roxo, lilás e detalhes vermelhos.</p>
+        </div>
+      </div>
+      <div class="avatar-select party-panel">
+        <div class="section-label"><span>◇</span><span>Selecionar avatar</span></div>
+        <div class="party-grid" id="avatarRoster">
+          <button class="avatar-card add-card" id="importAvatarCard" type="button">
+            <div class="avatar-card-visual">＋</div>
+            <div class="avatar-card-name">Adicionar</div>
+            <div class="avatar-card-kind">VRM / GLB</div>
+          </button>
+        </div>
+        <div class="avatar-actions">
+          <button id="importAvatarBtn" class="small-btn import">Importar avatar</button>
+          <button id="exportAvatarBtn" class="small-btn">Exportar avatar</button>
+          <button id="openAvatarBtn" class="small-btn">Abrir selecionado</button>
+        </div>
+      </div>
+
+      <div class="menu">
+        <button id="startBtn" class="menu-btn primary"><span class="icon">▶</span><span class="label">Iniciar</span></button>
+        <button id="settingsBtn" class="menu-btn"><span class="icon">⚙</span><span class="label">Configurações</span></button>
+        <button id="aboutBtn" class="menu-btn"><span class="icon">ⓘ</span><span class="label">Sobre</span></button>
+      </div>
+
+      <div class="footer">Para encerrar, use o X da janela ou o menu da bandeja.</div>
+    </div>
+  </div>
+
+  <script type="module" src="./renderer_dist/launcher.bundle.js"></script>
+</body>
+</html>

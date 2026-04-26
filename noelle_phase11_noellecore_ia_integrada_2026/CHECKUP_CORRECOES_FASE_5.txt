@@ -1,0 +1,37 @@
+Noelle Companion 2026 - Checkup e correções fase 5
+
+Correções feitas:
+1. Desequipar
+   - Corrigido estado local dos controles.
+   - Agora o botão Desequipar atualiza localStorage e envia comando ao avatar.
+   - Removido callback antigo que só mexia no estado local e não avisava a janela do avatar.
+
+2. Abas vazias
+   - Aba Emotes agora renderiza os emotes também.
+   - Aba Inventário agora renderiza o inventário também.
+   - A aba Principal continua tendo acesso rápido a emotes e inventário.
+
+3. Itens bugados
+   - Inventário agora atualiza estado visual equipado/desequipado.
+   - Menu contextual mostra item equipado com slot correto.
+   - Conflitos de slot foram tratados:
+     - item em duas mãos remove mão direita e mão esquerda
+     - item na mão remove item de duas mãos
+
+4. Modo duas mãos
+   - Adicionado slot lógico two_hands.
+   - Adicionado label Duas mãos.
+   - Violão preto ganhou modo Usar em duas mãos.
+   - Bola de basquete ganhou modo Usar em duas mãos.
+   - O avatar recebe pose especial simples para violão e bola.
+
+5. Limpeza/checkup
+   - Adicionado script npm run checkup.
+   - doctor agora roda checkup também.
+   - Validação cobre IDs duplicados, abas vazias, botões de tema, legado antigo e modo duas mãos.
+
+Comandos:
+- npm.cmd run checkup
+- npm.cmd run doctor
+- dependencies.bat
+- iniciar.bat
