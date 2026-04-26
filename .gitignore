@@ -1,18 +1,49 @@
-# Noelle IA - arquivos que nao devem ir para o GitHub
+# Dependencias
 node_modules/
 **/node_modules/
-logs/
-**/logs/
+.venv/
+venv/
+env/
+**/.venv/
+**/venv/
+
+# Build e release
 release/
 dist/
 build/
 out/
+**/release/
+**/dist/
+**/build/
+**/out/
 src/renderer_dist/
-.venv/
-venv/
-env/
+
+# Logs e temporarios
+logs/
+**/logs/
+*.log
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# Pacotes/backups
+*.zip
+*.rar
+*.7z
+backup/
+backups/
+*_backup/
+*_old/
+*_bak/
+
+# Python
+__pycache__/
 **/__pycache__/
 *.pyc
+*.pyo
+
+# Modelos/cache local
 tools/noelle_stt/models/
 tools/noelle_stt/cache/
 **/tools/noelle_stt/models/
@@ -20,16 +51,17 @@ tools/noelle_stt/cache/
 .cache/
 huggingface/
 hf_cache/
-*.log
-*.zip
-*.rar
-*.7z
+**/.cache/
+**/huggingface/
+**/hf_cache/
+
+# Audio temporario
 *.wav
 *.webm
 *.mp3
-tmp/
-temp/
-Thumbs.db
-.DS_Store
+
+# Ambiente/local
 .env
 .env.local
+.DS_Store
+Thumbs.db
