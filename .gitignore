@@ -1,0 +1,70 @@
+# Dependências
+node_modules/
+**/node_modules/
+.venv/
+venv/
+env/
+**/.venv/
+**/venv/
+
+# Builds e releases
+release/
+dist/
+build/
+out/
+**/release/
+**/dist/
+**/build/
+**/out/
+src/renderer_dist/
+
+# Logs
+logs/
+**/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pacotes e backups locais
+*.zip
+*.rar
+*.7z
+backup/
+backups/
+*_backup/
+*_old/
+*_bak/
+
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# STT / modelos / cache
+models/
+**/models/
+tools/noelle_stt/models/
+tools/noelle_stt/cache/
+.cache/
+**/.cache/
+huggingface/
+hf_cache/
+
+# Áudio temporário
+*.wav
+*.webm
+*.mp3
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Config local sensível
+.env
+.env.local
