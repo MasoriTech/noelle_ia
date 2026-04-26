@@ -560,12 +560,40 @@ function renderNoelleCoreChat() {
     return;
   }
 
-  logEl.innerHTML = items.map((item) => {
+  logEl.innerHTML = items.map((item, idx) => {
     const role = item.role === "user" ? "user" : item.role === "assistant" ? "assistant" : "system";
     const who = role === "user" ? "Você" : role === "assistant" ? "Noelle" : "Sistema";
     const meta = role === "assistant" && item.meta?.seconds ? " · " + escapeHtml(String(item.meta.seconds) + "s") : "";
-    return '<div class="chat-bubble ' + role + '"><b>' + who + meta + '</b><br>' + escapeHtml(item.content) + '</div>';
+    const speakBtn = role === "assistant" ? `<button class="btn-speak-item" data-msg-idx="${idx}" title="Ouvir resposta" aria-label="Ouvir resposta">🔊</button>` : "";
+    return '<div class="chat-bubble ' + role + '"><b>' + who + meta + '</b>' + speakBtn + '<br>' + escapeHtml(item.content) + '</div>';
   }).join("");
+  
+  // Vincula cliques nos botões de fala
+  Array.from(logEl.querySelectorAll(".btn-speak-item")).forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const idx = parseInt(btn.dataset.msgIdx, 10);
+      const item = items[idx];
+      if (!item || item.role !== "assistant") return;
+      
+      btn.disabled = true;
+      btn.textContent = "⏳";
+      try {
+        const result = await window.desktopWidget?.noelleCoreSpeak?.(item.content, { lang: "pt-BR" });
+        if (result?.ok) {
+          btn.textContent = "✓";
+          setTimeout(() => { btn.textContent = "🔊"; btn.disabled = false; }, 1000);
+        } else {
+          btn.title = "Erro ao falar: " + (result?.error || "erro desconhecido");
+          btn.textContent = "✗";
+          setTimeout(() => { btn.textContent = "🔊"; btn.disabled = false; }, 1500);
+        }
+      } catch (err) {
+        btn.title = "Erro: " + String(err?.message || err);
+        btn.textContent = "✗";
+        setTimeout(() => { btn.textContent = "🔊"; btn.disabled = false; }, 1500);
+      }
+    });
+  });
   logEl.scrollTop = logEl.scrollHeight;
 }
 
@@ -866,6 +894,29 @@ function stopNoelleCoreVoiceInput() {
   }
 }
 
+function triggerAvatarReactionToChat(persona = "nobre") {
+  // Mapeia personas para motions disponíveis
+  const personaMotionMap = {
+    nobre: "VRMA_02",      // Pose de repouso elegante
+    direta: "VRMA_03",     // Gesto mais enérgico
+    fofa: "005_smartphone",// Gesto amigável
+    seria: "VRMA_01",      // Pose séria
+    brincalhona: "007_gekirei" // Gesto festivo
+  };
+
+  const motionId = personaMotionMap[persona] || "VRMA_02";
+  try {
+    // Envia comando para o avatar via ipcRenderer
+    window.desktopWidget?.sendAvatarCommand?.({
+      type: "playMotion",
+      motionId: motionId
+    });
+  } catch (err) {
+    // Silentemente ignorar erros de comunicação com avatar
+    console.debug("Avatar reaction unavailable:", err?.message);
+  }
+}
+
 async function startNoelleCoreVoiceInput() {
   const mic = byId("coreMicBtn");
   if (!mic || mic.disabled || noelleCoreAudioBusy) return;
@@ -1028,6 +1079,10 @@ async function sendNoelleCoreMessage(customText = null, meta = {}) {
         persona: result.persona,
         tokensPerSecond: result.metrics?.tokens_per_second
       });
+      
+      // Faz o avatar reagir
+      triggerAvatarReactionToChat(result.persona || persona);
+      
       const metricLine = formatNoelleCoreMetrics(result.metrics);
       const slowHint = Number(result.seconds || 0) > 10 ? " · acima de 10s: use Pré-carregar ou Perfil Turbo." : "";
       setNoelleCoreRuntimeLine("Resposta pronta em " + result.seconds + "s" + slowHint + ".", "ok");

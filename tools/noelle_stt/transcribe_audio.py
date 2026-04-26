@@ -87,18 +87,18 @@ def build_model(model_name: str, compute_type: str, download_root: str | None, l
     raise RuntimeError(str(last_error or "não foi possível carregar o modelo"))
 
 
-def transcribe_once(model: Any, audio_path: str, language: str, use_vad: bool, min_silence_ms: int) -> tuple[str, list[dict[str, Any]], Any]:
+def transcribe_once(model: Any, audio_path: str, language: str, use_vad: bool, min_silence_ms: int, relaxed: bool = False) -> tuple[str, list[dict[str, Any]], Any]:
     kwargs: dict[str, Any] = {
         "language": language or "pt",
-        "beam_size": 1,
-        "best_of": 1,
+        "beam_size": 1 if not relaxed else 3,
+        "best_of": 1 if not relaxed else 3,
         "vad_filter": bool(use_vad),
         "condition_on_previous_text": False,
         "temperature": 0.0,
         "initial_prompt": "Transcreva fala curta em português brasileiro. Não invente palavras.",
-        "no_speech_threshold": 0.55,
-        "compression_ratio_threshold": 2.4,
-        "log_prob_threshold": -1.0,
+        "no_speech_threshold": 0.80 if relaxed else 0.68,
+        "compression_ratio_threshold": 2.8,
+        "log_prob_threshold": -1.5 if relaxed else -1.2,
     }
     if use_vad:
         kwargs["vad_parameters"] = {
@@ -172,23 +172,26 @@ def main() -> None:
             num_workers=args.num_workers,
         )
 
+        # Para áudio curto gravado pelo Electron, começar sem VAD costuma ser mais robusto.
         transcript, segments, info = transcribe_once(
             model=model,
             audio_path=str(audio_path),
             language=language,
-            use_vad=use_vad,
+            use_vad=False,
             min_silence_ms=args.min_silence_duration_ms,
+            relaxed=False,
         )
 
         fallback_used = False
-        if not transcript and use_vad:
+        if not transcript:
             fallback_used = True
             transcript, segments, info = transcribe_once(
                 model=model,
                 audio_path=str(audio_path),
                 language=language,
-                use_vad=False,
+                use_vad=use_vad,
                 min_silence_ms=args.min_silence_duration_ms,
+                relaxed=True,
             )
 
         seconds = round(time.time() - started, 2)
@@ -196,7 +199,7 @@ def main() -> None:
             emit({
                 "ok": False,
                 "error": "Não consegui identificar fala clara no áudio.",
-                "hint": "Fale mais perto do microfone por 2 a 5 segundos. Se continuar ruim, teste small/base depois.",
+                "hint": "Fale perto do microfone por 2 a 5 segundos. Se o medium demorar ou falhar, teste small/base. Confira se PREPARAR_AUDIO_STT.bat instalou faster-whisper, ctranslate2 e av.",
                 "model": model_name,
                 "compute_type": final_compute,
                 "language": getattr(info, "language", language) if info else language,

@@ -105,8 +105,8 @@ const NOELLE_CORE_DEFAULTS = {
       keep_alive: "20m",
       timeoutMs: 90000,
       options: {
-        num_ctx: 192,
-        num_predict: 42,
+        num_ctx: 512,
+        num_predict: 128,
         num_thread: 2,
         num_batch: 48,
         temperature: 0.36,
@@ -120,8 +120,8 @@ const NOELLE_CORE_DEFAULTS = {
       keep_alive: "15m",
       timeoutMs: 120000,
       options: {
-        num_ctx: 384,
-        num_predict: 80,
+        num_ctx: 1024,
+        num_predict: 256,
         num_thread: 2,
         num_batch: 96,
         temperature: 0.45,
@@ -135,8 +135,8 @@ const NOELLE_CORE_DEFAULTS = {
       keep_alive: "10m",
       timeoutMs: 90000,
       options: {
-        num_ctx: 256,
-        num_predict: 55,
+        num_ctx: 768,
+        num_predict: 160,
         num_thread: 2,
         num_batch: 64,
         temperature: 0.40,
@@ -150,8 +150,8 @@ const NOELLE_CORE_DEFAULTS = {
       keep_alive: 0,
       timeoutMs: 120000,
       options: {
-        num_ctx: 256,
-        num_predict: 60,
+        num_ctx: 512,
+        num_predict: 128,
         num_thread: 2,
         num_batch: 64,
         temperature: 0.42,
@@ -641,6 +641,66 @@ async function noelleCoreChat(payload = {}) {
     seconds: metrics.seconds,
     metrics
   };
+}
+
+async function noelleCoreSpeak(text = "", options = {}) {
+  const message = String(text || "").trim();
+  if (!message) return { ok: false, error: "Texto vazio para síntese de voz." };
+
+  const lang = options.lang || "pt-BR";
+  const rate = options.rate || 1;
+  const volume = options.volume || 1;
+  
+  return new Promise((resolve) => {
+    const started = Date.now();
+    try {
+      // Use PowerShell SAPI (nativo Windows) para TTS
+      const psScript = `
+        Add-Type -AssemblyName System.Windows.Forms;
+        Add-Type -AssemblyName System.Speech;
+        $speak = New-Object System.Speech.Synthesis.SpeechSynthesizer;
+        $speak.Rate = ${Math.max(-10, Math.min(10, (rate - 1) * 10))};
+        $speak.Volume = ${Math.max(0, Math.min(100, volume * 100))};
+        try {
+          $speak.Speak('${message.replace(/'/g, "''")}');
+        } catch {
+          Write-Error $_.Exception.Message;
+        }
+      `;
+      
+      const proc = spawn("powershell", ["-NoProfile", "-Command", psScript], {
+        detached: false,
+        stdio: "pipe",
+        shell: false
+      });
+
+      let hasError = false;
+      proc.stderr.on("data", (data) => {
+        hasError = true;
+        console.warn("TTS erro:", data.toString());
+      });
+
+      proc.on("close", (code) => {
+        const seconds = Number(((Date.now() - started) / 1000).toFixed(2));
+        appendNoelleCoreLog("tts_" + (code === 0 && !hasError ? "success" : "error"), { text: message.slice(0, 100), seconds, code });
+        resolve({
+          ok: code === 0 && !hasError,
+          text: message,
+          seconds,
+          lang,
+          error: hasError ? "Erro ao falar" : null
+        });
+      });
+
+      proc.on("error", (err) => {
+        appendNoelleCoreLog("tts_exception", { error: err.message });
+        resolve({ ok: false, error: err.message, text: message });
+      });
+    } catch (err) {
+      appendNoelleCoreLog("tts_exception", { error: String(err?.message || err) });
+      resolve({ ok: false, error: String(err?.message || err), text: message });
+    }
+  });
 }
 
 async function noelleCoreSetModel(mode) {
@@ -1926,6 +1986,15 @@ ipcMain.handle("noelle-core-set-persona", async (_event, payload) => {
   try {
     return await noelleCoreSetPersona(payload?.persona || "nobre");
   } catch (err) {
+    return { ok: false, error: String(err?.message || err) };
+  }
+});
+
+ipcMain.handle("noelle-core-speak", async (_event, payload) => {
+  try {
+    return await noelleCoreSpeak(payload?.text || "", payload?.options || {});
+  } catch (err) {
+    appendNoelleCoreLog("ipc_speak_exception", { error: String(err?.message || err) });
     return { ok: false, error: String(err?.message || err) };
   }
 });

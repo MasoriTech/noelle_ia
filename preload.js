@@ -52,6 +52,7 @@ contextBridge.exposeInMainWorld("desktopWidget", {
   noelleCoreSetModel: (mode) => ipcRenderer.invoke("noelle-core-set-model", { mode }),
   noelleCoreSetProfile: (profile) => ipcRenderer.invoke("noelle-core-set-profile", { profile }),
   noelleCoreSetPersona: (persona) => ipcRenderer.invoke("noelle-core-set-persona", { persona }),
+  noelleCoreSpeak: (text, options) => ipcRenderer.invoke("noelle-core-speak", { text, options }),
   noelleCoreUnload: () => ipcRenderer.invoke("noelle-core-unload"),
   noelleCorePreload: () => ipcRenderer.invoke("noelle-core-preload"),
   noelleCoreReset: (sessionId) => ipcRenderer.invoke("noelle-core-reset", { session_id: sessionId }),
