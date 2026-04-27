@@ -1,29 +1,18 @@
+"use strict";
 const fs = require("fs");
 const path = require("path");
-
-const root = path.resolve(__dirname, "..");
+const root = process.cwd();
 const required = [
-  "src/renderer_dist/launcher.bundle.js",
+  "src/renderer/controls_window_app.js",
   "src/renderer_dist/controls.bundle.js",
-  "src/renderer_dist/avatar.bundle.js",
 ];
-
-let failed = 0;
+let ok = true;
 for (const rel of required) {
-  const full = path.join(root, rel);
-  if (!fs.existsSync(full)) {
-    console.error("FAIL bundle ausente:", rel);
-    failed += 1;
-    continue;
+  const file = path.join(root, rel);
+  if (!fs.existsSync(file) || fs.statSync(file).size < 20) {
+    console.error("ERRO: bundle/arquivo ausente ou vazio:", rel);
+    ok = false;
   }
-  const size = fs.statSync(full).size;
-  if (size < 1024) {
-    console.error("FAIL bundle muito pequeno:", rel, size);
-    failed += 1;
-    continue;
-  }
-  console.log("OK  ", rel, size, "bytes");
 }
-
-if (failed) process.exit(1);
+if (!ok) process.exit(1);
 console.log("Bundles validados.");

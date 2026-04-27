@@ -1,0 +1,6 @@
+[
+  { "id": "angry", "file": "angry.png", "label": "Brava" },
+  { "id": "sick", "file": "sick.png", "label": "Passando mal" },
+  { "id": "sad", "file": "sad.png", "label": "Triste" },
+  { "id": "happy", "file": "happy.png", "label": "Feliz" }
+]

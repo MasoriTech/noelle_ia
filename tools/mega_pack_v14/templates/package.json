@@ -1,0 +1,53 @@
+{
+  "name": "noelle-companion-2026",
+  "version": "14.0.0",
+  "description": "Noelle Companion 2026 - Electron limpo, Chat IA, expressões, diagnóstico e manutenção segura.",
+  "main": "main.js",
+  "author": "MasoriTech / Noelle Companion",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "doctor": "node scripts/noelle_doctor_v14.cjs",
+    "diagnostico": "node scripts/noelle_doctor_v14.cjs",
+    "check": "node scripts/noelle_doctor_v14.cjs",
+    "build-renderers": "node scripts/build-renderers.mjs",
+    "verify-renderer-bundles": "node scripts/verify-renderer-bundles.js",
+    "dist:win": "electron-builder --win nsis portable"
+  },
+  "devDependencies": {
+    "electron": "41.3.0",
+    "electron-builder": "26.8.1"
+  },
+  "build": {
+    "appId": "tech.masori.noelle",
+    "productName": "Noelle Companion",
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "src/**/*",
+      "scripts/**/*",
+      "tools/**/*",
+      "docs/**/*",
+      "!**/*.map",
+      "!logs/**",
+      "!backups/**",
+      "!node_modules/.cache/**"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "assets/icons/app.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
