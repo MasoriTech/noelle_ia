@@ -2,211 +2,212 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: file:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self';" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Noelle Companion</title>
   <link rel="stylesheet" href="styles/noelle.css" />
-  <link rel="stylesheet" href="./styles/noelle_chat_v12.css">
 </head>
-<body>
-  <div class="app-shell" id="appShell">
-    <header class="topbar">
-      <div class="brand">
+<body class="theme-noelle">
+  <main class="app-shell" id="appShell">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <div class="brand-block">
         <div class="brand-icon">✦</div>
         <div>
-          <h1>Noelle Companion</h1>
-          <p id="topSubtitle">Base limpa 2026 · janelas refeitas</p>
+          <h1>Noelle</h1>
+          <p>Companion 2026</p>
         </div>
       </div>
-      <div class="top-actions">
-        <span class="status-pill" id="globalStatus">Iniciando...</span>
-        <button class="btn btn-ghost" id="backToMenuBtn" type="button">← Voltar ao menu</button>
-      </div>
-    </header>
 
-    <main class="content-area">
-      <section class="page active" id="page-home" data-page="home" aria-label="Principal">
-        <div class="page-grid two-columns">
-          <article class="card hero-card">
+      <nav class="side-nav">
+        <button class="nav-item active" data-target="home"><span>⌂</span><strong>Principal</strong></button>
+        <button class="nav-item" data-target="chat"><span>♛</span><strong>Chat IA</strong></button>
+        <button class="nav-item" data-target="emotes"><span>☺</span><strong>Emotes</strong></button>
+        <button class="nav-item" data-target="inventory"><span>◇</span><strong>Inventário</strong></button>
+        <button class="nav-item" data-target="settings"><span>⚙</span><strong>Configurações</strong></button>
+        <button class="nav-item" data-target="about"><span>ⓘ</span><strong>Sobre</strong></button>
+      </nav>
+
+      <section class="sidebar-footer">
+        <span class="status-dot" id="sidebarDot"></span>
+        <div>
+          <strong id="sidebarStatus">Iniciando</strong>
+          <small id="sidebarDetail">Aguardando diagnóstico</small>
+        </div>
+      </section>
+    </aside>
+
+    <section class="main-panel">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Noelle Companion</p>
+          <h2 id="topTitle">Principal</h2>
+        </div>
+        <div class="top-actions">
+          <span class="status-pill" id="globalStatus">Iniciando...</span>
+          <button class="btn" id="refreshStatusBtn" type="button">Diagnóstico</button>
+        </div>
+      </header>
+
+      <section class="viewport">
+        <section class="page active" data-page="home">
+          <div class="page-grid two-columns">
+            <article class="card hero-card wide">
+              <div class="section-title">
+                <span class="section-icon">✦</span>
+                <div>
+                  <h2>Principal</h2>
+                  <p>Janela base estável para voltar avatar, emotes e configurações sem quebrar o Chat IA.</p>
+                </div>
+              </div>
+              <div class="home-status">
+                <div class="avatar-preview" id="avatarPreview"><span>Noelle</span></div>
+                <div class="status-stack">
+                  <span class="badge success">Ativa</span>
+                  <h3>Pronta para integração gradual</h3>
+                  <p>O design foi organizado em áreas fixas: navegação, topo, conteúdo e ações. Isso evita input por cima das mensagens e scroll duplicado.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="card quick-card">
+              <div class="section-title compact"><span class="section-icon">▣</span><h2>Câmera do avatar</h2></div>
+              <p class="muted">Presets visuais da janela antiga, prontos para reconectar com o widget.</p>
+              <div class="segmented">
+                <button class="chip active" type="button" data-toast="Preset rosto preparado">Rosto</button>
+                <button class="chip" type="button" data-toast="Preset busto preparado">Busto</button>
+                <button class="chip" type="button" data-toast="Preset meio corpo preparado">Meio corpo</button>
+                <button class="chip" type="button" data-toast="Preset corpo inteiro preparado">Corpo inteiro</button>
+              </div>
+            </article>
+
+            <article class="card quick-card">
+              <div class="section-title compact"><span class="section-icon">⛶</span><h2>Tamanho da janela</h2></div>
+              <p class="muted">Controles simples, sem ocupar espaço do chat.</p>
+              <div class="segmented">
+                <button class="chip" type="button" data-toast="Tamanho pequeno preparado">Pequena</button>
+                <button class="chip active" type="button" data-toast="Tamanho médio preparado">Média</button>
+                <button class="chip" type="button" data-toast="Tamanho grande preparado">Grande</button>
+              </div>
+            </article>
+
+            <article class="card quick-card wide">
+              <div class="section-title compact"><span class="section-icon">⚡</span><h2>Ações rápidas</h2></div>
+              <div class="quick-actions">
+                <button class="btn" type="button" data-toast="Repetir preparado para avatar/voz">↻ Repetir</button>
+                <button class="btn" type="button" data-toast="Pausar preparado">⏸ Pausar</button>
+                <button class="btn" type="button" data-toast="Parar preparado">■ Parar</button>
+                <button class="btn" type="button" data-toast="Sempre no topo preparado">Sempre no topo</button>
+                <button class="btn" type="button" data-toast="Centralizar preparado">Centralizar</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" data-page="chat">
+          <article class="card chat-screen">
+            <header class="chat-header">
+              <div class="section-title compact">
+                <span class="section-icon">♛</span>
+                <div>
+                  <h2>Chat IA</h2>
+                  <p>Conversa local com NoelleCore / Ollama</p>
+                </div>
+              </div>
+              <div class="chat-header-actions">
+                <span class="status-pill" id="chatStatusPill">IA aguardando</span>
+                <button class="btn" id="clearChatBtn" type="button">Limpar</button>
+              </div>
+            </header>
+
+            <div class="chat-log" id="chatLog" aria-live="polite"></div>
+
+            <form class="chat-composer" id="chatForm">
+              <textarea id="chatInput" rows="1" placeholder="Mensagem para Noelle..."></textarea>
+              <button class="icon-btn" id="micBtn" type="button" title="Áudio/STT preparado">🎙</button>
+              <button class="send-btn" id="sendBtn" type="submit" title="Enviar">➤</button>
+            </form>
+
+            <details class="settings-drawer" id="chatSettingsDrawer">
+              <summary>Configurações do Chat IA</summary>
+              <div class="settings-grid">
+                <label>Modelo
+                  <select id="modelSelect">
+                    <option value="qwen3:0.6b">Qwen3 0.6B Fast</option>
+                    <option value="gemma3:1b">Gemma 3 1B</option>
+                    <option value="hermes3:3b">Hermes 3B</option>
+                  </select>
+                </label>
+                <label>Perfil
+                  <select id="profileSelect">
+                    <option value="turbo">Turbo</option>
+                    <option value="rapido">Rápido</option>
+                    <option value="economico">Econômico</option>
+                  </select>
+                </label>
+                <label>Persona
+                  <select id="personaSelect">
+                    <option value="nobre">Nobre rica</option>
+                    <option value="direta">Direta</option>
+                    <option value="fofa">Fofa</option>
+                    <option value="seria">Séria</option>
+                  </select>
+                </label>
+                <div class="drawer-actions">
+                  <button class="btn" id="statusBtn" type="button">Status Ollama</button>
+                  <button class="btn" id="saveMemoryBtn" type="button">Salvar memória</button>
+                </div>
+                <p class="muted drawer-note" id="chatDetailStatus">Pronto.</p>
+              </div>
+            </details>
+          </article>
+        </section>
+
+        <section class="page" data-page="emotes">
+          <article class="card page-card">
             <div class="section-title">
-              <span class="section-icon">⌂</span>
+              <span class="section-icon">☺</span>
               <div>
-                <h2>Principal</h2>
-                <p>Noelle ativa, com janelas separadas e organização limpa.</p>
+                <h2>Emotes e expressões</h2>
+                <p>Renderiza os ícones antigos da Noelle em <code>src/assets/expressions</code>, sem apagar assets.</p>
               </div>
             </div>
-            <div class="home-status">
-              <div class="avatar-preview" aria-hidden="true">Noelle</div>
-              <div class="status-stack">
-                <span class="badge success">Ativa</span>
-                <h3>Pronta para testes</h3>
-                <p>Essa versão mantém as abas antigas, mas refeitas com layout estável: sem input por cima, sem botão gigante e sem scroll duplo.</p>
+            <div class="expression-toolbar">
+              <span class="status-pill" id="expressionStatus">Carregando expressões...</span>
+              <button class="btn" id="reloadExpressionsBtn" type="button">Recarregar</button>
+            </div>
+            <div class="tile-grid expression-grid" id="expressionGrid"></div>
+          </article>
+        </section>
+
+        <section class="page" data-page="inventory">
+          <article class="card page-card">
+            <div class="section-title">
+              <span class="section-icon">◇</span>
+              <div>
+                <h2>Inventário</h2>
+                <p>Área preservada para reconectar o manifesto real de itens do avatar/widget.</p>
               </div>
+            </div>
+            <div class="tile-grid">
+              <button class="tile" type="button" data-toast="Integração de item preparada"><span>◇</span><strong>Item 3D</strong><small>Manifesto</small></button>
+              <button class="tile" type="button" data-toast="Integração de item preparada"><span>◌</span><strong>Acessório</strong><small>Manifesto</small></button>
+              <button class="tile" type="button" data-toast="Integração de item preparada"><span>▣</span><strong>Objeto</strong><small>Manifesto</small></button>
+              <button class="tile" type="button" data-toast="Adicionar futuro item"><span>＋</span><strong>Adicionar</strong><small>Futuro item</small></button>
             </div>
           </article>
+        </section>
 
-          <article class="card">
-            <div class="section-title compact">
-              <span class="section-icon">▣</span>
-              <div>
-                <h2>Câmera do avatar</h2>
-                <p>Presets visuais baseados na janela antiga.</p>
-              </div>
-            </div>
-            <div class="segmented" id="cameraPresetGroup" role="group" aria-label="Câmera">
-              <button class="chip active" data-camera="rosto" type="button">Rosto</button>
-              <button class="chip" data-camera="busto" type="button">Busto</button>
-              <button class="chip" data-camera="meio" type="button">Meio corpo</button>
-              <button class="chip" data-camera="inteiro" type="button">Corpo inteiro</button>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="section-title compact">
-              <span class="section-icon">⛶</span>
-              <div>
-                <h2>Tamanho da janela</h2>
-                <p>Controles simples, sem ocupar o chat.</p>
-              </div>
-            </div>
-            <div class="segmented" id="windowSizeGroup" role="group" aria-label="Tamanho da janela">
-              <button class="chip" data-size="small" type="button">Pequena</button>
-              <button class="chip active" data-size="medium" type="button">Média</button>
-              <button class="chip" data-size="large" type="button">Grande</button>
-            </div>
-          </article>
-
-          <article class="card quick-card">
-            <div class="section-title compact">
-              <span class="section-icon">⚡</span>
-              <div>
-                <h2>Ações rápidas</h2>
-                <p>Botões preparados para conectar com avatar/widget depois.</p>
-              </div>
-            </div>
-            <div class="quick-actions">
-              <button class="btn" data-toast="Repetir preparado." type="button">↻ Repetir</button>
-              <button class="btn" data-toast="Pausar preparado." type="button">⏸ Pausar</button>
-              <button class="btn" data-toast="Parar preparado." type="button">■ Parar</button>
-              <button class="btn" data-toast="Sempre no topo preparado." type="button">Sempre no topo</button>
-              <button class="btn" data-toast="Centralizar preparado." type="button">Centralizar</button>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="page" id="page-chat" data-page="chat" aria-label="Chat IA">
-        <div class="chat-screen card">
-          <header class="chat-header">
-            <div class="section-title compact">
-              <span class="section-icon">♛</span>
-              <div>
-                <h2>Chat IA</h2>
-                <p>Conversa local com NoelleCore / Ollama</p>
-              </div>
-            </div>
-            <div class="chat-header-actions">
-              <span class="status-pill" id="chatStatusPill">IA aguardando</span>
-              <span class="muted" id="chatDetailStatus">Pronto.</span>
-            </div>
-          </header>
-
-          <div class="chat-log" id="chatLog" aria-live="polite"></div>
-
-          <form class="chat-composer" id="chatForm">
-            <textarea id="chatInput" rows="1" placeholder="Fale com a Noelle..." aria-label="Mensagem para Noelle"></textarea>
-            <button class="send-btn" id="sendBtn" type="submit" title="Enviar mensagem">➤</button>
-            <button class="icon-btn" id="micBtn" type="button" title="Transcrição de áudio ainda não ligada nesta base">🎙</button>
-          </form>
-
-          <details class="settings-drawer" id="chatSettings">
-            <summary>Configurações do Chat IA</summary>
-            <div class="settings-grid">
-              <label>
-                Modelo
-                <select id="modelSelect">
-                  <option value="qwen3:0.6b">Qwen3 0.6B Fast</option>
-                  <option value="gemma3:1b">Gemma 3 1B</option>
-                  <option value="hermes3:3b">Hermes 3B</option>
-                </select>
-              </label>
-              <label>
-                Perfil
-                <select id="profileSelect">
-                  <option value="turbo">Turbo</option>
-                  <option value="rapido">Rápido</option>
-                  <option value="economico">Econômico</option>
-                </select>
-              </label>
-              <label>
-                Persona
-                <select id="personaSelect">
-                  <option value="nobre">Nobre rica</option>
-                  <option value="direta">Direta</option>
-                  <option value="fofa">Fofa</option>
-                  <option value="seria">Séria</option>
-                </select>
-              </label>
-              <div class="drawer-actions">
-                <button class="btn" id="statusBtn" type="button">Status</button>
-                <button class="btn" id="clearChatBtn" type="button">Limpar conversa</button>
-                <button class="btn" id="saveMemoryBtn" type="button">Salvar memória</button>
-              </div>
-            </div>
-          </details>
-        </div>
-      </section>
-
-      <section class="page" id="page-emotes" data-page="emotes" aria-label="Emotes">
-        <div class="card page-card">
-          <div class="section-title">
-            <span class="section-icon">☺</span>
-            <div>
-              <h2>Emotes</h2>
-              <p>Grade limpa inspirada na janela antiga, sem entupir a tela principal.</p>
-            </div>
-          </div>
-          <div class="tile-grid" id="emoteGrid">
-            <button class="tile" data-toast="Emote feliz preparado." type="button"><span>😊</span><strong>Feliz</strong><small>Expressão leve</small></button>
-            <button class="tile" data-toast="Emote aceno preparado." type="button"><span>👋</span><strong>Acenar</strong><small>Entrada/saída</small></button>
-            <button class="tile" data-toast="Emote surpresa preparado." type="button"><span>✨</span><strong>Surpresa</strong><small>Reação rápida</small></button>
-            <button class="tile" data-toast="Emote pensando preparado." type="button"><span>💭</span><strong>Pensando</strong><small>Modo análise</small></button>
-            <button class="tile" data-toast="Emote séria preparado." type="button"><span>🛡</span><strong>Séria</strong><small>Foco</small></button>
-            <button class="tile" data-toast="Emote nobre preparado." type="button"><span>♛</span><strong>Nobre</strong><small>Persona</small></button>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="page-inventory" data-page="inventory" aria-label="Inventário">
-        <div class="card page-card">
-          <div class="section-title">
-            <span class="section-icon">◇</span>
-            <div>
-              <h2>Inventário</h2>
-              <p>Itens em cards claros para equipar depois no avatar/widget.</p>
-            </div>
-          </div>
-          <div class="tile-grid inventory-grid">
-            <button class="tile" data-toast="Katana preparada para integração." type="button"><span>🗡</span><strong>Katana</strong><small>Item 3D</small></button>
-            <button class="tile" data-toast="Basketball preparado para integração." type="button"><span>🏀</span><strong>Basketball</strong><small>Item 3D</small></button>
-            <button class="tile" data-toast="iPhone preparado para integração." type="button"><span>📱</span><strong>iPhone 14 Pro</strong><small>Item 3D</small></button>
-            <button class="tile" data-toast="Slot vazio reservado." type="button"><span>＋</span><strong>Adicionar</strong><small>Futuro item</small></button>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="page-settings" data-page="settings" aria-label="Configurações">
-        <div class="page-grid two-columns">
-          <article class="card">
-            <div class="section-title compact">
+        <section class="page" data-page="settings">
+          <article class="card page-card">
+            <div class="section-title">
               <span class="section-icon">⚙</span>
               <div>
                 <h2>Configurações</h2>
-                <p>Preferências visuais e desempenho.</p>
+                <p>Preferências visuais, desempenho e ferramentas seguras.</p>
               </div>
             </div>
             <div class="settings-grid single">
-              <label>
-                Tema
+              <label>Tema
                 <select id="themeSelect">
                   <option value="noelle">Noelle Roxo</option>
                   <option value="pbv">Noelle Preto/Vermelho/Branco</option>
@@ -214,68 +215,56 @@
                   <option value="light">Branco</option>
                 </select>
               </label>
-              <label>
-                Desempenho visual
+              <label>Desempenho visual
                 <select id="visualPerfSelect">
                   <option value="performance">Performance</option>
                   <option value="balanced" selected>Balanceado</option>
                   <option value="quality">Qualidade</option>
                 </select>
               </label>
-              <label class="check-row"><input id="reduceTransparency" type="checkbox" /> Reduzir transparência</label>
-              <label class="check-row"><input id="showExpressions" type="checkbox" checked /> Mostrar expressões</label>
+              <label class="check-row"><input type="checkbox" id="reduceTransparencyToggle" /> Reduzir transparência</label>
+              <label class="check-row"><input type="checkbox" id="showExpressionsToggle" checked /> Mostrar expressões</label>
+            </div>
+            <h3>Ferramentas</h3>
+            <div class="quick-actions">
+              <button class="btn" id="copyDiagBtn" type="button">Copiar diagnóstico</button>
+              <button class="btn" type="button" data-toast="Salvar posição preparado">Salvar posição do avatar</button>
+              <button class="btn danger" id="resetUiBtn" type="button">Resetar interface</button>
             </div>
           </article>
+        </section>
 
-          <article class="card">
-            <div class="section-title compact">
-              <span class="section-icon">🧰</span>
+        <section class="page" data-page="about">
+          <article class="card page-card">
+            <div class="section-title">
+              <span class="section-icon">ⓘ</span>
               <div>
-                <h2>Ferramentas</h2>
-                <p>Ações seguras sem spawn externo dentro do Electron.</p>
+                <h2>Sobre o projeto Noelle</h2>
+                <p>Base Electron organizada para Chat IA, expressões, avatar/widget, inventário e build portable.</p>
               </div>
             </div>
-            <div class="quick-actions stacked">
-              <button class="btn" id="copyDiagBtn" type="button">Copiar diagnóstico</button>
-              <button class="btn" data-toast="Salvar posição preparado." type="button">Salvar posição do avatar</button>
-              <button class="btn" data-toast="Reset visual preparado." type="button">Resetar interface</button>
-              <button class="btn danger" data-toast="Remoção preparada, mas não executada nessa base limpa." type="button">Remover itens</button>
+            <div class="about-list">
+              <div><span>Projeto</span><strong>Noelle Companion 2026</strong></div>
+              <div><span>Estado</span><strong>Mega Pack V14 aplicado</strong></div>
+              <div><span>Ollama</span><strong>127.0.0.1:11434 · modelo padrão qwen3:0.6b</strong></div>
+              <div><span>Preload</span><strong>noelleAPI + desktopWidget para compatibilidade</strong></div>
             </div>
           </article>
-        </div>
+        </section>
       </section>
+    </section>
 
-      <section class="page" id="page-about" data-page="about" aria-label="Sobre">
-        <div class="card page-card">
-          <div class="section-title">
-            <span class="section-icon">ⓘ</span>
-            <div>
-              <h2>Sobre o projeto Noelle</h2>
-              <p>Base Electron refeita para ficar estável antes de voltar avatar, emotes avançados e build portable.</p>
-            </div>
-          </div>
-          <div class="about-list">
-            <div><strong>Projeto</strong><span>Noelle Companion 2026</span></div>
-            <div><strong>Foco</strong><span>Chat IA, avatar/widget, inventário e emotes organizados.</span></div>
-            <div><strong>Estado</strong><span>Base limpa pronta para integração gradual.</span></div>
-            <div><strong>Ollama</strong><span>127.0.0.1:11434 · modelo padrão qwen3:0.6b</span></div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <nav class="bottom-nav" aria-label="Navegação principal">
-      <button class="nav-item active" data-target="home" type="button"><span>⌂</span>Principal</button>
-      <button class="nav-item" data-target="chat" type="button"><span>♛</span>Chat IA</button>
-      <button class="nav-item" data-target="emotes" type="button"><span>☺</span>Emotes</button>
-      <button class="nav-item" data-target="inventory" type="button"><span>◇</span>Inventário</button>
-      <button class="nav-item" data-target="settings" type="button"><span>⚙</span>Configurações</button>
-      <button class="nav-item" data-target="about" type="button"><span>ⓘ</span>Sobre</button>
+    <nav class="mobile-nav" aria-label="Navegação inferior">
+      <button class="nav-item active" data-target="home"><span>⌂</span>Principal</button>
+      <button class="nav-item" data-target="chat"><span>♛</span>Chat</button>
+      <button class="nav-item" data-target="emotes"><span>☺</span>Emotes</button>
+      <button class="nav-item" data-target="inventory"><span>◇</span>Inventário</button>
+      <button class="nav-item" data-target="settings"><span>⚙</span>Config</button>
+      <button class="nav-item" data-target="about"><span>ⓘ</span>Sobre</button>
     </nav>
-  </div>
+  </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="renderer/controls_window_app.js"></script>
-  <script src="./renderer/noelle_chat_v12.js"></script>
 </body>
 </html>

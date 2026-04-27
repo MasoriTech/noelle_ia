@@ -1,5 +1,1 @@
-# Noelle IA - requirements Python de entrada
-# Mantem um arquivo na raiz para ferramentas/IDEs e redireciona para o STT.
-# Instalar: py -3 -m pip install -r requirements.txt
-
 -r tools/noelle_stt/requirements.txt
