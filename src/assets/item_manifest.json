@@ -1,5 +1,32 @@
 [
   {
+    "id": "acoustic_guitar_black",
+    "label": "Acoustic Guitar Black",
+    "file": "acoustic_guitar_black.glb",
+    "slot": "right_hand",
+    "default_interaction": "two_hand_guitar",
+    "notes": "Violão em modo especial de duas mãos.",
+    "category": "hand",
+    "target_size": 0.78,
+    "thumbnail": "thumbnails/acoustic_guitar_black.png",
+    "supported_modes": [
+      "two_hand_guitar",
+      "hand_right",
+      "back_mount"
+    ]
+  },
+  {
+    "id": "agua",
+    "label": "Agua",
+    "file": "agua.glb",
+    "slot": "right_hand",
+    "default_interaction": "auto",
+    "notes": "Item extra para a Yoru segurar na mão.",
+    "category": "hand",
+    "thumbnail": "thumbnails/agua.png",
+    "target_size": 0.19
+  },
+  {
     "id": "basketball",
     "label": "Basketball",
     "file": "basketball.glb",
@@ -16,8 +43,64 @@
     ]
   },
   {
+    "id": "cafe",
+    "label": "Cafe",
+    "file": "cafe.glb",
+    "slot": "right_hand",
+    "default_interaction": "hand_right",
+    "notes": "Caneca/copo de café para cenas casuais e de mesa.",
+    "category": "hand",
+    "target_size": 0.16,
+    "thumbnail": "thumbnails/cafe.png"
+  },
+  {
+    "id": "dado_de_20_lados",
+    "label": "Dado De 20 Lados",
+    "file": "dado_de_20_lados.glb",
+    "slot": "right_hand",
+    "default_interaction": "roll_item",
+    "notes": "d20 para segurar ou girar como item de mesa.",
+    "category": "hand",
+    "thumbnail": "thumbnails/d20.png",
+    "target_size": 0.08
+  },
+  {
+    "id": "dado_obj",
+    "label": "Dado Obj",
+    "file": "dado_obj.glb",
+    "slot": "right_hand",
+    "default_interaction": "roll_item",
+    "notes": "Dado clássico para teste rápido de interação.",
+    "category": "hand",
+    "thumbnail": "thumbnails/dice.png",
+    "target_size": 0.07
+  },
+  {
+    "id": "grand_piano",
+    "label": "Grand Piano",
+    "file": "grand_piano.glb",
+    "slot": "scene_front",
+    "default_interaction": "scene_front",
+    "notes": "Piano de cauda para compor o cenário editável.",
+    "category": "scene",
+    "target_size": 1.38,
+    "spawn_preset": "piano_left_stage",
+    "thumbnail": "thumbnails/grand_piano.png"
+  },
+  {
+    "id": "iphone_14_pro",
+    "label": "Iphone 14 Pro",
+    "file": "iphone_14_pro.glb",
+    "slot": "left_hand",
+    "default_interaction": "auto",
+    "notes": "Celular para pose de consulta, chat ou selfie.",
+    "category": "hand",
+    "thumbnail": "thumbnails/iphone_14_pro.png",
+    "target_size": 0.16
+  },
+  {
     "id": "kendo_shinai_blade",
-    "label": "Shinai Blade",
+    "label": "Kendo Shinai Blade",
     "file": "kendo_shinai_blade.glb",
     "slot": "back_mount",
     "default_interaction": "back_sheath",
@@ -34,83 +117,6 @@
     "thumbnail": "thumbnails/kendo_shinai_blade.png"
   },
   {
-    "id": "iphone_14_pro",
-    "label": "iPhone 14 Pro",
-    "file": "iphone_14_pro.glb",
-    "slot": "left_hand",
-    "default_interaction": "auto",
-    "notes": "Celular para pose de consulta, chat ou selfie.",
-    "category": "hand",
-    "thumbnail": "thumbnails/iphone_14_pro.png",
-    "target_size": 0.16
-  },
-  {
-    "id": "d20",
-    "label": "Dado de 20 lados",
-    "file": "dado_de_20_lados.glb",
-    "slot": "right_hand",
-    "default_interaction": "roll_item",
-    "notes": "d20 para segurar ou girar como item de mesa.",
-    "category": "hand",
-    "thumbnail": "thumbnails/d20.png",
-    "target_size": 0.08
-  },
-  {
-    "id": "dice",
-    "label": "Dado comum",
-    "file": "dado_obj.glb",
-    "slot": "right_hand",
-    "default_interaction": "roll_item",
-    "notes": "Dado clássico para teste rápido de interação.",
-    "category": "hand",
-    "thumbnail": "thumbnails/dice.png",
-    "target_size": 0.07
-  },
-  {
-    "id": "office_desk",
-    "label": "Mesa de escritório",
-    "file": "office_desk.glb",
-    "slot": "scene_front",
-    "default_interaction": "desk_sit",
-    "notes": "Mesa de escritório com cadeira simples procedural para compor a cena em frente da Yoru.",
-    "category": "scene",
-    "thumbnail": "thumbnails/office_desk.png",
-    "target_size": 1.45
-  },
-  {
-    "id": "agua",
-    "label": "Água",
-    "file": "agua.glb",
-    "slot": "right_hand",
-    "default_interaction": "auto",
-    "notes": "Item extra para a Yoru segurar na mão.",
-    "category": "hand",
-    "thumbnail": "thumbnails/agua.png",
-    "target_size": 0.19
-  },
-  {
-    "id": "cafe",
-    "label": "Café",
-    "file": "cafe.glb",
-    "slot": "right_hand",
-    "default_interaction": "hand_right",
-    "notes": "Caneca/copo de café para cenas casuais e de mesa.",
-    "category": "hand",
-    "target_size": 0.16,
-    "thumbnail": "thumbnails/cafe.png"
-  },
-  {
-    "id": "tablet",
-    "label": "Tablet",
-    "file": "tablet.glb",
-    "slot": "left_hand",
-    "default_interaction": "hand_left",
-    "notes": "Tablet para pose de leitura, consulta e stream.",
-    "category": "hand",
-    "target_size": 0.26,
-    "thumbnail": "thumbnails/tablet.png"
-  },
-  {
     "id": "microfone",
     "label": "Microfone",
     "file": "microfone.glb",
@@ -122,31 +128,25 @@
     "thumbnail": "thumbnails/microfone.png"
   },
   {
-    "id": "acoustic_guitar_black",
-    "label": "Violão preto",
-    "file": "acoustic_guitar_black.glb",
-    "slot": "right_hand",
-    "default_interaction": "two_hand_guitar",
-    "notes": "Violão em modo especial de duas mãos.",
-    "category": "hand",
-    "target_size": 0.78,
-    "thumbnail": "thumbnails/acoustic_guitar_black.png",
-    "supported_modes": [
-      "two_hand_guitar",
-      "hand_right",
-      "back_mount"
-    ]
+    "id": "office_desk",
+    "label": "Office Desk",
+    "file": "office_desk.glb",
+    "slot": "scene_front",
+    "default_interaction": "desk_sit",
+    "notes": "Mesa de escritório com cadeira simples procedural para compor a cena em frente da Yoru.",
+    "category": "scene",
+    "thumbnail": "thumbnails/office_desk.png",
+    "target_size": 1.45
   },
   {
-    "id": "grand_piano",
-    "label": "Piano de cauda",
-    "file": "grand_piano.glb",
-    "slot": "scene_front",
-    "default_interaction": "scene_front",
-    "notes": "Piano de cauda para compor o cenário editável.",
-    "category": "scene",
-    "target_size": 1.38,
-    "spawn_preset": "piano_left_stage",
-    "thumbnail": "thumbnails/grand_piano.png"
+    "id": "tablet",
+    "label": "Tablet",
+    "file": "tablet.glb",
+    "slot": "left_hand",
+    "default_interaction": "hand_left",
+    "notes": "Tablet para pose de leitura, consulta e stream.",
+    "category": "hand",
+    "target_size": 0.26,
+    "thumbnail": "thumbnails/tablet.png"
   }
 ]

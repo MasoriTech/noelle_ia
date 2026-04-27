@@ -1,18 +1,22 @@
 [
   {
     "file": "angry.png",
-    "label": "Brava"
-  },
-  {
-    "file": "sick.png",
-    "label": "Passando mal"
-  },
-  {
-    "file": "sad.png",
-    "label": "Triste"
+    "label": "Angry",
+    "id": "angry"
   },
   {
     "file": "happy.png",
-    "label": "Feliz"
+    "label": "Happy",
+    "id": "happy"
+  },
+  {
+    "file": "sad.png",
+    "label": "Sad",
+    "id": "sad"
+  },
+  {
+    "file": "sick.png",
+    "label": "Sick",
+    "id": "sick"
   }
 ]

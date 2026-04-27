@@ -1,49 +1,7 @@
 [
   {
-    "id": "VRMA_02",
-    "label": "Greeting",
-    "file": "VRMA_02.vrma",
-    "source": "pixiv"
-  },
-  {
-    "id": "VRMA_03",
-    "label": "Peace sign",
-    "file": "VRMA_03.vrma",
-    "source": "pixiv"
-  },
-  {
-    "id": "VRMA_06",
-    "label": "Model pose",
-    "file": "VRMA_06.vrma",
-    "source": "pixiv"
-  },
-  {
-    "id": "VRMA_05",
-    "label": "Spin",
-    "file": "VRMA_05.vrma",
-    "source": "pixiv"
-  },
-  {
-    "id": "VRMA_01",
-    "label": "Show full body",
-    "file": "VRMA_01.vrma",
-    "source": "pixiv"
-  },
-  {
-    "id": "VRMA_04",
-    "label": "Shoot",
-    "file": "VRMA_04.vrma",
-    "source": "pixiv"
-  },
-  {
-    "id": "VRMA_07",
-    "label": "Squat",
-    "file": "VRMA_07.vrma",
-    "source": "pixiv"
-  },
-  {
     "id": "001_motion_pose",
-    "label": "Motion pose",
+    "label": "Motion Pose",
     "file": "001_motion_pose.vrma",
     "source": "fm"
   },
@@ -73,7 +31,7 @@
   },
   {
     "id": "006_drinkwater",
-    "label": "Drink water",
+    "label": "Drinkwater",
     "file": "006_drinkwater.vrma",
     "source": "fm"
   },
@@ -88,5 +46,47 @@
     "label": "Gatan",
     "file": "008_gatan.vrma",
     "source": "fm"
+  },
+  {
+    "id": "VRMA_01",
+    "label": "VRMA 01",
+    "file": "VRMA_01.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_02",
+    "label": "VRMA 02",
+    "file": "VRMA_02.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_03",
+    "label": "VRMA 03",
+    "file": "VRMA_03.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_04",
+    "label": "VRMA 04",
+    "file": "VRMA_04.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_05",
+    "label": "VRMA 05",
+    "file": "VRMA_05.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_06",
+    "label": "VRMA 06",
+    "file": "VRMA_06.vrma",
+    "source": "pixiv"
+  },
+  {
+    "id": "VRMA_07",
+    "label": "VRMA 07",
+    "file": "VRMA_07.vrma",
+    "source": "pixiv"
   }
 ]
