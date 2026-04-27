@@ -148,27 +148,72 @@ function fitNodeToTargetSize(node, item, slot, preset) {
   }
 }
 
+// NOELLE_V17_5_ITEM_PATH_FIX
+function cleanItemAssetPath(value) {
+  return String(value || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").trim();
+}
+function uniqueItemPaths(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+function itemAssetCandidates(file) {
+  const clean = cleanItemAssetPath(file);
+  const noAssets = clean.replace(/^assets\//i, "");
+  const noItems = noAssets.replace(/^items\//i, "");
+  return uniqueItemPaths([
+    clean.startsWith("assets/") ? clean : null,
+    clean.startsWith("items/") ? "assets/" + clean : null,
+    "assets/items/" + noItems,
+    "assets/" + noAssets
+  ]);
+}
+function thumbnailAssetCandidates(file) {
+  const clean = cleanItemAssetPath(file);
+  const noAssets = clean.replace(/^assets\//i, "");
+  const noItems = noAssets.replace(/^items\//i, "");
+  return uniqueItemPaths([
+    clean.startsWith("assets/") ? clean : null,
+    clean.startsWith("items/") ? "assets/" + clean : null,
+    clean.startsWith("thumbnails/") ? "assets/items/" + clean : null,
+    "assets/items/" + noItems,
+    "assets/" + noAssets
+  ]);
+}
+async function resolveFirstLocalAsset(candidates) {
+  for (const rel of candidates) {
+    try {
+      if (await assetExistsLocal(rel)) return { rel, url: await getAssetFileUrlLocal(rel) };
+    } catch {}
+  }
+  return { rel: candidates[0] || "", url: null };
+}
 export async function loadItemManifest() {
-  const items = await readJsonAssetLocal("assets/item_manifest.json");
+  const raw = await readJsonAssetLocal("assets/item_manifest.json");
+  const items = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
+  const validated = [];
 
-  const validated = await Promise.all(items.map(async (item) => {
-    const fileRel = `assets/items/${item.file}`;
-    const thumbRel = item.thumbnail ? `assets/items/${item.thumbnail}` : null;
+  for (const item of items) {
+    const file = item.file || item.path || item.name || "";
+    const resolvedFile = await resolveFirstLocalAsset(itemAssetCandidates(file));
+    const thumbRel = item.thumbnail ? await resolveFirstLocalAsset(thumbnailAssetCandidates(item.thumbnail)) : { rel: null, url: null };
 
-    const fileOk = await assetExistsLocal(fileRel);
-    const thumbOk = thumbRel ? await assetExistsLocal(thumbRel) : false;
+    if (!resolvedFile.url) {
+      console.warn("[Noelle] Item ignorado porque o arquivo não foi encontrado:", item.id || file, itemAssetCandidates(file));
+      continue;
+    }
 
-    return {
+    validated.push({
       ...item,
+      id: item.id || String(file).split("/").pop().replace(/\.[^.]+$/, ""),
       supported_modes: item.supported_modes || [],
-      __available: fileOk,
-      assetUrl: fileOk ? await getAssetFileUrlLocal(fileRel) : null,
-      thumbnailUrl: thumbOk ? await getAssetFileUrlLocal(thumbRel) : null,
-      thumbnail: thumbOk ? item.thumbnail : null,
-    };
-  }));
+      __available: true,
+      assetRel: resolvedFile.rel,
+      assetUrl: resolvedFile.url,
+      thumbnailUrl: thumbRel.url,
+      thumbnail: thumbRel.url ? item.thumbnail : null
+    });
+  }
 
-  return validated.filter((item) => item.__available);
+  return validated;
 }
 
 export function normalizeSlotName(slot) {

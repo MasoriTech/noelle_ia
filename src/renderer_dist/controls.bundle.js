@@ -1,370 +1,412 @@
-"use strict";
-
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-
-const api = window.noelleAPI || window.desktopWidget || {};
-
-const appState = {
+// src/renderer/controls_window_app.js
+var $ = (selector, root = document) => root.querySelector(selector);
+var $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+var appState = {
   page: "home",
   model: "qwen3:0.6b",
   profile: "rapido",
   persona: "nobre",
   theme: "noelle",
-  selectedExpression: null,
   messages: [
-    {
-      role: "assistant",
-      content: "Oi! Eu sou a Noelle. A janela agora usa layout estável, Chat IA fixo e emotes carregados de src/assets/expressions.",
-      seconds: null,
-      at: Date.now(),
-    },
+    { role: "assistant", content: "Oi! Agora a Noelle voltou a carregar avatar, express\xF5es, motions VRMA, invent\xE1rio e TTS/STT pelo boot autom\xE1tico.", at: Date.now() }
   ],
   memories: [],
-  expressions: [],
+  assets: null,
+  lastMotion: null,
+  avatarAlwaysOnTop: false
 };
-
 function nowTime() {
-  return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return (/* @__PURE__ */ new Date()).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
-
 function showToast(text) {
   const toast = $("#toast");
   if (!toast) return;
-  toast.textContent = String(text || "");
+  toast.textContent = text;
   toast.classList.add("show");
   clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => toast.classList.remove("show"), 2600);
+  showToast._timer = setTimeout(() => toast.classList.remove("show"), 3e3);
 }
-
 function escapeText(value) {
   const div = document.createElement("div");
   div.textContent = String(value ?? "");
   return div.innerHTML;
 }
-
 function selectHasValue(select, value) {
   return !!select && Array.from(select.options).some((opt) => opt.value === value);
 }
-
 function setPage(page) {
   appState.page = page;
   $$(".page").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
   $$(".nav-item").forEach((el) => el.classList.toggle("active", el.dataset.target === page));
-  const titles = { home: "Principal", chat: "Chat IA", emotes: "Emotes", inventory: "Inventário", settings: "Configurações", about: "Sobre" };
+  const titles = { home: "Principal", avatar: "Avatar", chat: "Chat IA", emotes: "Emotes", inventory: "Invent\xE1rio", settings: "Configura\xE7\xF5es", about: "Sobre" };
   const title = $("#topTitle");
+  const subtitle = $("#topSubtitle");
   if (title) title.textContent = titles[page] || "Noelle";
+  if (subtitle) subtitle.textContent = `${titles[page] || "Noelle"} \xB7 Noelle Companion 2026`;
   if (page === "chat") scrollChatToBottom();
-  if (page === "emotes") renderExpressions();
 }
-
-function renderMessages() {
-  const log = $("#chatLog");
-  if (!log) return;
-  log.innerHTML = "";
-  appState.messages.forEach((msg) => {
-    const item = document.createElement("article");
-    const role = msg.role === "user" || msg.role === "assistant" || msg.role === "system" ? msg.role : "system";
-    item.className = `message ${role}${msg.error ? " error" : ""}`;
-    const label = role === "user" ? "Você" : role === "assistant" ? "Noelle" : "Sistema";
-    const timing = msg.seconds ? ` · ${msg.seconds}s` : "";
-    item.innerHTML = `
-      <div class="meta"><span>${escapeText(label)}${escapeText(timing)}</span><span class="time">${escapeText(msg.time || nowTime())}</span></div>
-      <div class="body">${escapeText(msg.content)}</div>
-    `;
-    log.appendChild(item);
-  });
-  scrollChatToBottom();
+function setGlobalStatus(text, type = "warn") {
+  const label = $("#globalStatus");
+  const dot = $("#globalStatusDot");
+  if (label) label.textContent = text;
+  if (dot) {
+    dot.classList.remove("ok", "bad");
+    if (type === "ok") dot.classList.add("ok");
+    if (type === "bad") dot.classList.add("bad");
+  }
 }
-
-function scrollChatToBottom() {
-  const log = $("#chatLog");
-  if (!log) return;
-  requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
-}
-
 function setChatStatus(text, detail = "") {
   const pill = $("#chatStatusPill");
   const detailEl = $("#chatDetailStatus");
   if (pill) pill.textContent = text;
   if (detailEl) detailEl.textContent = detail;
 }
-
-function setGlobalStatus(text, state = "warn") {
-  const el = $("#globalStatus");
-  const sidebar = $("#sidebarStatus");
-  const detail = $("#sidebarDetail");
-  const dot = $("#sidebarDot");
-  if (el) el.textContent = text;
-  if (sidebar) sidebar.textContent = text;
-  if (detail) detail.textContent = state === "online" ? "Ollama pronto" : state === "offline" ? "Verifique o Ollama" : "Aguardando";
-  if (dot) {
-    dot.classList.remove("online", "offline");
-    if (state === "online") dot.classList.add("online");
-    if (state === "offline") dot.classList.add("offline");
-  }
-}
-
 function autosizeTextarea(textarea) {
   if (!textarea) return;
   textarea.style.height = "auto";
   textarea.style.height = Math.min(textarea.scrollHeight, 130) + "px";
 }
-
+function renderMessages() {
+  const log = $("#chatLog");
+  if (!log) return;
+  log.innerHTML = "";
+  appState.messages.forEach((msg, index) => {
+    const item = document.createElement("article");
+    const role = msg.role === "user" || msg.role === "assistant" || msg.role === "system" ? msg.role : "system";
+    item.className = `message ${role}${msg.error ? " error" : ""}`;
+    const label = role === "user" ? "Voc\xEA" : role === "assistant" ? "Noelle" : "Sistema";
+    const timing = msg.seconds ? ` \xB7 ${msg.seconds}s` : "";
+    const speakButton = role === "assistant" ? `<button class="speak-btn" data-speak-index="${index}">\u{1F50A} Ler</button>` : "";
+    item.innerHTML = `
+      <div class="message-meta"><span>${escapeText(label)}${escapeText(timing)} \xB7 ${escapeText(msg.time || nowTime())}</span>${speakButton}</div>
+      <div class="message-body">${escapeText(msg.content)}</div>
+    `;
+    log.appendChild(item);
+  });
+  $$(".speak-btn", log).forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const msg = appState.messages[Number(btn.dataset.speakIndex)];
+      speakText(msg?.content || "");
+    });
+  });
+  scrollChatToBottom();
+}
+function scrollChatToBottom() {
+  const log = $("#chatLog");
+  if (!log) return;
+  requestAnimationFrame(() => {
+    log.scrollTop = log.scrollHeight;
+  });
+}
 async function loadSavedState() {
-  if (!api.loadState) return;
+  if (!window.noelleAPI?.loadState) return;
   try {
-    const result = await api.loadState();
+    const result = await window.noelleAPI.loadState();
     if (result?.ok && result.state) {
       Object.assign(appState, {
         model: result.state.model || appState.model,
         profile: result.state.profile || appState.profile,
         persona: result.state.persona || appState.persona,
         theme: result.state.theme || appState.theme,
-        selectedExpression: result.state.selectedExpression || appState.selectedExpression,
         memories: Array.isArray(result.state.memories) ? result.state.memories : [],
+        avatarAlwaysOnTop: !!result.state.avatar?.alwaysOnTop
       });
-      if (Array.isArray(result.state.messages) && result.state.messages.length) {
-        appState.messages = result.state.messages;
-      }
+      if (Array.isArray(result.state.messages) && result.state.messages.length) appState.messages = result.state.messages;
     }
   } catch (err) {
     console.warn("Falha ao carregar estado:", err);
   }
 }
-
 async function persistState() {
-  if (!api.saveState) return;
+  if (!window.noelleAPI?.saveState) return;
   try {
-    await api.saveState({
+    await window.noelleAPI.saveState({
       model: appState.model,
       profile: appState.profile,
       persona: appState.persona,
       theme: appState.theme,
-      selectedExpression: appState.selectedExpression,
       memories: appState.memories,
-      messages: appState.messages.slice(-50),
+      messages: appState.messages.slice(-40),
+      avatar: { alwaysOnTop: appState.avatarAlwaysOnTop }
     });
   } catch (err) {
     console.warn("Falha ao salvar estado:", err);
   }
 }
-
 function syncControlsFromState() {
   const modelSelect = $("#modelSelect");
   const profileSelect = $("#profileSelect");
   const personaSelect = $("#personaSelect");
   const themeSelect = $("#themeSelect");
   if (selectHasValue(modelSelect, appState.model)) modelSelect.value = appState.model;
-  else appState.model = "qwen3:0.6b";
+  else if (modelSelect) modelSelect.value = "qwen3:0.6b";
   if (selectHasValue(profileSelect, appState.profile)) profileSelect.value = appState.profile;
-  else appState.profile = "rapido";
+  else if (profileSelect) profileSelect.value = "rapido";
   if (selectHasValue(personaSelect, appState.persona)) personaSelect.value = appState.persona;
-  else appState.persona = "nobre";
+  else if (personaSelect) personaSelect.value = "nobre";
   if (selectHasValue(themeSelect, appState.theme)) themeSelect.value = appState.theme;
-  else appState.theme = "noelle";
-  applyTheme(appState.theme);
+  else if (themeSelect) themeSelect.value = "noelle";
+  applyTheme(themeSelect?.value || appState.theme);
 }
-
 function applyTheme(theme) {
   appState.theme = theme || "noelle";
   document.body.classList.remove("theme-noelle", "theme-pbv", "theme-dark", "theme-light");
   document.body.classList.add(`theme-${appState.theme}`);
 }
-
 async function refreshStatus({ quiet = false } = {}) {
-  if (!api.status) {
-    setGlobalStatus("API indisponível", "offline");
-    setChatStatus("IA indisponível", "preload não carregou");
+  if (!window.noelleAPI?.status) {
+    setGlobalStatus("API indispon\xEDvel", "bad");
+    setChatStatus("IA indispon\xEDvel", "preload n\xE3o carregou");
     return null;
   }
   try {
-    const status = await api.status();
+    const status = await window.noelleAPI.status();
     const online = !!status?.ollama?.ok;
-    const models = status?.ollama?.models || [];
-    setGlobalStatus(online ? "Ollama online" : "Ollama offline", online ? "online" : "offline");
-    setChatStatus(online ? `IA online · ${appState.profile}` : "IA offline", online ? "Pronto." : "Abra o Ollama em 127.0.0.1:11434");
-    if (!quiet) {
-      const modelText = models.length ? `Modelos: ${models.slice(0, 6).join(", ")}` : status?.ollama?.error || "Nenhum modelo listado.";
-      showToast(online ? `Ollama online. ${modelText}` : `Ollama offline. ${modelText}`);
-    }
-    if (Array.isArray(status?.expressions)) {
-      appState.expressions = status.expressions;
-      renderExpressions();
-    }
+    const counts = status?.assets?.counts || {};
+    setGlobalStatus(online ? "Ollama online" : "Ollama offline", online ? "ok" : "bad");
+    setChatStatus(online ? `IA online \xB7 ${appState.profile}` : "IA offline", online ? "Pronto." : "Abra o Ollama em 127.0.0.1:11434");
+    updateAssetSummary(counts);
+    if (!quiet) showToast(online ? `Ollama online. Assets: ${counts.expressions || 0} express\xF5es, ${counts.motions || 0} motions.` : status?.ollama?.error || "Ollama offline.");
     return status;
   } catch (err) {
-    setGlobalStatus("Diagnóstico falhou", "offline");
-    setChatStatus("IA indisponível", err.message || String(err));
-    if (!quiet) showToast("Falha no diagnóstico: " + (err.message || err));
+    setGlobalStatus("Erro no status", "bad");
+    setChatStatus("Erro", String(err.message || err));
+    if (!quiet) showToast("Erro ao consultar status.");
     return null;
   }
 }
-
-async function sendChatMessage() {
-  const input = $("#chatInput");
-  if (!input) return;
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = "";
-  autosizeTextarea(input);
-  const history = appState.messages.filter((m) => m.role === "user" || m.role === "assistant").slice(-12).map((m) => ({ role: m.role, content: m.content }));
-  appState.messages.push({ role: "user", content: text, at: Date.now(), time: nowTime() });
-  renderMessages();
-  setChatStatus("Noelle pensando...", "Gerando resposta local.");
-  const sendBtn = $("#sendBtn");
-  if (sendBtn) sendBtn.disabled = true;
+function updateAssetSummary(counts = {}) {
+  const box = $("#assetSummary");
+  if (!box) return;
+  box.innerHTML = `
+    <span>Express\xF5es: <strong>${Number(counts.expressions || 0)}</strong></span>
+    <span>Motions VRMA: <strong>${Number(counts.motions || 0)}</strong></span>
+    <span>Itens GLB: <strong>${Number(counts.items || 0)}</strong></span>
+    <span>Avatares VRM: <strong>${Number(counts.avatars || 0)}</strong></span>
+  `;
+}
+async function loadAssets() {
+  if (!window.noelleAPI?.assets) return;
   try {
-    const result = await api.chat({ message: text, model: appState.model, profile: appState.profile, persona: appState.persona, history });
-    if (!result?.ok) {
-      appState.messages.push({ role: "system", content: result?.error || "Falha ao conversar com a IA.", error: true, at: Date.now(), time: nowTime() });
-      setChatStatus("IA com erro", result?.error || "Verifique o diagnóstico.");
-    } else {
-      appState.messages.push({ role: "assistant", content: result.message, seconds: result.seconds, at: Date.now(), time: nowTime() });
-      setChatStatus(`IA online · ${appState.profile}`, `Resposta em ${result.seconds}s`);
+    const result = await window.noelleAPI.assets();
+    if (result?.ok) {
+      appState.assets = result.assets;
+      renderAssets(result.assets);
+      updateAssetSummary(result.assets.counts);
+      const noelle = result.assets.avatars?.[0];
+      const label = $("#avatarPathLabel");
+      if (label) label.textContent = noelle?.rel || "Nenhum VRM encontrado em src/assets.";
     }
-    await persistState();
   } catch (err) {
-    appState.messages.push({ role: "system", content: "Erro no chat: " + (err.message || err), error: true, at: Date.now(), time: nowTime() });
-    setChatStatus("IA com erro", err.message || String(err));
-  } finally {
-    if (sendBtn) sendBtn.disabled = false;
-    renderMessages();
+    console.warn("Falha ao carregar assets:", err);
+    showToast("Falha ao carregar assets.");
   }
 }
-
-async function loadExpressions() {
-  const grid = $("#expressionGrid");
-  const status = $("#expressionStatus");
-  if (status) status.textContent = "Carregando expressões...";
-  try {
-    const result = api.listExpressions ? await api.listExpressions() : null;
-    appState.expressions = Array.isArray(result?.expressions) ? result.expressions : [];
-    renderExpressions();
-    if (status) status.textContent = appState.expressions.length ? `${appState.expressions.length} expressões carregadas` : "Nenhuma expressão encontrada";
-  } catch (err) {
-    if (grid) grid.innerHTML = `<p class="muted">Falha ao carregar expressões: ${escapeText(err.message || err)}</p>`;
-    if (status) status.textContent = "Erro nas expressões";
-  }
+function renderAssets(assets) {
+  renderExpressionCards(assets?.expressions || []);
+  renderMotionCards(assets?.motions || []);
+  renderItemCards(assets?.items || []);
 }
-
-function renderExpressions() {
-  const grid = $("#expressionGrid");
-  const status = $("#expressionStatus");
+function makeAssetCard(asset, options = {}) {
+  const card = document.createElement("article");
+  card.className = `asset-card ${asset.exists ? "" : "missing"}`;
+  const visual = options.image && asset.url ? `<img src="${escapeText(asset.url)}" alt="${escapeText(asset.label)}" />` : `<div class="asset-icon">${escapeText(options.icon || "\u25C7")}</div>`;
+  card.innerHTML = `
+    ${visual}
+    <div><strong>${escapeText(asset.label)}</strong><small>${escapeText(asset.rel || asset.file || "")}${asset.exists ? "" : " \xB7 ausente"}</small></div>
+    <button>${escapeText(options.actionLabel || "Aplicar")}</button>
+  `;
+  card.querySelector("button")?.addEventListener("click", () => options.onClick?.(asset));
+  return card;
+}
+function renderExpressionCards(expressions) {
+  const grid = $("#expressionsGrid");
   if (!grid) return;
-  const showToggle = $("#showExpressionsToggle");
-  if (showToggle && !showToggle.checked) {
-    grid.innerHTML = `<p class="muted">Expressões ocultas nas configurações.</p>`;
-    if (status) status.textContent = "Expressões ocultas";
-    return;
-  }
-  const expressions = Array.isArray(appState.expressions) ? appState.expressions : [];
-  if (!expressions.length) {
-    grid.innerHTML = `<p class="muted">Nenhuma expressão encontrada em src/assets/expressions.</p>`;
-    if (status) status.textContent = "Nenhuma expressão encontrada";
-    return;
-  }
   grid.innerHTML = "";
-  expressions.forEach((expr) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `tile expression-tile${expr.exists === false ? " missing" : ""}${appState.selectedExpression === expr.id ? " active" : ""}`;
-    button.dataset.expressionId = expr.id;
-    button.innerHTML = `
-      <img src="${escapeText(expr.src)}" alt="${escapeText(expr.label)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-      <span style="display:none">☺</span>
-      <strong>${escapeText(expr.label)}</strong>
-      <small>${expr.exists === false ? "arquivo ausente" : "expressão Noelle"}</small>
-    `;
-    button.addEventListener("click", () => applyExpression(expr.id));
-    grid.appendChild(button);
-  });
-  if (status) status.textContent = `${expressions.length} expressões carregadas`;
+  if (!expressions.length) {
+    grid.innerHTML = `<p class="muted">Nenhuma express\xE3o encontrada em src/assets/expressions.</p>`;
+    return;
+  }
+  expressions.forEach((asset) => grid.appendChild(makeAssetCard(asset, {
+    image: true,
+    actionLabel: "Aplicar express\xE3o",
+    onClick: (entry) => sendAvatarCommand("expression", entry)
+  })));
 }
-
-async function applyExpression(id) {
-  const expr = appState.expressions.find((item) => item.id === id);
-  appState.selectedExpression = id;
-  renderExpressions();
+function renderMotionCards(motions) {
+  const grid = $("#motionsGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  if (!motions.length) {
+    grid.innerHTML = `<p class="muted">Nenhum .vrma encontrado em src/assets/motions.</p>`;
+    return;
+  }
+  motions.forEach((asset) => grid.appendChild(makeAssetCard(asset, {
+    icon: "\u25B6",
+    actionLabel: "Tocar emote",
+    onClick: (entry) => {
+      appState.lastMotion = entry;
+      sendAvatarCommand("motion", entry);
+    }
+  })));
+}
+function renderItemCards(items) {
+  const grid = $("#itemsGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  if (!items.length) {
+    grid.innerHTML = `<p class="muted">Nenhum item encontrado em src/assets/items ou item_manifest.json.</p>`;
+    return;
+  }
+  items.forEach((asset) => grid.appendChild(makeAssetCard(asset, {
+    icon: "\u25C7",
+    actionLabel: "Equipar item",
+    onClick: (entry) => sendAvatarCommand("item", entry)
+  })));
+}
+async function sendAvatarCommand(command, payload = {}) {
+  if (!window.noelleAPI?.avatarCommand) {
+    showToast("API do avatar indispon\xEDvel.");
+    return;
+  }
   try {
-    if (api.applyExpression) await api.applyExpression(id);
-    await persistState();
-    showToast(expr ? `Expressão aplicada: ${expr.label}` : "Expressão aplicada");
+    await window.noelleAPI.openAvatar?.();
+    const result = await window.noelleAPI.avatarCommand(command, payload);
+    showToast(result?.ok ? `Avatar: ${command}` : result?.error || "Falha no avatar.");
   } catch (err) {
-    showToast("Falha ao aplicar expressão: " + (err.message || err));
+    showToast("Erro no comando do avatar: " + (err.message || err));
   }
 }
-
-async function copyDiagnostic() {
-  const status = await refreshStatus({ quiet: true });
-  const text = JSON.stringify({ at: new Date().toISOString(), status, state: appState }, null, 2);
+async function speakText(text) {
+  if (!text.trim()) return;
+  const label = $("#ttsStatus");
+  if (label) label.textContent = "Falando...";
   try {
-    await navigator.clipboard.writeText(text);
-    showToast("Diagnóstico copiado.");
-  } catch {
-    console.log(text);
-    showToast("Não consegui copiar. Diagnóstico foi enviado ao console.");
+    const result = await window.noelleAPI?.speak?.(text);
+    if (label) label.textContent = result?.ok ? `TTS OK (${result.engine || "engine"})` : result?.error || "Falha no TTS.";
+    showToast(result?.ok ? "TTS executado." : result?.error || "Falha no TTS.");
+  } catch (err) {
+    if (label) label.textContent = String(err.message || err);
+    showToast("Erro no TTS.");
   }
 }
-
-function bindEvents() {
-  $$(".nav-item[data-target]").forEach((btn) => btn.addEventListener("click", () => setPage(btn.dataset.target)));
-  $$("[data-toast]").forEach((btn) => btn.addEventListener("click", () => showToast(btn.dataset.toast)));
-  const form = $("#chatForm");
-  if (form) form.addEventListener("submit", (event) => { event.preventDefault(); sendChatMessage(); });
+async function sendChatMessage(text) {
+  const content = String(text || "").trim();
+  if (!content) return;
   const input = $("#chatInput");
   if (input) {
-    input.addEventListener("input", () => autosizeTextarea(input));
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        sendChatMessage();
-      }
-    });
+    input.value = "";
+    autosizeTextarea(input);
   }
-  $("#micBtn")?.addEventListener("click", () => showToast("STT preparado. Instale as dependências Python pelo INICIAR.bat."));
+  appState.messages.push({ role: "user", content, at: Date.now() });
+  renderMessages();
+  setChatStatus("Gerando...", "Aguardando Ollama responder.");
+  await persistState();
+  try {
+    const history = appState.messages.slice(-14).map((m) => ({ role: m.role, content: m.content }));
+    const result = await window.noelleAPI?.chat?.({ message: content, history, model: appState.model, profile: appState.profile, persona: appState.persona });
+    if (!result?.ok) {
+      appState.messages.push({ role: "system", content: result?.error || "Erro desconhecido no chat.", error: true, at: Date.now() });
+      setChatStatus("Erro", result?.error || "Falha no chat.");
+    } else {
+      appState.messages.push({ role: "assistant", content: result.message, seconds: result.seconds, at: Date.now() });
+      setChatStatus(`IA online \xB7 ${appState.profile}`, `Resposta em ${result.seconds}s`);
+    }
+  } catch (err) {
+    appState.messages.push({ role: "system", content: "Erro no renderer: " + (err.message || err), error: true, at: Date.now() });
+    setChatStatus("Erro", String(err.message || err));
+  }
+  appState.messages = appState.messages.slice(-40);
+  renderMessages();
+  await persistState();
+}
+function bindEvents() {
+  $$(".nav-item[data-target]").forEach((btn) => btn.addEventListener("click", () => setPage(btn.dataset.target)));
   $("#refreshStatusBtn")?.addEventListener("click", () => refreshStatus());
   $("#statusBtn")?.addEventListener("click", () => refreshStatus());
+  $("#refreshAssetsBtn")?.addEventListener("click", () => loadAssets());
+  ["#openAvatarBtn", "#openAvatarBtnTop"].forEach((selector) => $(selector)?.addEventListener("click", () => window.noelleAPI?.openAvatar?.()));
+  $$('[data-avatar-action="open"]').forEach((btn) => btn.addEventListener("click", () => window.noelleAPI?.openAvatar?.()));
+  $$("[data-avatar-action]").forEach((btn) => {
+    if (btn.dataset.avatarAction === "open") return;
+    btn.addEventListener("click", () => sendAvatarCommand(btn.dataset.avatarAction, {}));
+  });
+  $$("[data-avatar-camera]").forEach((btn) => btn.addEventListener("click", () => sendAvatarCommand("camera", { value: btn.dataset.avatarCamera })));
+  $("#repeatLastMotionBtn")?.addEventListener("click", () => appState.lastMotion ? sendAvatarCommand("motion", appState.lastMotion) : showToast("Nenhum emote tocado ainda."));
+  $("#avatarCenterBtn")?.addEventListener("click", () => sendAvatarCommand("center", {}));
+  $("#avatarTopBtn")?.addEventListener("click", async () => {
+    appState.avatarAlwaysOnTop = !appState.avatarAlwaysOnTop;
+    const result = await window.noelleAPI?.setAvatarAlwaysOnTop?.(appState.avatarAlwaysOnTop);
+    showToast(result?.ok ? `Sempre no topo: ${appState.avatarAlwaysOnTop ? "sim" : "n\xE3o"}` : "Falha ao alterar always-on-top.");
+    persistState();
+  });
+  ["#saveAvatarPosBtn", "#saveAvatarPosBtn2"].forEach((selector) => $(selector)?.addEventListener("click", async () => {
+    const result = await window.noelleAPI?.saveAvatarPosition?.();
+    showToast(result?.ok ? "Posi\xE7\xE3o do avatar salva." : result?.error || "Abra o avatar primeiro.");
+  }));
+  $("#chatForm")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    sendChatMessage($("#chatInput")?.value || "");
+  });
+  $("#chatInput")?.addEventListener("input", (event) => autosizeTextarea(event.currentTarget));
+  $("#chatInput")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendChatMessage(event.currentTarget.value);
+    }
+  });
+  $("#micBtn")?.addEventListener("click", () => showToast("STT instalado pelo INICIAR.bat; captura de microfone fica para o pr\xF3ximo m\xF3dulo."));
   $("#clearChatBtn")?.addEventListener("click", async () => {
-    appState.messages = [{ role: "assistant", content: "Conversa limpa. Pode mandar a próxima mensagem.", at: Date.now(), time: nowTime() }];
+    appState.messages = [{ role: "assistant", content: "Conversa limpa. Como posso ajudar?", at: Date.now() }];
     renderMessages();
     await persistState();
   });
   $("#saveMemoryBtn")?.addEventListener("click", async () => {
-    const lastUser = [...appState.messages].reverse().find((m) => m.role === "user");
-    if (!lastUser) return showToast("Nenhuma mensagem sua para salvar como memória.");
-    appState.memories.push({ text: lastUser.content, at: new Date().toISOString() });
-    appState.memories = appState.memories.slice(-60);
+    const last = [...appState.messages].reverse().find((m) => m.role === "assistant");
+    if (!last) return showToast("Nenhuma resposta para salvar.");
+    appState.memories.push({ text: last.content.slice(0, 500), at: (/* @__PURE__ */ new Date()).toISOString() });
+    appState.memories = appState.memories.slice(-50);
     await persistState();
-    showToast("Memória salva.");
+    showToast("Mem\xF3ria salva.");
   });
-  $("#reloadExpressionsBtn")?.addEventListener("click", () => loadExpressions());
-  $("#copyDiagBtn")?.addEventListener("click", () => copyDiagnostic());
-  $("#resetUiBtn")?.addEventListener("click", async () => {
-    appState.theme = "noelle";
-    appState.selectedExpression = null;
+  $("#modelSelect")?.addEventListener("change", (e) => {
+    appState.model = e.currentTarget.value;
+    persistState();
+  });
+  $("#profileSelect")?.addEventListener("change", (e) => {
+    appState.profile = e.currentTarget.value;
+    persistState();
+    refreshStatus({ quiet: true });
+  });
+  $("#personaSelect")?.addEventListener("change", (e) => {
+    appState.persona = e.currentTarget.value;
+    persistState();
+  });
+  $("#themeSelect")?.addEventListener("change", (e) => {
+    applyTheme(e.currentTarget.value);
+    persistState();
+  });
+  $("#testTtsBtn")?.addEventListener("click", () => speakText("Ol\xE1, eu sou a Noelle. O sistema de voz est\xE1 pronto."));
+  $("#resetUiBtn")?.addEventListener("click", () => {
     applyTheme("noelle");
-    syncControlsFromState();
-    renderExpressions();
-    await persistState();
+    setPage("home");
     showToast("Interface resetada.");
   });
-  $("#modelSelect")?.addEventListener("change", (event) => { appState.model = event.target.value; persistState(); });
-  $("#profileSelect")?.addEventListener("change", (event) => { appState.profile = event.target.value; persistState(); refreshStatus({ quiet: true }); });
-  $("#personaSelect")?.addEventListener("change", (event) => { appState.persona = event.target.value; persistState(); });
-  $("#themeSelect")?.addEventListener("change", (event) => { applyTheme(event.target.value); persistState(); });
-  $("#reduceTransparencyToggle")?.addEventListener("change", (event) => document.body.classList.toggle("reduced-transparency", event.target.checked));
-  $("#showExpressionsToggle")?.addEventListener("change", () => renderExpressions());
+  $("#copyDiagBtn")?.addEventListener("click", async () => {
+    const status = await refreshStatus({ quiet: true });
+    const assets = appState.assets;
+    const text = JSON.stringify({ status, assets }, null, 2);
+    await navigator.clipboard?.writeText(text);
+    showToast("Diagn\xF3stico copiado.");
+  });
 }
-
-async function bootstrap() {
+async function boot() {
   bindEvents();
   await loadSavedState();
   syncControlsFromState();
   renderMessages();
-  await loadExpressions();
+  await loadAssets();
   await refreshStatus({ quiet: true });
-  setPage(appState.page);
+  setPage(appState.page || "home");
 }
-
-window.addEventListener("DOMContentLoaded", bootstrap);
+document.addEventListener("DOMContentLoaded", boot);

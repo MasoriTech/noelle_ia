@@ -54066,27 +54066,92 @@ async function getAssetFileUrlLocal(relPath) {
 }
 
 // src/renderer/motions.js
+function cleanAssetPath(value) {
+  return String(value || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").trim();
+}
+function filenameStem(value) {
+  const clean = cleanAssetPath(value).split(/[?#]/)[0];
+  const name = clean.split("/").pop() || clean;
+  return name.replace(/\.[^.]+$/, "");
+}
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+function motionAssetCandidates(file) {
+  const clean = cleanAssetPath(file);
+  const noAssets = clean.replace(/^assets\//i, "");
+  const noMotions = noAssets.replace(/^motions\//i, "");
+  return unique([
+    clean.startsWith("assets/") ? clean : null,
+    clean.startsWith("motions/") ? "assets/" + clean : null,
+    "assets/motions/" + noMotions,
+    "assets/" + noAssets
+  ]);
+}
+async function resolveMotionAsset(file) {
+  const candidates = motionAssetCandidates(file);
+  for (const rel of candidates) {
+    try {
+      if (await assetExistsLocal(rel)) {
+        return { rel, url: await getAssetFileUrlLocal(rel) };
+      }
+    } catch {
+    }
+  }
+  return { rel: candidates[0] || String(file || ""), url: null };
+}
+function aliasKeys(motion) {
+  const fileStem = filenameStem(motion.file || motion.assetRel || "");
+  const id = String(motion.id || fileStem || "").trim();
+  const label = String(motion.label || "").trim();
+  return unique([
+    id,
+    id.toLowerCase(),
+    fileStem,
+    fileStem.toLowerCase(),
+    label,
+    label.toLowerCase(),
+    cleanAssetPath(motion.file || ""),
+    cleanAssetPath(motion.assetRel || "")
+  ]);
+}
 async function loadMotionManifest() {
-  const motions = await readJsonAssetLocal("assets/motion_manifest.json");
-  const validated = await Promise.all(
-    motions.map(async (motion) => {
-      const rel = `assets/motions/${motion.file}`;
-      const ok = await assetExistsLocal(rel);
-      const assetUrl = ok ? await getAssetFileUrlLocal(rel) : null;
-      return { motion: { ...motion, assetUrl }, ok };
-    })
-  );
-  return validated.filter((x) => x.ok).map((x) => x.motion);
+  const raw = await readJsonAssetLocal("assets/motion_manifest.json");
+  const list = Array.isArray(raw) ? raw : Array.isArray(raw?.motions) ? raw.motions : [];
+  const validated = [];
+  for (const entry of list) {
+    const file = entry.file || entry.path || entry.name || "";
+    const resolved = await resolveMotionAsset(file);
+    if (!resolved.url) {
+      console.warn("[Noelle] Motion ignorada porque o arquivo n\xE3o foi encontrado:", entry.id || file, motionAssetCandidates(file));
+      continue;
+    }
+    const id = String(entry.id || filenameStem(file)).trim();
+    validated.push({
+      ...entry,
+      id,
+      label: entry.label || id,
+      file,
+      assetRel: resolved.rel,
+      assetUrl: resolved.url,
+      aliases: aliasKeys({ ...entry, id, file, assetRel: resolved.rel })
+    });
+  }
+  return validated;
 }
 function createMotionMap(motions) {
   const map = {};
-  for (const motion of motions) {
-    map[motion.id] = motion.assetUrl || motion.file;
+  for (const motion of Array.isArray(motions) ? motions : []) {
+    const target = motion.assetUrl || motion.assetRel || motion.file;
+    for (const key of aliasKeys(motion)) {
+      if (key) map[key] = target;
+    }
   }
   return map;
 }
 function describeMotion(motionId, motions) {
-  const motion = Array.isArray(motions) ? motions.find((item) => item.id === motionId) : null;
+  const key = String(motionId || "").toLowerCase();
+  const motion = Array.isArray(motions) ? motions.find((item) => aliasKeys(item).some((alias) => String(alias || "").toLowerCase() === key)) : null;
   return motion ? motion.label : motionId;
 }
 
@@ -54223,23 +54288,68 @@ function fitNodeToTargetSize(node, item, slot, preset) {
     console.warn("Falha ao ajustar tamanho do item", item?.id, err);
   }
 }
+function cleanItemAssetPath(value) {
+  return String(value || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").trim();
+}
+function uniqueItemPaths(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+function itemAssetCandidates(file) {
+  const clean = cleanItemAssetPath(file);
+  const noAssets = clean.replace(/^assets\//i, "");
+  const noItems = noAssets.replace(/^items\//i, "");
+  return uniqueItemPaths([
+    clean.startsWith("assets/") ? clean : null,
+    clean.startsWith("items/") ? "assets/" + clean : null,
+    "assets/items/" + noItems,
+    "assets/" + noAssets
+  ]);
+}
+function thumbnailAssetCandidates(file) {
+  const clean = cleanItemAssetPath(file);
+  const noAssets = clean.replace(/^assets\//i, "");
+  const noItems = noAssets.replace(/^items\//i, "");
+  return uniqueItemPaths([
+    clean.startsWith("assets/") ? clean : null,
+    clean.startsWith("items/") ? "assets/" + clean : null,
+    clean.startsWith("thumbnails/") ? "assets/items/" + clean : null,
+    "assets/items/" + noItems,
+    "assets/" + noAssets
+  ]);
+}
+async function resolveFirstLocalAsset(candidates) {
+  for (const rel of candidates) {
+    try {
+      if (await assetExistsLocal(rel)) return { rel, url: await getAssetFileUrlLocal(rel) };
+    } catch {
+    }
+  }
+  return { rel: candidates[0] || "", url: null };
+}
 async function loadItemManifest() {
-  const items = await readJsonAssetLocal("assets/item_manifest.json");
-  const validated = await Promise.all(items.map(async (item) => {
-    const fileRel = `assets/items/${item.file}`;
-    const thumbRel = item.thumbnail ? `assets/items/${item.thumbnail}` : null;
-    const fileOk = await assetExistsLocal(fileRel);
-    const thumbOk = thumbRel ? await assetExistsLocal(thumbRel) : false;
-    return {
+  const raw = await readJsonAssetLocal("assets/item_manifest.json");
+  const items = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
+  const validated = [];
+  for (const item of items) {
+    const file = item.file || item.path || item.name || "";
+    const resolvedFile = await resolveFirstLocalAsset(itemAssetCandidates(file));
+    const thumbRel = item.thumbnail ? await resolveFirstLocalAsset(thumbnailAssetCandidates(item.thumbnail)) : { rel: null, url: null };
+    if (!resolvedFile.url) {
+      console.warn("[Noelle] Item ignorado porque o arquivo n\xE3o foi encontrado:", item.id || file, itemAssetCandidates(file));
+      continue;
+    }
+    validated.push({
       ...item,
+      id: item.id || String(file).split("/").pop().replace(/\.[^.]+$/, ""),
       supported_modes: item.supported_modes || [],
-      __available: fileOk,
-      assetUrl: fileOk ? await getAssetFileUrlLocal(fileRel) : null,
-      thumbnailUrl: thumbOk ? await getAssetFileUrlLocal(thumbRel) : null,
-      thumbnail: thumbOk ? item.thumbnail : null
-    };
-  }));
-  return validated.filter((item) => item.__available);
+      __available: true,
+      assetRel: resolvedFile.rel,
+      assetUrl: resolvedFile.url,
+      thumbnailUrl: thumbRel.url,
+      thumbnail: thumbRel.url ? item.thumbnail : null
+    });
+  }
+  return validated;
 }
 function normalizeSlotName(slot) {
   if (!slot) return "right_hand";
