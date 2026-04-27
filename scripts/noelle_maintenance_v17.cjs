@@ -555,7 +555,7 @@ function ensureOllama() {
   if (!list.ok) {
     log("[INFO] Ollama instalado, mas offline. Tentando iniciar ollama serve...");
     try {
-      cp.spawn("ollama", ["serve"], { cwd: ROOT, detached: true, stdio: "ignore", shell: process.platform === "win32" }).unref();
+      cp.spawn("ollama", ["serve"], { cwd: ROOT, detached: true, stdio: "ignore", windowsHide: true }).unref();
     } catch (err) {
       log(`[AVISO] Nao consegui iniciar Ollama: ${err.message}`);
     }

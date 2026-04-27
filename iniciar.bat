@@ -1,92 +1,55 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - INICIAR V17 Manutencao Segura
-
-REM ============================================================
-REM  Noelle IA - INICIAR.bat unico
-REM  V17 Manutencao cirurgica + checklist de qualidade
-REM ============================================================
+title Noelle IA - Hotfix V17.1 Widget Avatar
 
 cd /d "%~dp0"
 
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - INICIAR V17
+echo  NOELLE IA - HOTFIX V17.1 WIDGET / AVATAR
 echo ============================================================
 echo.
-echo [1] Iniciar Noelle
-echo [2] Diagnostico completo
-echo [3] Reparar manifests/assets
-echo [4] Limpar outros .bat da raiz para backup
-echo [5] Aplicar manutencao segura sem iniciar
+echo [1] Aplicar hotfix e iniciar Noelle
+echo [2] Aplicar hotfix somente
+echo [3] Diagnostico do widget/avatar
 echo [0] Sair
 echo.
+set /p "OP=Escolha: "
 
-set /p OP=Escolha: 
-
-if "%OP%"=="1" goto START
-if "%OP%"=="2" goto DIAG
-if "%OP%"=="3" goto REPAIR
-if "%OP%"=="4" goto CLEAN_BATS
-if "%OP%"=="5" goto APPLY
+if "%OP%"=="1" goto APPLY_START
+if "%OP%"=="2" goto APPLY_ONLY
+if "%OP%"=="3" goto DIAG
 if "%OP%"=="0" exit /b 0
 goto MENU
 
-:CHECK_NODE
-where node >nul 2>nul
-if errorlevel 1 (
-  echo.
-  echo [ERRO] Node.js nao encontrado no PATH.
-  echo Instale Node.js LTS ou corrija o PATH.
-  echo.
-  pause
-  goto MENU
-)
-exit /b 0
+:APPLY_START
+node scripts\hotfix_v17_1_widget_avatar.cjs --apply
+if errorlevel 1 goto FAIL
 
-:START
-call :CHECK_NODE
-echo.
-echo [START] Preparando e iniciando Noelle...
-node scripts\noelle_maintenance_v17.cjs --start
-echo.
+if exist "scripts\noelle_maintenance_v17.cjs" (
+  node scripts\noelle_maintenance_v17.cjs --start
+) else if exist "node_modules\.bin\electron.cmd" (
+  call node_modules\.bin\electron.cmd .
+) else (
+  npm start
+)
+pause
+goto MENU
+
+:APPLY_ONLY
+node scripts\hotfix_v17_1_widget_avatar.cjs --apply
 pause
 goto MENU
 
 :DIAG
-call :CHECK_NODE
-echo.
-echo [DIAG] Rodando diagnostico completo...
-node scripts\diagnostico_v17.cjs
-echo.
+node scripts\hotfix_v17_1_widget_avatar.cjs --diag
 pause
 goto MENU
 
-:REPAIR
-call :CHECK_NODE
+:FAIL
 echo.
-echo [REPAIR] Reparando manifests/assets...
-node scripts\rebuild_manifests_noelle.cjs
-echo.
-pause
-goto MENU
-
-:CLEAN_BATS
-call :CHECK_NODE
-echo.
-echo [CLEAN] Movendo outros .bat da raiz para backup...
-node scripts\noelle_maintenance_v17.cjs --clean-bats
-echo.
-pause
-goto MENU
-
-:APPLY
-call :CHECK_NODE
-echo.
-echo [APPLY] Aplicando manutencao segura...
-node scripts\noelle_maintenance_v17.cjs --apply
-echo.
+echo [ERRO] Hotfix falhou. Veja as mensagens acima.
 pause
 goto MENU

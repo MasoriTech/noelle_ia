@@ -347,7 +347,7 @@ function createAvatarWindow({ show = true } = {}) {
   });
   avatarWin.once("ready-to-show", () => { if (show) avatarWin.show(); });
   avatarWin.on("closed", () => { avatarWin = null; });
-  avatarWin.loadFile(path.join(SRC_DIR, "avatar.html"));
+  const avatarHtmlPath = fs.existsSync(path.join(SRC_DIR, "avatar_view.html")) ? path.join(SRC_DIR, "avatar_view.html") : path.join(SRC_DIR, "avatar.html"); avatarWin.loadFile(avatarHtmlPath);
   return avatarWin;
 }
 
