@@ -1,1 +1,2 @@
+# TTS local - Piper com fallback no app quando indisponivel
 piper-tts==1.4.2

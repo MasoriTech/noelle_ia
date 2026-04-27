@@ -2,91 +2,106 @@
   {
     "id": "001_motion_pose",
     "label": "Motion Pose",
-    "file": "001_motion_pose.vrma",
-    "source": "fm"
+    "file": "motions/001_motion_pose.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "002_dogeza",
     "label": "Dogeza",
-    "file": "002_dogeza.vrma",
-    "source": "fm"
+    "file": "motions/002_dogeza.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "003_humidai",
     "label": "Humidai",
-    "file": "003_humidai.vrma",
-    "source": "fm"
+    "file": "motions/003_humidai.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "004_hello_1",
     "label": "Hello 1",
-    "file": "004_hello_1.vrma",
-    "source": "fm"
+    "file": "motions/004_hello_1.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "005_smartphone",
     "label": "Smartphone",
-    "file": "005_smartphone.vrma",
-    "source": "fm"
+    "file": "motions/005_smartphone.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "006_drinkwater",
     "label": "Drinkwater",
-    "file": "006_drinkwater.vrma",
-    "source": "fm"
+    "file": "motions/006_drinkwater.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "007_gekirei",
     "label": "Gekirei",
-    "file": "007_gekirei.vrma",
-    "source": "fm"
+    "file": "motions/007_gekirei.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "008_gatan",
     "label": "Gatan",
-    "file": "008_gatan.vrma",
-    "source": "fm"
+    "file": "motions/008_gatan.vrma",
+    "source": "fm",
+    "kind": "motion"
   },
   {
     "id": "VRMA_01",
     "label": "VRMA 01",
-    "file": "VRMA_01.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_01.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   },
   {
     "id": "VRMA_02",
     "label": "VRMA 02",
-    "file": "VRMA_02.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_02.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   },
   {
     "id": "VRMA_03",
     "label": "VRMA 03",
-    "file": "VRMA_03.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_03.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   },
   {
     "id": "VRMA_04",
     "label": "VRMA 04",
-    "file": "VRMA_04.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_04.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   },
   {
     "id": "VRMA_05",
     "label": "VRMA 05",
-    "file": "VRMA_05.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_05.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   },
   {
     "id": "VRMA_06",
     "label": "VRMA 06",
-    "file": "VRMA_06.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_06.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   },
   {
     "id": "VRMA_07",
     "label": "VRMA 07",
-    "file": "VRMA_07.vrma",
-    "source": "pixiv"
+    "file": "motions/VRMA_07.vrma",
+    "source": "pixiv",
+    "kind": "motion"
   }
 ]

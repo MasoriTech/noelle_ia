@@ -1,2 +1,4 @@
+# Noelle IA - requirements raiz
+# Mantem STT/TTS separados para facilitar manutenção.
 -r tools/noelle_stt/requirements.txt
 -r tools/noelle_tts/requirements.txt

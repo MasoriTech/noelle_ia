@@ -2,21 +2,25 @@
   {
     "file": "angry.png",
     "label": "Angry",
-    "id": "angry"
+    "id": "angry",
+    "kind": "expression"
   },
   {
     "file": "happy.png",
     "label": "Happy",
-    "id": "happy"
+    "id": "happy",
+    "kind": "expression"
   },
   {
     "file": "sad.png",
     "label": "Sad",
-    "id": "sad"
+    "id": "sad",
+    "kind": "expression"
   },
   {
     "file": "sick.png",
     "label": "Sick",
-    "id": "sick"
+    "id": "sick",
+    "kind": "expression"
   }
 ]

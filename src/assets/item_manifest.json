@@ -2,7 +2,7 @@
   {
     "id": "acoustic_guitar_black",
     "label": "Acoustic Guitar Black",
-    "file": "acoustic_guitar_black.glb",
+    "file": "items/acoustic_guitar_black.glb",
     "slot": "right_hand",
     "default_interaction": "two_hand_guitar",
     "notes": "Violão em modo especial de duas mãos.",
@@ -13,23 +13,25 @@
       "two_hand_guitar",
       "hand_right",
       "back_mount"
-    ]
+    ],
+    "kind": "item"
   },
   {
     "id": "agua",
     "label": "Agua",
-    "file": "agua.glb",
+    "file": "items/agua.glb",
     "slot": "right_hand",
     "default_interaction": "auto",
     "notes": "Item extra para a Yoru segurar na mão.",
     "category": "hand",
     "thumbnail": "thumbnails/agua.png",
-    "target_size": 0.19
+    "target_size": 0.19,
+    "kind": "item"
   },
   {
     "id": "basketball",
     "label": "Basketball",
-    "file": "basketball.glb",
+    "file": "items/basketball.glb",
     "slot": "right_hand",
     "default_interaction": "two_hand_ball",
     "notes": "Bola esportiva para a Yoru segurar na mão ou mostrar na cena.",
@@ -40,68 +42,74 @@
       "hand_right",
       "hand_left",
       "two_hand_ball"
-    ]
+    ],
+    "kind": "item"
   },
   {
     "id": "cafe",
     "label": "Cafe",
-    "file": "cafe.glb",
+    "file": "items/cafe.glb",
     "slot": "right_hand",
     "default_interaction": "hand_right",
     "notes": "Caneca/copo de café para cenas casuais e de mesa.",
     "category": "hand",
     "target_size": 0.16,
-    "thumbnail": "thumbnails/cafe.png"
+    "thumbnail": "thumbnails/cafe.png",
+    "kind": "item"
   },
   {
     "id": "dado_de_20_lados",
     "label": "Dado De 20 Lados",
-    "file": "dado_de_20_lados.glb",
+    "file": "items/dado_de_20_lados.glb",
     "slot": "right_hand",
     "default_interaction": "roll_item",
     "notes": "d20 para segurar ou girar como item de mesa.",
     "category": "hand",
     "thumbnail": "thumbnails/d20.png",
-    "target_size": 0.08
+    "target_size": 0.08,
+    "kind": "item"
   },
   {
     "id": "dado_obj",
     "label": "Dado Obj",
-    "file": "dado_obj.glb",
+    "file": "items/dado_obj.glb",
     "slot": "right_hand",
     "default_interaction": "roll_item",
     "notes": "Dado clássico para teste rápido de interação.",
     "category": "hand",
     "thumbnail": "thumbnails/dice.png",
-    "target_size": 0.07
+    "target_size": 0.07,
+    "kind": "item"
   },
   {
     "id": "grand_piano",
     "label": "Grand Piano",
-    "file": "grand_piano.glb",
+    "file": "items/grand_piano.glb",
     "slot": "scene_front",
     "default_interaction": "scene_front",
     "notes": "Piano de cauda para compor o cenário editável.",
     "category": "scene",
     "target_size": 1.38,
     "spawn_preset": "piano_left_stage",
-    "thumbnail": "thumbnails/grand_piano.png"
+    "thumbnail": "thumbnails/grand_piano.png",
+    "kind": "item"
   },
   {
     "id": "iphone_14_pro",
     "label": "Iphone 14 Pro",
-    "file": "iphone_14_pro.glb",
+    "file": "items/iphone_14_pro.glb",
     "slot": "left_hand",
     "default_interaction": "auto",
     "notes": "Celular para pose de consulta, chat ou selfie.",
     "category": "hand",
     "thumbnail": "thumbnails/iphone_14_pro.png",
-    "target_size": 0.16
+    "target_size": 0.16,
+    "kind": "item"
   },
   {
     "id": "kendo_shinai_blade",
     "label": "Kendo Shinai Blade",
-    "file": "kendo_shinai_blade.glb",
+    "file": "items/kendo_shinai_blade.glb",
     "slot": "back_mount",
     "default_interaction": "back_sheath",
     "notes": "Shinai de treino estilizado para cosplay, pose samurai e customização artística do avatar.",
@@ -114,39 +122,43 @@
       "hand_left",
       "two_hand_blade"
     ],
-    "thumbnail": "thumbnails/kendo_shinai_blade.png"
+    "thumbnail": "thumbnails/kendo_shinai_blade.png",
+    "kind": "item"
   },
   {
     "id": "microfone",
     "label": "Microfone",
-    "file": "microfone.glb",
+    "file": "items/microfone.glb",
     "slot": "right_hand",
     "default_interaction": "hand_right",
     "notes": "Microfone de mão para live, voz e apresentação.",
     "category": "hand",
     "target_size": 0.24,
-    "thumbnail": "thumbnails/microfone.png"
+    "thumbnail": "thumbnails/microfone.png",
+    "kind": "item"
   },
   {
     "id": "office_desk",
     "label": "Office Desk",
-    "file": "office_desk.glb",
+    "file": "items/office_desk.glb",
     "slot": "scene_front",
     "default_interaction": "desk_sit",
     "notes": "Mesa de escritório com cadeira simples procedural para compor a cena em frente da Yoru.",
     "category": "scene",
     "thumbnail": "thumbnails/office_desk.png",
-    "target_size": 1.45
+    "target_size": 1.45,
+    "kind": "item"
   },
   {
     "id": "tablet",
     "label": "Tablet",
-    "file": "tablet.glb",
+    "file": "items/tablet.glb",
     "slot": "left_hand",
     "default_interaction": "hand_left",
     "notes": "Tablet para pose de leitura, consulta e stream.",
     "category": "hand",
     "target_size": 0.26,
-    "thumbnail": "thumbnails/tablet.png"
+    "thumbnail": "thumbnails/tablet.png",
+    "kind": "item"
   }
 ]
