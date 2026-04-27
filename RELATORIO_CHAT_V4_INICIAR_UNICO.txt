@@ -1,0 +1,18 @@
+RELATORIO - NOELLE CHAT IA V4
+
+Mudanca principal:
+- O pack agora usa somente INICIAR.bat.
+
+Correcoes mantidas:
+- Corrige ensureDir ausente em main.js quando necessario.
+- Remove referencias ao patch antigo noelle_chat_focus_patch, que causava sobreposicao do input e do botao Enviar.
+- Aplica CSS seguro no src/controls.html.
+- Mantem uma janela de Chat IA limpa em tools/noelle_chat_clean.
+- Ajusta titleBarOverlay/titleBarStyle quando encontrado, para reduzir sobreposicao da barra superior.
+
+Nova opcao:
+- INICIAR.bat > [6] Limpar outros .bat da raiz.
+- Essa opcao move BATs antigos para backup em vez de apagar.
+
+Recomendacao:
+- Depois de aplicar, use somente INICIAR.bat para abrir, diagnosticar, reparar e limpar.

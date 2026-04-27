@@ -1,0 +1,21 @@
+Noelle IA V13 - requirements atualizados
+========================================
+
+Arquivos atualizados:
+- requirements.txt
+- tools/noelle_stt/requirements.txt
+
+Dependencias principais:
+- faster-whisper==1.2.1
+- ctranslate2>=4.7.1,<5
+- av>=17.0.1,<18
+- huggingface-hub>=1.12.0,<2
+
+Notas:
+- O projeto atual ja usa tools/noelle_stt/requirements.txt para STT.
+- O requirements.txt da raiz foi adicionado para facilitar IDE, pip e automacao.
+- onnxruntime fica como dependencia transitiva do faster-whisper para o pip escolher wheel compativel com seu Python.
+- Se o Python for antigo, prefira Python 3.10 ou 3.11 no Windows.
+
+Backup:
+C:\Users\Administrator\Downloads\chat\noelle_ia\backups\requirements_v13_2026-04-27T19-29-08-721Z

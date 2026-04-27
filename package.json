@@ -1,76 +1,16 @@
 {
-  "name": "noelle-windows-program-inventory",
-  "version": "3.4.0",
-  "private": true,
+  "name": "noelle-companion-janelas-refeitas",
+  "version": "9.0.0",
+  "description": "Noelle Companion 2026 - janelas refeitas com Electron limpo, Chat IA estável e layout moderno.",
   "main": "main.js",
+  "author": "MasoriTech / Noelle Companion",
+  "license": "MIT",
+  "private": true,
   "scripts": {
-    "start": "npm run build-renderers && npm run verify-renderer-bundles && electron .",
-    "doctor": "node scripts/doctor.js && npm run checkup && npm run verify-renderer-bundles",
-    "build-renderers": "node scripts/bundle-renderers.mjs",
-    "verify-renderer-bundles": "node scripts/verify-renderer-bundles.js",
-    "smoke-test": "node scripts/smoke-test.js",
-    "module-report": "node scripts/module-report.js",
-    "pack:win": "electron-builder --win portable",
-    "dist:win": "electron-builder --win nsis portable",
-    "postinstall": "npm run build-renderers",
-    "checkup": "node scripts/checkup-ui.js"
+    "start": "electron .",
+    "diagnostico": "node scripts/diagnostico.cjs"
   },
   "devDependencies": {
-    "electron": "^30.0.0",
-    "electron-builder": "^25.1.8",
-    "esbuild": "^0.25.8"
-  },
-  "productName": "Noelle Companion",
-  "description": "Noelle Companion 2026 - NoelleCore IA integrada com Ollama, chat de texto, persona nobre e modo PC fraco.",
-  "dependencies": {
-    "electron-log": "^5.2.4",
-    "three": "^0.180.0",
-    "@pixiv/three-vrm": "^3.4.2",
-    "@pixiv/three-vrm-animation": "^3.4.2"
-  },
-  "build": {
-    "appId": "noelle.companion.windows",
-    "productName": "Noelle Companion",
-    "asar": true,
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "main.js",
-      "preload.js",
-      "package.json",
-      "README.txt",
-      "assets/**/*",
-      "src/**/*",
-      "scripts/**/*"
-    ],
-    "win": {
-      "icon": "assets/icons/app.ico",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Noelle Companion"
-    },
-    "portable": {
-      "artifactName": "Noelle-Companion-Portable-${version}.exe"
-    }
+    "electron": "^30.5.1"
   }
 }

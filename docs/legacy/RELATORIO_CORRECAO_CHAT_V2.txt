@@ -1,0 +1,15 @@
+RELATORIO - NOELLE CHAT IA V2
+
+Problemas vistos na imagem:
+1. O patch visual anterior empilhou o campo de texto e botoes sobre a area de mensagens.
+2. O botao Enviar ficou grande demais e perdeu o formato de chat real.
+3. O botao de audio ficou deslocado.
+4. O chat criou scroll interno confuso.
+5. ECONNREFUSED 127.0.0.1:11434 indica Ollama fechado/offline.
+
+Correcao aplicada neste pack:
+1. Remove noelle_chat_focus_patch.css/js da pagina de controles.
+2. Injeta um CSS mais seguro, sem grid agressivo no painel inteiro.
+3. Mantem a caixa de mensagens no centro e o input fixo abaixo, sem sobrepor.
+4. Adiciona janela separada Noelle Chat IA Limpo, inspirada em apps tipo Discord, mas com codigo autoral.
+5. Mantem backups automaticos antes de alterar arquivos.

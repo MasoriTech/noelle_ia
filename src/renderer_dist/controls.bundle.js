@@ -1706,3 +1706,31 @@ main().catch((err) => {
   if (summary) summary.textContent = "Erro ao iniciar controles: " + err;
   console.error(err);
 });
+(function() {
+  try {
+    if (!window.__NOELLE_CHAT_FORCE_FIX_V7_SCRIPT_TAG__) {
+      window.__NOELLE_CHAT_FORCE_FIX_V7_SCRIPT_TAG__ = true;
+      setTimeout(function() {
+        if (document.querySelector("script[data-noelle-chat-force-fix-v7]")) return;
+        var s = document.createElement("script");
+        s.type = "module";
+        s.dataset.noelleChatForceFixV7 = "1";
+        s.src = "./renderer/noelle_chat_v8_modern.js?v=8";
+        (document.head || document.documentElement).appendChild(s);
+      }, 350);
+    }
+  } catch (_) {
+  }
+})();
+(function() {
+  try {
+    setTimeout(function() {
+      if (document.querySelector("script[data-noelle-chat-v8-modern]")) return;
+      var s = document.createElement("script");
+      s.dataset.noelleChatV8Modern = "1";
+      s.src = "./renderer/noelle_chat_v8_modern.js?v=8";
+      (document.head || document.documentElement).appendChild(s);
+    }, 250);
+  } catch (_) {
+  }
+})();

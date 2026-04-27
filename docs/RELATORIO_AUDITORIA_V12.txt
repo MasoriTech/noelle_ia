@@ -1,0 +1,32 @@
+Relatório - Noelle UI V12 segura
+================================
+
+Decisão principal:
+A V12 não substitui a janela inteira. Ela injeta um layout moderno apenas na aba Chat IA e mantém as telas antigas.
+
+O que foi evitado:
+- CSS global que mexe em todas as abas.
+- Substituir controls.html inteiro.
+- Criar vários .bat na raiz.
+- Usar titleBarOverlay junto com barra nativa.
+- Mover .bat extras sem confirmação.
+- Apagar código antigo de emotes/inventário/configurações.
+
+Padrão de layout usado no Chat IA:
+- header compacto
+- área de mensagens com scroll único
+- composer fixo embaixo
+- botão enviar pequeno
+- microfone pequeno
+- configurações em details recolhível
+
+Arquivos adicionados:
+- INICIAR.bat
+- scripts/aplicar_ui_v12_segura.cjs
+- scripts/diagnostico_ui_v12.cjs
+- scripts/limpar_bats_raiz.cjs
+- src/styles/noelle_chat_v12.css
+- src/renderer/noelle_chat_v12.js
+
+Risco restante:
+Se a pasta do projeto já estiver com controls.html substituído por uma versão anterior quebrada, a V12 não consegue inventar os emotes/configurações antigos do nada. Nesse caso, restaure pelo Git ou por backup e aplique a V12 em cima da base antiga.

@@ -1,67 +1,7 @@
-# Dependencias
 node_modules/
-**/node_modules/
-.venv/
-venv/
-env/
-**/.venv/
-**/venv/
-
-# Build e release
 release/
 dist/
-build/
-out/
-**/release/
-**/dist/
-**/build/
-**/out/
-src/renderer_dist/
-
-# Logs e temporarios
 logs/
-**/logs/
-*.log
-tmp/
-temp/
-**/tmp/
-**/temp/
-
-# Pacotes/backups
-*.zip
-*.rar
-*.7z
-backup/
 backups/
-*_backup/
-*_old/
-*_bak/
-
-# Python
-__pycache__/
-**/__pycache__/
-*.pyc
-*.pyo
-
-# Modelos/cache local
-tools/noelle_stt/models/
-tools/noelle_stt/cache/
-**/tools/noelle_stt/models/
-**/tools/noelle_stt/cache/
-.cache/
-huggingface/
-hf_cache/
-**/.cache/
-**/huggingface/
-**/hf_cache/
-
-# Audio temporario
-*.wav
-*.webm
-*.mp3
-
-# Ambiente/local
-.env
-.env.local
 .DS_Store
-Thumbs.db
+*.log

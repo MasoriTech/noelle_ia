@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noelle Chat IA</title>
+  <link rel="stylesheet" href="./chat.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="server-rail" aria-label="Atalhos">
+      <button class="rail-logo active" data-view="chat" title="Chat">N</button>
+      <button class="rail-dot" data-view="status" title="Status">●</button>
+      <button class="rail-dot" data-view="memory" title="Memória">✦</button>
+      <button class="rail-dot" data-view="settings" title="Configurações">⚙</button>
+      <span class="rail-sep"></span>
+      <button class="rail-dot danger" id="btnUnload" title="Descarregar modelo">⏻</button>
+    </aside>
+
+    <aside class="channel-panel">
+      <header class="workspace-head">
+        <div>
+          <strong>Noelle IA</strong>
+          <small>janela dedicada</small>
+        </div>
+        <span id="onlinePill" class="online-pill warn">checando</span>
+      </header>
+
+      <section class="channel-group">
+        <div class="group-title">Conversas</div>
+        <button class="channel active" data-view="chat"><span>#</span> chat-principal</button>
+        <button class="channel" data-view="status"><span>#</span> diagnostico</button>
+        <button class="channel" data-view="memory"><span>#</span> memorias</button>
+        <button class="channel" data-view="settings"><span>#</span> configuracoes</button>
+      </section>
+
+      <section class="channel-group grow">
+        <div class="group-title">Ações rápidas</div>
+        <button class="side-action" id="btnStatus">Status do Ollama</button>
+        <button class="side-action" id="btnPreload">Pré-carregar modelo</button>
+        <button class="side-action" id="btnReset">Limpar conversa</button>
+        <button class="side-action" id="btnOpenLogs">Abrir logs</button>
+      </section>
+
+      <footer class="user-card">
+        <div class="avatar-small">N</div>
+        <div class="user-meta">
+          <strong>NoelleCore</strong>
+          <small id="miniMeta">qwen3:0.6b · turbo</small>
+        </div>
+      </footer>
+    </aside>
+
+    <main class="main-panel">
+      <header class="chat-topbar">
+        <div class="room-title">
+          <span>#</span>
+          <div>
+            <strong id="roomTitle">chat-principal</strong>
+            <small id="roomSubtitle">Conversa limpa, focada e rápida</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <select id="profileSelect" class="select-mini" title="Perfil">
+            <option value="turbo">Turbo</option>
+            <option value="rapido">Rápido</option>
+            <option value="minimo">Mínimo</option>
+          </select>
+          <select id="personaSelect" class="select-mini" title="Persona">
+            <option value="nobre">Nobre</option>
+            <option value="direta">Direta</option>
+            <option value="dev">Dev</option>
+          </select>
+        </div>
+      </header>
+
+      <section id="viewChat" class="view active">
+        <div id="messageList" class="message-list" aria-live="polite"></div>
+        <form id="chatForm" class="composer">
+          <button type="button" id="btnAttachHint" class="composer-icon" title="Anexos ainda não ativados">＋</button>
+          <textarea id="messageInput" rows="1" placeholder="Conversar com a Noelle...  Enter envia · Shift+Enter quebra linha"></textarea>
+          <button type="submit" id="sendBtn" class="send-btn">Enviar</button>
+        </form>
+      </section>
+
+      <section id="viewStatus" class="view">
+        <div class="panel-card">
+          <h2>Diagnóstico</h2>
+          <p class="muted">Aqui você vê se o Ollama está aberto, se o modelo existe e se ele está carregado.</p>
+          <pre id="statusBox" class="diagnostic-box">Clique em “Status do Ollama”.</pre>
+        </div>
+      </section>
+
+      <section id="viewMemory" class="view">
+        <div class="panel-card slim">
+          <h2>Memória manual</h2>
+          <p class="muted">Salve só informações úteis para esta Noelle lembrar durante as conversas locais.</p>
+          <div class="memory-row">
+            <input id="memoryInput" class="text-input" placeholder="Ex: responder curto quando eu pedir correção de bug" />
+            <button id="btnRemember" class="send-btn" type="button">Salvar</button>
+          </div>
+          <pre id="memoryBox" class="diagnostic-box">Nenhuma ação ainda.</pre>
+        </div>
+      </section>
+
+      <section id="viewSettings" class="view">
+        <div class="panel-card slim">
+          <h2>Configurações</h2>
+          <label class="field-label" for="modelInput">Modelo Ollama</label>
+          <input id="modelInput" class="text-input" value="qwen3:0.6b" />
+          <div class="settings-grid">
+            <button id="btnSaveConfig" class="side-action primary" type="button">Salvar config</button>
+            <button id="btnDefaultModel" class="side-action" type="button">Voltar qwen3:0.6b</button>
+          </div>
+          <p class="muted">Dica: para PC fraco, mantenha qwen3:0.6b e perfil Turbo ou Mínimo.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="./chat.js"></script>
+</body>
+</html>

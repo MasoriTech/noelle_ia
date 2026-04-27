@@ -3,135 +3,127 @@ setlocal EnableExtensions
 set "APP_DIR=%~dp0"
 cd /d "%APP_DIR%"
 
-set "NOELLE_CORE_IA=1"
-set "NOELLE_SAFE_CACHE=1"
-set "OLLAMA_MAX_LOADED_MODELS=1"
-set "OLLAMA_NUM_PARALLEL=1"
-set "OLLAMA_CONTEXT_LENGTH=512"
-
-if not exist "logs" mkdir "logs" >nul 2>nul
-set "LOG_FILE=logs\iniciar_noelle.log"
-
-echo ==========================
-echo Iniciando Noelle Companion 2026
-echo NoelleCore IA + Ollama + STT local
-echo ==========================
-echo [%date% %time%] Iniciando Noelle > "%LOG_FILE%"
-
+:menu
+cls
+echo ============================================================
+echo  Noelle IA - INICIAR unico V13
+echo ============================================================
+echo [1] Aplicar UI V12 segura + atualizar requirements.txt
+echo [2] Aplicar somente requirements.txt Python
+echo [3] Instalar/atualizar dependencias Python do STT
+echo [4] Diagnostico UI + requirements
+echo [5] Iniciar Noelle
+echo [6] Iniciar Ollama e Noelle
+echo [7] Limpar outros .bat da raiz
+echo [0] Sair
 echo.
-echo [1/6] Verificando pasta do programa...
-if not exist "package.json" (
-  echo ERRO: package.json nao encontrado. >> "%LOG_FILE%"
-  echo Este .bat precisa ficar na pasta principal da Noelle.
-  pause
-  exit /b 1
-)
-if not exist "main.js" (
-  echo ERRO: main.js nao encontrado. >> "%LOG_FILE%"
-  echo main.js nao encontrado. Copie este patch por cima da pasta principal da Noelle.
-  pause
-  exit /b 1
-)
+set /p OP=Escolha: 
 
-echo [2/6] Verificando Node/npm...
+if "%OP%"=="1" goto aplicar_tudo
+if "%OP%"=="2" goto aplicar_requirements
+if "%OP%"=="3" goto instalar_python
+if "%OP%"=="4" goto diagnostico
+if "%OP%"=="5" goto iniciar_noelle
+if "%OP%"=="6" goto ollama_noelle
+if "%OP%"=="7" goto limpar_bats
+if "%OP%"=="0" exit /b 0
+goto menu
+
+:node_check
 where node.exe >nul 2>nul
 if errorlevel 1 (
-  echo ERRO: Node.js nao encontrado. >> "%LOG_FILE%"
-  echo Node.js nao encontrado no PATH. Instale o Node.js e abra um novo terminal.
+  echo Node.js nao encontrado no PATH.
+  echo Instale Node.js, abra um terminal novo e tente de novo.
   pause
   exit /b 1
 )
-where npm.cmd >nul 2>nul
-if errorlevel 1 (
-  echo ERRO: npm nao encontrado. >> "%LOG_FILE%"
-  echo npm.cmd nao foi encontrado no PATH.
-  pause
-  exit /b 1
-)
+exit /b 0
 
-if not exist "node_modules" (
-  echo [AVISO] node_modules nao existe. Rodando npm install...
-  call npm.cmd install >> "%LOG_FILE%" 2>&1
-  if errorlevel 1 goto :erro
-)
+:aplicar_tudo
+call :node_check || exit /b 1
+node scripts\aplicar_ui_v12_segura.cjs
+if errorlevel 1 goto erro
+node scripts\aplicar_requirements_v13.cjs
+if errorlevel 1 goto erro
+echo.
+echo [ok] UI segura e requirements aplicados.
+pause
+goto menu
 
-echo [3/6] Verificando Python/STT...
+:aplicar_requirements
+call :node_check || exit /b 1
+node scripts\aplicar_requirements_v13.cjs
+if errorlevel 1 goto erro
+echo.
+echo [ok] requirements.txt atualizado.
+pause
+goto menu
+
+:instalar_python
 set "PY_CMD="
 where py.exe >nul 2>nul && set "PY_CMD=py -3"
 if not defined PY_CMD (
   where python.exe >nul 2>nul && set "PY_CMD=python"
 )
 if not defined PY_CMD (
-  echo [AVISO] Python nao encontrado. Chat de texto funciona, mas microfone/STT nao.
-  echo [AVISO] Python nao encontrado para STT. >> "%LOG_FILE%"
-) else (
-  %PY_CMD% -c "import faster_whisper, ctranslate2; print('STT OK')" >nul 2>nul
-  if errorlevel 1 (
-    echo [AVISO] Dependencias do audio local ainda nao estao prontas.
-    echo         Rode: PREPARAR_AUDIO_STT.bat
-    echo [AVISO] Dependencias STT ausentes. >> "%LOG_FILE%"
-  ) else (
-    echo STT local: OK
-  )
-)
-
-echo [4/6] Verificando Ollama sem travar...
-echo [INFO] Checagem do Ollama tem timeout curto. Se falhar, a Noelle abre mesmo assim.
-
-set "OLLAMA_PS=%TEMP%\noelle_ollama_check_%RANDOM%%RANDOM%.ps1"
-> "%OLLAMA_PS%" echo $ProgressPreference = 'SilentlyContinue'
->> "%OLLAMA_PS%" echo try {
->> "%OLLAMA_PS%" echo   $r = Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 -Uri 'http://127.0.0.1:11434/api/tags'
->> "%OLLAMA_PS%" echo   $txt = [string]$r.Content
->> "%OLLAMA_PS%" echo   if ($txt -match 'qwen3:0\.6b') { exit 0 } else { exit 2 }
->> "%OLLAMA_PS%" echo } catch {
->> "%OLLAMA_PS%" echo   exit 1
->> "%OLLAMA_PS%" echo }
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OLLAMA_PS%" >nul 2>nul
-set "OLLAMA_CHECK_CODE=%ERRORLEVEL%"
-del "%OLLAMA_PS%" >nul 2>nul
-
-if "%OLLAMA_CHECK_CODE%"=="0" (
-  echo Ollama: OK ^| qwen3:0.6b encontrado
-  echo [OK] Ollama online com qwen3:0.6b. >> "%LOG_FILE%"
-) else if "%OLLAMA_CHECK_CODE%"=="2" (
-  echo [AVISO] Ollama respondeu, mas qwen3:0.6b nao apareceu na lista.
-  echo         Para baixar depois: ollama pull qwen3:0.6b
-  echo [AVISO] Ollama online, qwen3:0.6b ausente. >> "%LOG_FILE%"
-) else (
-  echo [AVISO] Ollama nao respondeu em 2 segundos.
-  echo         A Noelle vai abrir mesmo assim. A aba Chat IA avisara se estiver offline.
-  echo         Se quiser usar IA local, abra o Ollama antes ou depois.
-  echo [AVISO] Ollama offline ou lento no startup. >> "%LOG_FILE%"
-)
-
-echo [5/6] Gerando bundles...
-call npm.cmd run build-renderers >> "%LOG_FILE%" 2>&1
-if errorlevel 1 goto :erro
-
-call npm.cmd run verify-renderer-bundles >> "%LOG_FILE%" 2>&1
-if errorlevel 1 goto :erro
-
-echo [6/6] Abrindo Noelle...
-if exist "node_modules\.bin\electron.cmd" (
-  call "node_modules\.bin\electron.cmd" . >> "%LOG_FILE%" 2>&1
-) else (
-  call npx.cmd electron . >> "%LOG_FILE%" 2>&1
-)
-set "EXIT_CODE=%ERRORLEVEL%"
-if not "%EXIT_CODE%"=="0" (
-  echo.
-  echo A Noelle foi encerrada com codigo %EXIT_CODE%.
-  echo Veja o log: %LOG_FILE%
+  echo Python nao encontrado. Instale Python 3.10+ e marque Add to PATH.
   pause
-  exit /b %EXIT_CODE%
+  goto menu
 )
-exit /b 0
+if not exist "requirements.txt" (
+  echo requirements.txt nao encontrado. Rode a opcao [2] primeiro.
+  pause
+  goto menu
+)
+echo Atualizando pip...
+%PY_CMD% -m pip install --upgrade pip
+if errorlevel 1 goto erro
+echo Instalando/atualizando dependencias Python do STT...
+%PY_CMD% -m pip install --upgrade -r requirements.txt
+if errorlevel 1 goto erro
+echo.
+echo [ok] Dependencias Python instaladas/atualizadas.
+pause
+goto menu
+
+:diagnostico
+call :node_check || exit /b 1
+node scripts\diagnostico_ui_v12.cjs
+node scripts\diagnostico_requirements_v13.cjs
+echo.
+pause
+goto menu
+
+:iniciar_noelle
+where npm.cmd >nul 2>nul
+if errorlevel 1 (
+  echo npm.cmd nao encontrado. Instale Node.js e rode npm install.
+  pause
+  goto menu
+)
+call npm.cmd start
+pause
+goto menu
+
+:ollama_noelle
+where ollama.exe >nul 2>nul
+if errorlevel 1 (
+  echo Ollama nao encontrado no PATH. Abra/instale o Ollama antes.
+  pause
+  goto menu
+)
+start "Ollama" /min cmd /c "ollama serve"
+timeout /t 3 /nobreak >nul
+goto iniciar_noelle
+
+:limpar_bats
+call :node_check || exit /b 1
+node scripts\limpar_bats_raiz.cjs
+pause
+goto menu
 
 :erro
 echo.
-echo Falha ao preparar/abrir a Noelle.
-echo Veja o log: %LOG_FILE%
+echo [erro] Operacao falhou. Veja a mensagem acima.
 pause
-exit /b 1
+goto menu

@@ -1,0 +1,27 @@
+RELATORIO - CORRECOES DA JANELA CHAT IA
+=======================================
+
+Problemas localizados no estado atual:
+
+1. ensureDir is not defined
+A imagem mostra esse erro na propria UI. No main.js publico do repo, a parte de STT usa diretorios temporarios/cache, mas a funcao ensureDir nao aparece definida no arquivo. O hotfix adiciona a funcao de forma segura usando fs.mkdirSync(..., { recursive: true }).
+
+2. Titlebar sobreposta
+A janela usa titleBarStyle hidden + titleBarOverlay no Electron. No Windows isso pode sobrepor a barra customizada roxa e esconder parte do botao Voltar. O hotfix troca para titleBarStyle default nas janelas com frame true.
+
+3. Chat dentro da tela errada
+O Chat IA esta preso dentro de uma janela que tambem tem Principal, Emotes, Inventario, Configuracoes e Sobre. Por isso o chat perde espaco e os botoes ficam gigantes. O hotfix injeta um ajuste visual leve e tambem adiciona janela dedicada.
+
+4. Controles avancados expostos demais
+Texto, Audio, Ollama, Persona, STT, Bench, Preload e Memorias aparecem todos juntos. Isso torna a janela pesada. A janela dedicada organiza isso em canais/areas separadas.
+
+5. Resposta lenta sem streaming visual
+O print mostrou 38.05s em modo rapido. Isso nao e necessariamente bug de UI, mas a experiencia fica ruim sem feedback. A janela dedicada deixa diagnostico e preload mais acessiveis.
+
+Ordem recomendada de teste:
+1. APLICAR_HOTFIX_JANELA_CHAT.bat
+2. iniciar.bat
+3. Entrar na aba Chat IA e verificar se o erro ensureDir sumiu.
+4. ABRIR_CHAT_IA_CORRIGIDO.bat
+5. Testar com: oi
+6. Se demorar muito, clicar em Pre-carregar modelo.

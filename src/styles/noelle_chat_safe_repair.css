@@ -1,0 +1,145 @@
+/* Noelle Chat IA - reparo seguro v2
+   Objetivo: corrigir a janela integrada sem empilhar input/botoes sobre as mensagens.
+   Este CSS NAO usa grid no painel inteiro e desfaz o visual agressivo do hotfix anterior. */
+
+/* Garante que o painel de chat continue no layout nativo do app. */
+.tab-panel[data-tab-panel="chat"].active {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  min-height: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* O card do chat vira uma coluna estavel: topo, status, mensagens, compose e avancado. */
+.tab-panel[data-tab-panel="chat"] .card.noelle-core-shell,
+.tab-panel[data-tab-panel="chat"] .card.core-clean-shell {
+  display: grid !important;
+  grid-template-rows: auto auto minmax(220px, 1fr) auto auto !important;
+  gap: 10px !important;
+  min-height: 0 !important;
+  height: calc(100vh - 188px) !important;
+  max-height: calc(100vh - 188px) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Mensagens ocupam o espaco central e nunca ficam por baixo do input. */
+.tab-panel[data-tab-panel="chat"] .chat-log {
+  min-height: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
+  scroll-behavior: smooth;
+}
+
+.tab-panel[data-tab-panel="chat"] .chat-bubble {
+  max-width: min(820px, 88%) !important;
+}
+
+.tab-panel[data-tab-panel="chat"] .chat-bubble.user {
+  margin-left: auto !important;
+}
+
+.tab-panel[data-tab-panel="chat"] .chat-bubble.assistant,
+.tab-panel[data-tab-panel="chat"] .chat-bubble.system {
+  margin-right: auto !important;
+}
+
+/* Compose compacto, estilo app de chat: texto + enviar + mic. */
+.tab-panel[data-tab-panel="chat"] .chat-compose,
+.tab-panel[data-tab-panel="chat"] .chat-compose.clean {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 118px 58px !important;
+  gap: 8px !important;
+  align-items: stretch !important;
+  min-height: 56px !important;
+  position: static !important;
+  z-index: auto !important;
+}
+
+.tab-panel[data-tab-panel="chat"] .chat-compose textarea {
+  min-height: 56px !important;
+  max-height: 112px !important;
+  resize: none !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+.tab-panel[data-tab-panel="chat"] .chat-compose .btn,
+.tab-panel[data-tab-panel="chat"] #coreSendBtn,
+.tab-panel[data-tab-panel="chat"] #coreMicBtn {
+  min-height: 56px !important;
+  max-height: 56px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+.tab-panel[data-tab-panel="chat"] #coreMicBtn {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Configuracoes avancadas ficam discretas e nao empurram o chat. */
+.tab-panel[data-tab-panel="chat"] .core-advanced-panel {
+  max-height: 150px !important;
+  overflow: auto !important;
+}
+
+.tab-panel[data-tab-panel="chat"] .core-advanced-panel:not([open]) {
+  max-height: 42px !important;
+  overflow: hidden !important;
+}
+
+.tab-panel[data-tab-panel="chat"] .core-toolbar,
+.tab-panel[data-tab-panel="chat"] .clean-toolbar {
+  min-height: 0 !important;
+}
+
+/* Se sobrar classe do hotfix v1 por cache, neutraliza. */
+body.noelle-chat-focus-patch [data-tab-panel="chat"].active {
+  display: flex !important;
+  grid-template-rows: none !important;
+  min-height: 0 !important;
+}
+
+body.noelle-chat-focus-patch #coreChatLog,
+body.noelle-chat-focus-patch .chat-log {
+  max-height: none !important;
+}
+
+@media (max-width: 900px) {
+  .tab-panel[data-tab-panel="chat"] .card.noelle-core-shell,
+  .tab-panel[data-tab-panel="chat"] .card.core-clean-shell {
+    height: calc(100vh - 176px) !important;
+    max-height: calc(100vh - 176px) !important;
+  }
+
+  .tab-panel[data-tab-panel="chat"] .chat-compose,
+  .tab-panel[data-tab-panel="chat"] .chat-compose.clean {
+    grid-template-columns: minmax(0, 1fr) 96px 52px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .tab-panel[data-tab-panel="chat"] .chat-compose,
+  .tab-panel[data-tab-panel="chat"] .chat-compose.clean {
+    grid-template-columns: minmax(0, 1fr) 52px !important;
+  }
+
+  .tab-panel[data-tab-panel="chat"] #coreSendBtn {
+    font-size: 0 !important;
+  }
+
+  .tab-panel[data-tab-panel="chat"] #coreSendBtn::after {
+    content: "➤";
+    font-size: 18px;
+  }
+}

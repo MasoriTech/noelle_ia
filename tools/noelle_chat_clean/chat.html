@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Noelle Chat IA Limpo</title>
+  <link rel="stylesheet" href="./chat.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-dot">✦</div>
+      <button class="nav active" title="Chat">♛</button>
+      <button id="clearBtn" class="nav" title="Limpar conversa">⌫</button>
+      <button id="statusBtn" class="nav" title="Status do Ollama">◎</button>
+    </aside>
+
+    <section class="channels">
+      <div class="brand">
+        <b>Noelle</b>
+        <span>Chat IA limpo</span>
+      </div>
+      <div class="channel-title">Canais</div>
+      <button class="channel active"># conversa</button>
+      <button class="channel" id="diagChannel"># diagnostico</button>
+      <div class="spacer"></div>
+      <label class="field">
+        <span>Modelo</span>
+        <select id="modelSelect">
+          <option value="qwen3:0.6b">qwen3:0.6b fast</option>
+          <option value="gemma3:1b">gemma3:1b</option>
+          <option value="hermes3:3b">hermes3:3b</option>
+          <option value="llama3.2:1b">llama3.2:1b</option>
+        </select>
+      </label>
+      <div id="modelHint" class="hint">Use qwen3:0.6b para teste rapido.</div>
+    </section>
+
+    <main class="chat-main">
+      <header class="topbar">
+        <div>
+          <h1># conversa</h1>
+          <p>Janela separada, sem avatar, sem inventario e sem controles empilhados.</p>
+        </div>
+        <div id="statusPill" class="status-pill warn">checando...</div>
+      </header>
+
+      <div id="log" class="log" aria-live="polite"></div>
+
+      <footer class="composer">
+        <textarea id="input" rows="1" placeholder="Mensagem para a Noelle..."></textarea>
+        <button id="sendBtn" class="send">Enviar</button>
+      </footer>
+    </main>
+  </div>
+
+  <script src="./chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+RELATÓRIO RÁPIDO - BUGS E RISCOS DO CHAT IA NO REPO NOELLE_IA
+==============================================================
+
+Base verificada no GitHub público:
+- MasoriTech/noelle_ia
+- leovargasdev/discord-clone usado apenas como referência visual de layout.
+
+Achados principais:
+
+1) A janela de controles está sobrecarregada
+O arquivo src/controls.html tem mais de 1700 linhas e mistura controles de avatar, tema, inventário, emotes e Chat IA. Isso deixa a manutenção frágil e torna fácil quebrar a UI com uma alteração visual pequena.
+
+2) O Chat IA está preso dentro da janela de controles
+O chat aparece como uma aba dentro do painel de controles. Para uso real, o chat precisa ser o foco principal: histórico grande, campo de mensagem fixo, status discreto e ações avançadas escondidas.
+
+3) O main.js concentra responsabilidades demais
+O processo principal junta criação de janelas, bandeja, avatar, biblioteca de avatares, NoelleCore/Ollama, STT e utilitários. Isso aumenta o risco de regressão quando uma parte muda.
+
+4) src/index.html parece inválido ou não é uma página HTML real
+O arquivo mostrado no GitHub aparece como texto solto, sem estrutura HTML. Mesmo que não esteja sendo usado, isso confunde e pode quebrar caso algum fluxo tente carregar src/index.html.
+
+5) A transcrição de áudio/STT está acoplada ao processo principal
+O STT depende de Python, cache, modelos e arquivos temporários. Se Python/modelo/ffmpeg falhar, o erro pode parecer bug do chat. O ideal é manter o chat de texto estável separado e tratar STT como módulo opcional.
+
+6) A UI do chat antigo mostra controles demais ao mesmo tempo
+Botões como preload, bench, memórias, reset e diagnóstico são úteis, mas não devem competir com o campo de mensagem. Neste pack, ações avançadas ficam numa área lateral/toolbar discreta.
+
+Correção entregue neste pack:
+- Uma janela dedicada para Chat IA usando Electron + Ollama.
+- Visual Discord-like autoral, com sidebar, canais e composer fixo.
+- Diagnóstico embutido de Ollama/modelo.
+- Sem alterar main.js existente.
+- Sem depender do bundle atual do renderer.

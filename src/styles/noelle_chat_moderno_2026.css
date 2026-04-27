@@ -1,0 +1,385 @@
+/*
+  Noelle Chat IA Moderno 2026
+  Correção estrutural: header / mensagens / composer / configurações.
+  Não depende de copiar Discord; usa apenas padrões modernos de chat.
+*/
+
+:root {
+  --noelle-chat-bg: rgba(6, 7, 14, 0.92);
+  --noelle-chat-panel: rgba(16, 15, 28, 0.86);
+  --noelle-chat-panel-2: rgba(24, 19, 36, 0.92);
+  --noelle-chat-line: rgba(255, 255, 255, 0.10);
+  --noelle-chat-line-strong: rgba(255, 60, 132, 0.38);
+  --noelle-chat-text: rgba(255, 245, 253, 0.94);
+  --noelle-chat-muted: rgba(255, 232, 246, 0.62);
+  --noelle-chat-accent: #a43cff;
+  --noelle-chat-accent-2: #ff3d7f;
+  --noelle-chat-radius: 22px;
+}
+
+/* remove visualmente sobras de patches antigos, caso tenham sido injetados antes */
+.noelle-chat-focus-patch,
+.noelle-chat-safe-repair,
+.noelle-chat-legacy-patch {
+  display: none !important;
+}
+
+[data-tab-panel="chat"].noelle-chat-modern-panel {
+  box-sizing: border-box !important;
+  height: clamp(430px, calc(100vh - 178px), 780px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 14px !important;
+  display: block !important;
+  background: linear-gradient(135deg, rgba(255, 38, 111, 0.12), rgba(119, 52, 255, 0.08) 42%, rgba(0, 0, 0, 0.18)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 26px !important;
+}
+
+[data-tab-panel="chat"].noelle-chat-modern-panel:not(.active) {
+  display: none !important;
+}
+
+.noelle-chat-modern-panel,
+.noelle-chat-modern-panel * {
+  box-sizing: border-box;
+}
+
+.noelle-chat-modern-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+}
+
+.noelle-chat-modern-header {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--noelle-chat-line);
+  border-radius: 20px;
+  background: rgba(5, 6, 12, 0.42);
+  backdrop-filter: blur(14px);
+}
+
+.noelle-chat-modern-title {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.noelle-chat-modern-title strong {
+  font-size: 1.04rem;
+  line-height: 1.2;
+  color: var(--noelle-chat-text);
+}
+
+.noelle-chat-modern-title span {
+  font-size: 0.82rem;
+  color: var(--noelle-chat-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.noelle-chat-modern-status {
+  min-width: 0;
+  max-width: 52%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--noelle-chat-muted);
+  font-size: 0.82rem;
+}
+
+.noelle-chat-modern-status > * {
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.noelle-chat-modern-messages {
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--noelle-chat-line);
+  border-radius: var(--noelle-chat-radius);
+  background:
+    radial-gradient(circle at top left, rgba(150, 63, 255, 0.14), transparent 36%),
+    linear-gradient(180deg, rgba(10, 8, 20, 0.95), rgba(7, 8, 14, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 16px 40px rgba(0,0,0,0.25);
+}
+
+.noelle-chat-modern-messages #coreChatLog,
+.noelle-chat-modern-panel #coreChatLog.noelle-modern-chat-log {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  scroll-behavior: smooth;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.noelle-chat-modern-panel #coreChatLog::-webkit-scrollbar,
+.noelle-chat-modern-settings-body::-webkit-scrollbar,
+.noelle-chat-modern-panel #coreChatInput::-webkit-scrollbar {
+  width: 10px;
+}
+
+.noelle-chat-modern-panel #coreChatLog::-webkit-scrollbar-track,
+.noelle-chat-modern-settings-body::-webkit-scrollbar-track,
+.noelle-chat-modern-panel #coreChatInput::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.04);
+  border-radius: 999px;
+}
+
+.noelle-chat-modern-panel #coreChatLog::-webkit-scrollbar-thumb,
+.noelle-chat-modern-settings-body::-webkit-scrollbar-thumb,
+.noelle-chat-modern-panel #coreChatInput::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(164,60,255,0.75), rgba(255,61,127,0.65));
+  border-radius: 999px;
+}
+
+/* tenta normalizar vários nomes de classe possíveis das mensagens antigas */
+.noelle-chat-modern-panel #coreChatLog > * {
+  position: static !important;
+  max-width: min(780px, 86%) !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  border-radius: 18px !important;
+  overflow-wrap: anywhere !important;
+  line-height: 1.42 !important;
+}
+
+.noelle-chat-modern-panel #coreChatLog > *:has(.role-user),
+.noelle-chat-modern-panel #coreChatLog > *.user,
+.noelle-chat-modern-panel #coreChatLog > *.message-user,
+.noelle-chat-modern-panel #coreChatLog > *[data-role="user"] {
+  align-self: flex-end !important;
+}
+
+.noelle-chat-modern-panel #coreChatLog > *:has(.role-assistant),
+.noelle-chat-modern-panel #coreChatLog > *.assistant,
+.noelle-chat-modern-panel #coreChatLog > *.message-assistant,
+.noelle-chat-modern-panel #coreChatLog > *[data-role="assistant"] {
+  align-self: flex-start !important;
+}
+
+.noelle-chat-modern-composer {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px 48px;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--noelle-chat-line);
+  border-radius: 22px;
+  background: rgba(6, 7, 13, 0.88);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.24);
+}
+
+.noelle-chat-modern-panel #coreChatInput {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  height: 48px;
+  max-height: 132px !important;
+  resize: none !important;
+  overflow-y: auto !important;
+  display: block !important;
+  padding: 13px 16px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  outline: none !important;
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--noelle-chat-text) !important;
+  font: inherit !important;
+  line-height: 1.35 !important;
+}
+
+.noelle-chat-modern-panel #coreChatInput:focus {
+  border-color: rgba(164, 60, 255, 0.78) !important;
+  box-shadow: 0 0 0 3px rgba(164,60,255,0.16) !important;
+}
+
+.noelle-chat-modern-panel #coreChatInput::placeholder {
+  color: rgba(255, 232, 246, 0.45) !important;
+}
+
+.noelle-chat-modern-panel #coreSendBtn,
+.noelle-chat-modern-panel #coreMicBtn {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.noelle-chat-modern-panel #coreSendBtn::before {
+  content: "➤";
+  font-size: 20px;
+  transform: translateX(1px);
+}
+
+.noelle-chat-modern-panel #coreMicBtn::before {
+  content: "🎙";
+  font-size: 18px;
+}
+
+.noelle-chat-modern-panel #coreSendBtn {
+  border: 1px solid rgba(255, 61, 127, 0.72) !important;
+  background: linear-gradient(135deg, var(--noelle-chat-accent), var(--noelle-chat-accent-2)) !important;
+  color: white !important;
+  box-shadow: 0 8px 22px rgba(164,60,255,0.26) !important;
+}
+
+.noelle-chat-modern-panel #coreMicBtn {
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  background: rgba(255,255,255,0.065) !important;
+  color: white !important;
+}
+
+.noelle-chat-modern-settings {
+  min-height: 0;
+  border: 1px solid var(--noelle-chat-line);
+  border-radius: 18px;
+  background: rgba(10, 10, 18, 0.72);
+  overflow: hidden;
+}
+
+.noelle-chat-modern-settings summary {
+  min-height: 42px;
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 14px;
+  color: var(--noelle-chat-muted);
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.noelle-chat-modern-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.noelle-chat-modern-settings summary::after {
+  content: "▾";
+  float: right;
+  opacity: 0.72;
+}
+
+.noelle-chat-modern-settings[open] summary::after {
+  content: "▴";
+}
+
+.noelle-chat-modern-settings-body {
+  max-height: min(220px, 28vh);
+  overflow: auto;
+  padding: 0 12px 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.noelle-chat-modern-group {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.035);
+}
+
+.noelle-chat-modern-group-title {
+  margin: 0 0 8px;
+  color: var(--noelle-chat-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.noelle-chat-modern-control-line {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin: 7px 0;
+  color: var(--noelle-chat-muted);
+  font-size: 0.86rem;
+}
+
+.noelle-chat-modern-control-line select {
+  min-width: 0;
+  width: 100%;
+}
+
+.noelle-chat-modern-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.noelle-chat-modern-button-row button {
+  min-height: 34px !important;
+  padding: 7px 10px !important;
+  border-radius: 12px !important;
+  font-size: 0.84rem !important;
+}
+
+.noelle-chat-modern-hidden-original {
+  display: none !important;
+}
+
+@media (max-width: 720px) {
+  [data-tab-panel="chat"].noelle-chat-modern-panel {
+    height: calc(100vh - 150px) !important;
+    padding: 10px !important;
+    border-radius: 20px !important;
+  }
+
+  .noelle-chat-modern-status {
+    display: none;
+  }
+
+  .noelle-chat-modern-composer {
+    grid-template-columns: minmax(0, 1fr) 44px 44px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .noelle-chat-modern-panel #coreSendBtn,
+  .noelle-chat-modern-panel #coreMicBtn {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+  }
+}
