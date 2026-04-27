@@ -991,3 +991,14 @@ Objetos de cenário como mesa e piano usam:
 iPhone usa:
 - left_hand;
 - behavior: playMotion 005_smartphone.
+
+
+## V18.2 Room ultra robusta
+
+Correções importantes:
+- TransformControls deve ser adicionado pelo getHelper() quando disponível.
+- src/assets/* dentro de src/room.html deve virar ./assets/*, não ../assets/*.
+- SkeletonUtils.clone reutiliza geometria/material por referência; a Room clona recursos por item para poder remover sem quebrar o cache.
+- A escala salva no room_layout.json é userScale, não escala final normalizada, evitando dobrar o tamanho ao recarregar.
+- Room usa Box3/BoxHelper para seleção e colisão simples.
+- Layout salvo é sanitizado no main.js e escrito via arquivo temporário + rename.

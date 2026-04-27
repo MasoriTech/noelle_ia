@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - V17.7 Items Robustos
+title Noelle IA - V18.2 Room Ultra Robusta
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,13 +9,14 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - V17.7 ITEMS ROBUSTOS
+echo  NOELLE IA - V18.2 ROOM ULTRA ROBUSTA
 echo ============================================================
 echo.
-echo [1] Aplicar reforco robusto de items e iniciar Noelle
-echo [2] Aplicar reforco robusto sem iniciar
-echo [3] Diagnostico robusto de items
-echo [4] Limpar outros .bat da raiz para backup
+echo [1] Aplicar Room ultra robusta e iniciar Noelle
+echo [2] Aplicar Room ultra robusta sem iniciar
+echo [3] Diagnostico Room ultra
+echo [4] Rebuild Room bundle
+echo [5] Limpar outros .bat da raiz para backup
 echo [0] Sair
 echo.
 set /p "OP=Escolha: "
@@ -23,7 +24,8 @@ set /p "OP=Escolha: "
 if "%OP%"=="1" goto APPLY_START
 if "%OP%"=="2" goto APPLY_ONLY
 if "%OP%"=="3" goto DIAG
-if "%OP%"=="4" goto CLEAN_BATS
+if "%OP%"=="4" goto BUILD_ROOM
+if "%OP%"=="5" goto CLEAN_BATS
 if "%OP%"=="0" exit /b 0
 goto MENU
 
@@ -37,30 +39,7 @@ if errorlevel 1 (
 for /f "tokens=* delims=" %%A in ('node -v 2^>nul') do echo [OK] Node %%A
 exit /b 0
 
-:APPLY_START
-call :CHECK_NODE
-if errorlevel 1 goto MENU
-
-echo.
-echo [1/4] Aplicando V17.7...
-node scripts\harden_item_logic_v17_7.cjs --apply
-if errorlevel 1 (
-  echo.
-  echo [ERRO] Reforco falhou com codigo %errorlevel%.
-  pause
-  goto MENU
-)
-
-echo.
-echo [2/4] Rodando diagnostico...
-node scripts\diagnostico_items_robustos_v17_7.cjs
-if errorlevel 1 (
-  echo.
-  echo [AVISO] Diagnostico encontrou problemas. Veja acima.
-)
-
-echo.
-echo [3/4] Verificando Electron local...
+:ENSURE_DEPS
 if exist "node_modules\.bin\electron.cmd" (
   echo [OK] Electron local encontrado.
 ) else (
@@ -68,19 +47,57 @@ if exist "node_modules\.bin\electron.cmd" (
   if errorlevel 1 (
     echo [ERRO] Electron local nao encontrado e npm nao esta no PATH.
     pause
-    goto MENU
+    exit /b 1
   )
   echo [INFO] Instalando dependencias npm porque Electron local nao foi encontrado...
   call npm install
   if errorlevel 1 (
     echo [ERRO] npm install falhou com codigo %errorlevel%.
     pause
-    goto MENU
+    exit /b 1
   )
+)
+exit /b 0
+
+:APPLY_START
+call :CHECK_NODE
+if errorlevel 1 goto MENU
+
+echo.
+echo [1/5] Aplicando Room ultra robusta...
+node scripts\harden_room_v18_2.cjs --apply
+if errorlevel 1 (
+  echo.
+  echo [ERRO] Room ultra robusta falhou com codigo %errorlevel%.
+  pause
+  goto MENU
 )
 
 echo.
-echo [4/4] Iniciando Noelle...
+echo [2/5] Verificando dependencias...
+call :ENSURE_DEPS
+if errorlevel 1 goto MENU
+
+echo.
+echo [3/5] Gerando bundle da Room...
+node scripts\build_room_v18_2.cjs
+if errorlevel 1 (
+  echo.
+  echo [ERRO] Build da Room falhou com codigo %errorlevel%.
+  pause
+  goto MENU
+)
+
+echo.
+echo [4/5] Diagnostico...
+node scripts\diagnostico_room_v18_2.cjs
+if errorlevel 1 (
+  echo.
+  echo [AVISO] Diagnostico encontrou problemas. Veja acima.
+)
+
+echo.
+echo [5/5] Iniciando Noelle...
 call "node_modules\.bin\electron.cmd" .
 if errorlevel 1 (
   echo [ERRO] Electron saiu com codigo %errorlevel%.
@@ -92,11 +109,11 @@ goto MENU
 call :CHECK_NODE
 if errorlevel 1 goto MENU
 
-node scripts\harden_item_logic_v17_7.cjs --apply
+node scripts\harden_room_v18_2.cjs --apply
 if errorlevel 1 (
-  echo [ERRO] Reforco falhou com codigo %errorlevel%.
+  echo [ERRO] Room ultra robusta falhou com codigo %errorlevel%.
 ) else (
-  echo [OK] Reforco aplicado.
+  echo [OK] Room ultra robusta aplicada.
 )
 pause
 goto MENU
@@ -104,15 +121,29 @@ goto MENU
 :DIAG
 call :CHECK_NODE
 if errorlevel 1 goto MENU
+node scripts\diagnostico_room_v18_2.cjs
+pause
+goto MENU
 
-node scripts\diagnostico_items_robustos_v17_7.cjs
+:BUILD_ROOM
+call :CHECK_NODE
+if errorlevel 1 goto MENU
+call :ENSURE_DEPS
+if errorlevel 1 goto MENU
+
+node scripts\build_room_v18_2.cjs
+if errorlevel 1 (
+  echo [ERRO] Build da Room falhou com codigo %errorlevel%.
+) else (
+  echo [OK] Bundle da Room gerado.
+)
 pause
 goto MENU
 
 :CLEAN_BATS
 set "STAMP=%DATE:/=-%_%TIME::=-%"
 set "STAMP=%STAMP: =0%"
-set "DEST=backups\bats_v17_7_%STAMP%"
+set "DEST=backups\bats_v18_2_room_%STAMP%"
 if not exist "backups" mkdir "backups" >nul 2>nul
 if not exist "%DEST%" mkdir "%DEST%" >nul 2>nul
 

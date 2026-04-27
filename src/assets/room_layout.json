@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "roomId": "default_room",
+  "grid": {
+    "size": 0.25,
+    "enabled": true
+  },
+  "items": [
+    {
+      "uid": "office_desk_mohtstom_xpddt",
+      "itemId": "office_desk",
+      "position": [
+        -0.25,
+        0,
+        0
+      ],
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "locked": false
+    }
+  ]
+}

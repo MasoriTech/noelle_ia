@@ -424,3 +424,36 @@ async function boot() {
 }
 
 document.addEventListener("DOMContentLoaded", boot);
+
+
+(function ensureNoelleRoomFloatingButton() {
+  function mount() {
+    if (document.getElementById("noelle-room-floating-button")) return;
+    const button = document.createElement("button");
+    button.id = "noelle-room-floating-button";
+    button.textContent = "🏠 Room";
+    button.title = "Abrir Noelle Room";
+    button.style.position = "fixed";
+    button.style.right = "18px";
+    button.style.bottom = "88px";
+    button.style.zIndex = "9999";
+    button.style.border = "1px solid rgba(255,88,148,.45)";
+    button.style.borderRadius = "999px";
+    button.style.padding = "12px 16px";
+    button.style.fontWeight = "800";
+    button.style.color = "#fff";
+    button.style.background = "linear-gradient(135deg,#ff477e,#8b5cf6)";
+    button.style.boxShadow = "0 12px 40px rgba(0,0,0,.28)";
+    button.addEventListener("click", async () => {
+      try {
+        if (window.noelleRoom?.open) await window.noelleRoom.open();
+        else console.warn("API da Room não encontrada.");
+      } catch (err) {
+        console.error("Falha ao abrir Room", err);
+      }
+    });
+    document.body.appendChild(button);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
+})();

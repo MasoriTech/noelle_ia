@@ -54,3 +54,12 @@ contextBridge.exposeInMainWorld("desktopWidget", {
   openExternal: noelleAPI.openExternal,
   onAvatarCommand: noelleAPI.onAvatarCommand
 });
+
+
+contextBridge.exposeInMainWorld("noelleRoom", {
+  open: () => ipcRenderer.invoke("room:open"),
+  close: () => ipcRenderer.invoke("room:close"),
+  listCatalog: () => ipcRenderer.invoke("room:catalog"),
+  loadLayout: () => ipcRenderer.invoke("room:load-layout"),
+  saveLayout: (layout) => ipcRenderer.invoke("room:save-layout", layout)
+});

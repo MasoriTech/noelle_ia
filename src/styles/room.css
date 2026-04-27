@@ -1,0 +1,88 @@
+:root {
+  --bg: #080711;
+  --panel: rgba(18, 17, 30, 0.92);
+  --panel2: rgba(34, 25, 43, 0.86);
+  --border: rgba(255, 88, 148, 0.28);
+  --text: #f5ecff;
+  --muted: #b9adc6;
+  --accent: #ff477e;
+  --accent2: #a855f7;
+  --danger: #ff5b6e;
+  --ok: #2ef5a8;
+  --warn: #ffd166;
+}
+* { box-sizing: border-box; }
+html, body, #roomApp { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+body {
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  background: radial-gradient(circle at 20% 10%, rgba(168,85,247,0.22), transparent 32%), var(--bg);
+  color: var(--text);
+}
+.room-app { display: grid; grid-template-rows: 64px 1fr; height: 100%; }
+.room-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  background: rgba(12, 9, 20, 0.94);
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-dot {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 24px rgba(255, 71, 126, 0.25);
+}
+.brand small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.toolbar, .actions-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.room-main { display: grid; grid-template-columns: 292px 1fr 280px; min-height: 0; }
+.room-sidebar, .room-inspector { padding: 12px; overflow: auto; background: rgba(6, 5, 12, 0.42); }
+.panel {
+  border: 1px solid var(--border); background: var(--panel);
+  border-radius: 18px; padding: 12px; margin-bottom: 12px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+}
+.panel h2 { font-size: 16px; margin: 0 0 10px; }
+button, .input, input {
+  color: var(--text); background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.13); border-radius: 13px;
+  padding: 10px 12px; outline: none;
+}
+button { cursor: pointer; font-weight: 700; }
+button:hover { border-color: rgba(255, 71, 126, 0.55); }
+button.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); border-color: rgba(255,255,255,0.16); }
+button.active { outline: 2px solid rgba(46,245,168,.55); }
+button.danger { border-color: rgba(255, 91, 110, 0.4); color: #ffdbe0; }
+.input { width: 100%; margin-bottom: 10px; }
+.catalog-list, .layout-list { display: grid; gap: 8px; }
+.catalog-item, .layout-item {
+  padding: 10px; border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: var(--panel2);
+}
+.catalog-item strong, .layout-item strong { display: block; font-size: 14px; }
+.catalog-item small, .layout-item small { display: block; color: var(--muted); word-break: break-word; margin: 4px 0 8px; }
+.viewport-wrap { position: relative; min-width: 0; min-height: 0; background: #080912; }
+#roomCanvas { width: 100%; height: 100%; display: block; }
+.room-help, .status-pill {
+  position: absolute; padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(8,7,17,0.76); backdrop-filter: blur(10px);
+  border-radius: 14px; color: var(--muted); font-size: 12px;
+}
+.room-help { left: 14px; bottom: 14px; max-width: 820px; }
+.status-pill { left: 14px; top: 14px; color: var(--ok); }
+.toast {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  padding: 10px 14px; border-radius: 999px;
+  background: rgba(18, 17, 30, 0.88); border: 1px solid var(--border);
+  opacity: 0; transition: opacity .18s ease; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.selected-info, .validation-box { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.validation-box.ok { color: var(--ok); }
+.validation-box.warn { color: var(--warn); }
+.validation-box.error { color: var(--danger); }
+.room-inspector label { display: grid; gap: 6px; margin-bottom: 10px; color: var(--muted); font-size: 12px; }
+.room-inspector input { width: 100%; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px; margin: 2px 4px 2px 0;
+  border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 4px 8px; color: var(--muted);
+}

@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "grand_piano",
+      "label": "Grand Piano",
+      "file": "items/grand_piano.glb",
+      "kind": "room_item",
+      "category": "scene_prop",
+      "placement": {
+        "surface": "floor",
+        "snap": true,
+        "rotateStepDeg": 15,
+        "canCollide": true,
+        "targetSize": 1.35
+      }
+    },
+    {
+      "id": "office_desk",
+      "label": "Office Desk",
+      "file": "items/office_desk.glb",
+      "kind": "room_item",
+      "category": "scene_prop",
+      "placement": {
+        "surface": "floor",
+        "snap": true,
+        "rotateStepDeg": 15,
+        "canCollide": true,
+        "targetSize": 1
+      }
+    },
+    {
+      "id": "tablet",
+      "label": "Tablet",
+      "file": "items/tablet.glb",
+      "kind": "room_item",
+      "category": "hand",
+      "placement": {
+        "surface": "floor",
+        "snap": true,
+        "rotateStepDeg": 15,
+        "canCollide": true,
+        "targetSize": 1
+      }
+    }
+  ]
+}

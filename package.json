@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "17.4.1",
+  "version": "18.2.0-room-ultra",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -11,7 +11,9 @@
     "diagnostico": "node scripts/diagnostico_v17_4_1_main.cjs",
     "doctor": "node scripts/diagnostico_v17_4_tray.cjs",
     "check": "node --check main.js && node --check preload.js && node --check src/renderer/controls_window_app.js && node --check src/renderer/avatar_window_app.js",
-    "dist:win": "electron-builder --win nsis portable"
+    "dist:win": "electron-builder --win nsis portable",
+    "build-room": "node scripts/build_room_v18_2.cjs",
+    "diagnostico-room": "node scripts/diagnostico_room_v18_2.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",
