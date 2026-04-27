@@ -930,3 +930,64 @@ assets/motions/003_humidai.vrma
 ```
 
 O mesmo vale para items e thumbnails.
+
+
+## Nota V17.5 — Manifest com prefixo de pasta
+
+Os manifests podem listar arquivos assim:
+
+```json
+{ "file": "motions/003_humidai.vrma" }
+{ "file": "items/basketball.glb" }
+```
+
+Os loaders NÃO podem montar caminho duplicado:
+
+```txt
+assets/motions/motions/003_humidai.vrma
+assets/items/items/basketball.glb
+```
+
+O loader correto deve aceitar ambos:
+
+```txt
+003_humidai.vrma
+motions/003_humidai.vrma
+assets/motions/003_humidai.vrma
+```
+
+e resolver para:
+
+```txt
+assets/motions/003_humidai.vrma
+```
+
+O mesmo vale para items e thumbnails.
+
+
+## V17.7 — items robustos
+
+A lógica de items deve usar:
+- SkeletonUtils.clone para GLB com SkinnedMesh/bones;
+- wrapper Group para cada item;
+- normalização de pivot;
+- alinhamento de base no chão para scene props;
+- targetSize por slot;
+- item_slots.js para slots;
+- item_behaviors.js para ações especiais;
+- items.js como motor genérico.
+
+Objetos de cenário como mesa e piano usam:
+- slot front_floor;
+- Y = 0;
+- Z negativo;
+- ground: true;
+- bottom aligned pela bounding box.
+
+Água usa:
+- right_hand;
+- behavior: playMotion 006_drinkwater.
+
+iPhone usa:
+- left_hand;
+- behavior: playMotion 005_smartphone.

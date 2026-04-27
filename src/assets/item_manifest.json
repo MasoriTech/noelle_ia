@@ -14,7 +14,21 @@
       "hand_right",
       "back_mount"
     ],
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "chest",
+    "supportedSlots": [
+      "two_hand_guitar",
+      "hand_right",
+      "back_mount",
+      "chest",
+      "two_hands"
+    ],
+    "behavior": {
+      "onEquip": {
+        "expression": "happy"
+      }
+    },
+    "transform": {}
   },
   {
     "id": "agua",
@@ -23,10 +37,84 @@
     "slot": "right_hand",
     "default_interaction": "auto",
     "notes": "Item extra para a Yoru segurar na mão.",
-    "category": "hand",
+    "category": "hand_prop",
     "thumbnail": "thumbnails/agua.png",
     "target_size": 0.19,
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "right_hand",
+    "supportedSlots": [
+      "right_hand",
+      "left_hand",
+      "mouth_near",
+      "front_table"
+    ],
+    "recommendedMotion": "006_drinkwater",
+    "behavior": {
+      "onEquip": {
+        "playMotion": "006_drinkwater",
+        "expression": "happy",
+        "delayMs": 180
+      }
+    },
+    "transform": {
+      "right_hand": {
+        "bone": "rightHand",
+        "position": [
+          0.018,
+          -0.025,
+          0.035
+        ],
+        "rotationDeg": [
+          80,
+          5,
+          12
+        ],
+        "targetSize": 0.16
+      },
+      "left_hand": {
+        "bone": "leftHand",
+        "position": [
+          -0.018,
+          -0.025,
+          0.035
+        ],
+        "rotationDeg": [
+          80,
+          -5,
+          -12
+        ],
+        "targetSize": 0.16
+      },
+      "mouth_near": {
+        "bone": "head",
+        "position": [
+          0.05,
+          -0.075,
+          0.16
+        ],
+        "rotationDeg": [
+          80,
+          0,
+          8
+        ],
+        "targetSize": 0.16
+      },
+      "front_table": {
+        "bone": null,
+        "position": [
+          0.18,
+          0.76,
+          -1.04
+        ],
+        "rotationDeg": [
+          0,
+          180,
+          0
+        ],
+        "targetSize": 0.18,
+        "ground": true
+      }
+    }
   },
   {
     "id": "basketball",
@@ -43,7 +131,23 @@
       "hand_left",
       "two_hand_ball"
     ],
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "two_hands",
+    "supportedSlots": [
+      "hand_right",
+      "hand_left",
+      "two_hand_ball",
+      "right_hand",
+      "left_hand",
+      "two_hands",
+      "front_floor"
+    ],
+    "behavior": {
+      "onEquip": {
+        "expression": "happy"
+      }
+    },
+    "transform": {}
   },
   {
     "id": "cafe",
@@ -52,10 +156,22 @@
     "slot": "right_hand",
     "default_interaction": "hand_right",
     "notes": "Caneca/copo de café para cenas casuais e de mesa.",
-    "category": "hand",
+    "category": "hand_prop",
     "target_size": 0.16,
     "thumbnail": "thumbnails/cafe.png",
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "right_hand",
+    "supportedSlots": [
+      "right_hand",
+      "left_hand",
+      "front_table"
+    ],
+    "behavior": {
+      "onEquip": {
+        "expression": "happy"
+      }
+    },
+    "transform": {}
   },
   {
     "id": "dado_de_20_lados",
@@ -67,7 +183,15 @@
     "category": "hand",
     "thumbnail": "thumbnails/d20.png",
     "target_size": 0.08,
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "front_table",
+    "supportedSlots": [
+      "front_table",
+      "right_hand",
+      "left_hand",
+      "front_floor"
+    ],
+    "transform": {}
   },
   {
     "id": "dado_obj",
@@ -79,7 +203,15 @@
     "category": "hand",
     "thumbnail": "thumbnails/dice.png",
     "target_size": 0.07,
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "front_table",
+    "supportedSlots": [
+      "front_table",
+      "right_hand",
+      "left_hand",
+      "front_floor"
+    ],
+    "transform": {}
   },
   {
     "id": "grand_piano",
@@ -88,11 +220,67 @@
     "slot": "scene_front",
     "default_interaction": "scene_front",
     "notes": "Piano de cauda para compor o cenário editável.",
-    "category": "scene",
+    "category": "scene_prop",
     "target_size": 1.38,
     "spawn_preset": "piano_left_stage",
     "thumbnail": "thumbnails/grand_piano.png",
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "front_floor",
+    "supportedSlots": [
+      "front_floor",
+      "scene_left",
+      "scene_right"
+    ],
+    "behavior": {
+      "type": "scene"
+    },
+    "transform": {
+      "front_floor": {
+        "bone": null,
+        "position": [
+          0.35,
+          0,
+          -1.45
+        ],
+        "rotationDeg": [
+          0,
+          180,
+          0
+        ],
+        "targetSize": 1.35,
+        "ground": true
+      },
+      "scene_left": {
+        "bone": null,
+        "position": [
+          -0.55,
+          0,
+          -1.45
+        ],
+        "rotationDeg": [
+          0,
+          160,
+          0
+        ],
+        "targetSize": 1.35,
+        "ground": true
+      },
+      "scene_right": {
+        "bone": null,
+        "position": [
+          0.55,
+          0,
+          -1.45
+        ],
+        "rotationDeg": [
+          0,
+          200,
+          0
+        ],
+        "targetSize": 1.35,
+        "ground": true
+      }
+    }
   },
   {
     "id": "iphone_14_pro",
@@ -104,7 +292,21 @@
     "category": "hand",
     "thumbnail": "thumbnails/iphone_14_pro.png",
     "target_size": 0.16,
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "left_hand",
+    "supportedSlots": [
+      "left_hand",
+      "right_hand",
+      "front_table"
+    ],
+    "recommendedMotion": "005_smartphone",
+    "behavior": {
+      "onEquip": {
+        "playMotion": "005_smartphone",
+        "delayMs": 120
+      }
+    },
+    "transform": {}
   },
   {
     "id": "kendo_shinai_blade",
@@ -123,7 +325,18 @@
       "two_hand_blade"
     ],
     "thumbnail": "thumbnails/kendo_shinai_blade.png",
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "back_mount",
+    "supportedSlots": [
+      "back_sheath",
+      "hand_right",
+      "hand_left",
+      "two_hand_blade",
+      "back_mount",
+      "right_hand",
+      "left_hand"
+    ],
+    "transform": {}
   },
   {
     "id": "microfone",
@@ -135,7 +348,19 @@
     "category": "hand",
     "target_size": 0.24,
     "thumbnail": "thumbnails/microfone.png",
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "mouth_near",
+    "supportedSlots": [
+      "mouth_near",
+      "right_hand",
+      "left_hand"
+    ],
+    "behavior": {
+      "onEquip": {
+        "expression": "happy"
+      }
+    },
+    "transform": {}
   },
   {
     "id": "office_desk",
@@ -144,10 +369,34 @@
     "slot": "scene_front",
     "default_interaction": "desk_sit",
     "notes": "Mesa de escritório com cadeira simples procedural para compor a cena em frente da Yoru.",
-    "category": "scene",
+    "category": "scene_prop",
     "thumbnail": "thumbnails/office_desk.png",
     "target_size": 1.45,
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "front_floor",
+    "supportedSlots": [
+      "front_floor"
+    ],
+    "behavior": {
+      "type": "scene"
+    },
+    "transform": {
+      "front_floor": {
+        "bone": null,
+        "position": [
+          0,
+          0,
+          -1.15
+        ],
+        "rotationDeg": [
+          0,
+          180,
+          0
+        ],
+        "targetSize": 1.35,
+        "ground": true
+      }
+    }
   },
   {
     "id": "tablet",
@@ -159,6 +408,13 @@
     "category": "hand",
     "target_size": 0.26,
     "thumbnail": "thumbnails/tablet.png",
-    "kind": "item"
+    "kind": "item",
+    "defaultSlot": "left_hand",
+    "supportedSlots": [
+      "left_hand",
+      "right_hand",
+      "front_table"
+    ],
+    "transform": {}
   }
 ]

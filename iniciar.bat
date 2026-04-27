@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - V17.5 Corrige Emotes e Items
+title Noelle IA - V17.7 Items Robustos
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,12 +9,12 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - V17.5 MAPEAMENTO EMOTES / ITEMS
+echo  NOELLE IA - V17.7 ITEMS ROBUSTOS
 echo ============================================================
 echo.
-echo [1] Aplicar correcao e iniciar Noelle
-echo [2] Aplicar correcao sem iniciar
-echo [3] Diagnostico emotes/items
+echo [1] Aplicar reforco robusto de items e iniciar Noelle
+echo [2] Aplicar reforco robusto sem iniciar
+echo [3] Diagnostico robusto de items
 echo [4] Limpar outros .bat da raiz para backup
 echo [0] Sair
 echo.
@@ -42,18 +42,18 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 
 echo.
-echo [1/4] Aplicando correcao V17.5...
-node scripts\fix_mapping_emotes_items_v17_5.cjs --apply
+echo [1/4] Aplicando V17.7...
+node scripts\harden_item_logic_v17_7.cjs --apply
 if errorlevel 1 (
   echo.
-  echo [ERRO] Correcao falhou com codigo %errorlevel%.
+  echo [ERRO] Reforco falhou com codigo %errorlevel%.
   pause
   goto MENU
 )
 
 echo.
 echo [2/4] Rodando diagnostico...
-node scripts\diagnostico_emotes_items_v17_5.cjs
+node scripts\diagnostico_items_robustos_v17_7.cjs
 if errorlevel 1 (
   echo.
   echo [AVISO] Diagnostico encontrou problemas. Veja acima.
@@ -92,11 +92,11 @@ goto MENU
 call :CHECK_NODE
 if errorlevel 1 goto MENU
 
-node scripts\fix_mapping_emotes_items_v17_5.cjs --apply
+node scripts\harden_item_logic_v17_7.cjs --apply
 if errorlevel 1 (
-  echo [ERRO] Correcao falhou com codigo %errorlevel%.
+  echo [ERRO] Reforco falhou com codigo %errorlevel%.
 ) else (
-  echo [OK] Correcao aplicada.
+  echo [OK] Reforco aplicado.
 )
 pause
 goto MENU
@@ -105,14 +105,14 @@ goto MENU
 call :CHECK_NODE
 if errorlevel 1 goto MENU
 
-node scripts\diagnostico_emotes_items_v17_5.cjs
+node scripts\diagnostico_items_robustos_v17_7.cjs
 pause
 goto MENU
 
 :CLEAN_BATS
 set "STAMP=%DATE:/=-%_%TIME::=-%"
 set "STAMP=%STAMP: =0%"
-set "DEST=backups\bats_v17_5_%STAMP%"
+set "DEST=backups\bats_v17_7_%STAMP%"
 if not exist "backups" mkdir "backups" >nul 2>nul
 if not exist "%DEST%" mkdir "%DEST%" >nul 2>nul
 

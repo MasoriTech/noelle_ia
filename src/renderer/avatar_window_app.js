@@ -690,7 +690,7 @@ async function main() {
     handleAvatarCommand(loader, payload).catch((err) => showError(err?.stack || err));
   });
 
-  window.desktopWidget?.onWindowState?.((_payload) => {});
+  window.desktopWidget?.onWindowState?.((_payload) => {}); window.addEventListener("noelle:item-behavior:motion", (event) => { const motionId = event?.detail?.motionId; if (motionId) playMotion(loader, motionId).catch((err) => showError(err?.stack || err)); }); window.addEventListener("noelle:item-behavior:expression", (event) => { const expressionId = event?.detail?.expressionId; if (expressionId && typeof showExpressionById === "function") showExpressionById(expressionId); });
 
   window.addEventListener("storage", () => {
     applyUiPrefsToShell();

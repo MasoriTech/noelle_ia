@@ -307,6 +307,14 @@ function resolveManifestAssetPath(baseDir, file, kind) {
   if (clean.startsWith("motions/") || clean.startsWith("expressions/") || clean.startsWith("items/") || clean.startsWith("avatars/")) return path.join(ASSETS_DIR, clean);
   return path.join(baseDir, clean);
 }
+function resolveManifestAssetPath(baseDir, file, kind) {
+  const clean = String(file || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").trim();
+  if (!clean) return baseDir;
+  if (path.isAbsolute(clean)) return clean;
+  if (clean.startsWith("assets/")) return path.join(SRC_DIR, clean);
+  if (clean.startsWith("motions/") || clean.startsWith("expressions/") || clean.startsWith("items/") || clean.startsWith("avatars/")) return path.join(ASSETS_DIR, clean);
+  return path.join(baseDir, clean);
+}
 function makeAssetEntry(entry, baseDir, fallbackKind) {
   const file = String(entry.file || entry.path || entry.name || "").trim();
   const filePath = resolveManifestAssetPath(baseDir, file, fallbackKind);

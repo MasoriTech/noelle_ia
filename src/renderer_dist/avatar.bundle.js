@@ -43390,13 +43390,13 @@ var GLTFParser = class {
   _getNodeRef(cache, index, object) {
     if (cache.refs[index] <= 1) return object;
     const ref = object.clone();
-    const updateMappings = (original, clone) => {
+    const updateMappings = (original, clone2) => {
       const mappings = this.associations.get(original);
       if (mappings != null) {
-        this.associations.set(clone, mappings);
+        this.associations.set(clone2, mappings);
       }
       for (const [i, child] of original.children.entries()) {
-        updateMappings(child, clone.children[i]);
+        updateMappings(child, clone2.children[i]);
       }
     };
     updateMappings(object, ref);
@@ -51519,27 +51519,27 @@ var ObjectIndexDispatcher = class {
 };
 function shallowCloneBufferGeometry(geometry) {
   var _a, _b, _c, _d;
-  const clone = new BufferGeometry();
-  clone.name = geometry.name;
-  clone.setIndex(geometry.index);
+  const clone2 = new BufferGeometry();
+  clone2.name = geometry.name;
+  clone2.setIndex(geometry.index);
   for (const [name, attribute] of Object.entries(geometry.attributes)) {
-    clone.setAttribute(name, attribute);
+    clone2.setAttribute(name, attribute);
   }
   for (const [key, morphAttributes] of Object.entries(geometry.morphAttributes)) {
     const attributeName = key;
-    clone.morphAttributes[attributeName] = morphAttributes.concat();
+    clone2.morphAttributes[attributeName] = morphAttributes.concat();
   }
-  clone.morphTargetsRelative = geometry.morphTargetsRelative;
-  clone.groups = [];
+  clone2.morphTargetsRelative = geometry.morphTargetsRelative;
+  clone2.groups = [];
   for (const group of geometry.groups) {
-    clone.addGroup(group.start, group.count, group.materialIndex);
+    clone2.addGroup(group.start, group.count, group.materialIndex);
   }
-  clone.boundingSphere = (_b = (_a = geometry.boundingSphere) == null ? void 0 : _a.clone()) != null ? _b : null;
-  clone.boundingBox = (_d = (_c = geometry.boundingBox) == null ? void 0 : _c.clone()) != null ? _d : null;
-  clone.drawRange.start = geometry.drawRange.start;
-  clone.drawRange.count = geometry.drawRange.count;
-  clone.userData = geometry.userData;
-  return clone;
+  clone2.boundingSphere = (_b = (_a = geometry.boundingSphere) == null ? void 0 : _a.clone()) != null ? _b : null;
+  clone2.boundingBox = (_d = (_c = geometry.boundingBox) == null ? void 0 : _c.clone()) != null ? _d : null;
+  clone2.drawRange.start = geometry.drawRange.start;
+  clone2.drawRange.count = geometry.drawRange.count;
+  clone2.userData = geometry.userData;
+  return clone2;
 }
 function disposeMaterial(material) {
   Object.values(material).forEach((value) => {
@@ -54155,150 +54155,453 @@ function describeMotion(motionId, motions) {
   return motion ? motion.label : motionId;
 }
 
-// src/renderer/items.js
-var BONE_MAP = {
-  right_hand: "rightHand",
-  left_hand: "leftHand",
-  back_mount: "chest",
-  two_hands: "chest",
-  head: "head",
-  waist: "hips"
+// node_modules/three/examples/jsm/utils/SkeletonUtils.js
+function clone(source) {
+  const sourceLookup = /* @__PURE__ */ new Map();
+  const cloneLookup = /* @__PURE__ */ new Map();
+  const clone2 = source.clone();
+  parallelTraverse(source, clone2, function(sourceNode, clonedNode) {
+    sourceLookup.set(clonedNode, sourceNode);
+    cloneLookup.set(sourceNode, clonedNode);
+  });
+  clone2.traverse(function(node) {
+    if (!node.isSkinnedMesh) return;
+    const clonedMesh = node;
+    const sourceMesh = sourceLookup.get(node);
+    const sourceBones = sourceMesh.skeleton.bones;
+    clonedMesh.skeleton = sourceMesh.skeleton.clone();
+    clonedMesh.bindMatrix.copy(sourceMesh.bindMatrix);
+    clonedMesh.skeleton.bones = sourceBones.map(function(bone) {
+      return cloneLookup.get(bone);
+    });
+    clonedMesh.bind(clonedMesh.skeleton, clonedMesh.bindMatrix);
+  });
+  return clone2;
+}
+function parallelTraverse(a, b, callback) {
+  callback(a, b);
+  for (let i = 0; i < a.children.length; i++) {
+    parallelTraverse(a.children[i], b.children[i], callback);
+  }
+}
+
+// src/renderer/item_slots.js
+var SCENE_FLOOR_Y = 0;
+var AVATAR_FRONT_Z = -1.18;
+var ITEM_SLOT_ALIASES = {
+  hand_right: "right_hand",
+  rightHand: "right_hand",
+  right_hand_bone: "right_hand",
+  hand_left: "left_hand",
+  leftHand: "left_hand",
+  left_hand_bone: "left_hand",
+  back: "back_mount",
+  back_sheath: "back_mount",
+  back_mount: "back_mount",
+  two_hand: "two_hands",
+  two_handed: "two_hands",
+  two_hand_ball: "two_hands",
+  two_hand_guitar: "two_hands",
+  mouth: "mouth_near",
+  microphone: "mouth_near",
+  mic: "mouth_near",
+  table: "front_table",
+  table_top: "front_table",
+  floor: "front_floor",
+  ground: "front_floor",
+  scene: "front_floor",
+  scene_front: "front_floor"
 };
+var ITEM_SLOTS = {
+  right_hand: {
+    label: "M\xE3o direita",
+    kind: "bone",
+    bone: "rightHand",
+    position: [0.02, -0.015, 0.03],
+    rotationDeg: [0, 0, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.18
+  },
+  left_hand: {
+    label: "M\xE3o esquerda",
+    kind: "bone",
+    bone: "leftHand",
+    position: [-0.02, -0.015, 0.03],
+    rotationDeg: [0, 0, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.18
+  },
+  mouth_near: {
+    label: "Perto da boca",
+    kind: "bone",
+    bone: "head",
+    position: [0.04, -0.08, 0.15],
+    rotationDeg: [75, 0, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.16
+  },
+  chest: {
+    label: "Frente do corpo",
+    kind: "bone",
+    bone: "chest",
+    position: [0, -0.2, -0.2],
+    rotationDeg: [10, 0, 40],
+    scale: [1, 1, 1],
+    targetSize: 0.82
+  },
+  back_mount: {
+    label: "Costas",
+    kind: "bone",
+    bone: "chest",
+    position: [-0.12, -0.1, -0.22],
+    rotationDeg: [0, 35, 78],
+    scale: [1, 1, 1],
+    targetSize: 0.86
+  },
+  two_hands: {
+    label: "Duas m\xE3os",
+    kind: "bone",
+    bone: "chest",
+    position: [0, -0.16, -0.24],
+    rotationDeg: [10, 0, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.24
+  },
+  head: {
+    label: "Cabe\xE7a",
+    kind: "bone",
+    bone: "head",
+    position: [0, 0.12, 0],
+    rotationDeg: [0, 0, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.22
+  },
+  waist: {
+    label: "Cintura",
+    kind: "bone",
+    bone: "hips",
+    position: [0.1, -0.04, -0.08],
+    rotationDeg: [0, 0, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.22
+  },
+  front_floor: {
+    label: "Ch\xE3o na frente",
+    kind: "scene",
+    bone: null,
+    position: [0, SCENE_FLOOR_Y, AVATAR_FRONT_Z],
+    rotationDeg: [0, 180, 0],
+    scale: [1, 1, 1],
+    targetSize: 1.2,
+    ground: true
+  },
+  front_table: {
+    label: "Em cima da mesa",
+    kind: "scene",
+    bone: null,
+    position: [0, 0.74, -1.05],
+    rotationDeg: [0, 180, 0],
+    scale: [1, 1, 1],
+    targetSize: 0.24,
+    ground: true
+  },
+  scene_left: {
+    label: "Cen\xE1rio \xE0 esquerda",
+    kind: "scene",
+    bone: null,
+    position: [-0.65, SCENE_FLOOR_Y, -1.35],
+    rotationDeg: [0, 160, 0],
+    scale: [1, 1, 1],
+    targetSize: 1.2,
+    ground: true
+  },
+  scene_right: {
+    label: "Cen\xE1rio \xE0 direita",
+    kind: "scene",
+    bone: null,
+    position: [0.65, SCENE_FLOOR_Y, -1.35],
+    rotationDeg: [0, 200, 0],
+    scale: [1, 1, 1],
+    targetSize: 1.2,
+    ground: true
+  }
+};
+function normalizeItemSlot(slot, fallback = "right_hand") {
+  const raw = String(slot || fallback || "right_hand").trim();
+  const mapped = ITEM_SLOT_ALIASES[raw] || raw;
+  if (ITEM_SLOTS[mapped]) return mapped;
+  if (fallback && ITEM_SLOTS[fallback]) return fallback;
+  return "right_hand";
+}
+function isSceneSlot(slot) {
+  return ITEM_SLOTS[normalizeItemSlot(slot)]?.kind === "scene";
+}
+function getSlotDefinition(slot) {
+  const id = normalizeItemSlot(slot);
+  return { id, ...ITEM_SLOTS[id] };
+}
+function slotLabel(slot) {
+  return getSlotDefinition(slot).label || slot;
+}
+function finiteNumber(value, fallback) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+function arr3(value, fallback) {
+  if (!Array.isArray(value)) return [...fallback];
+  return [
+    finiteNumber(value[0], fallback[0]),
+    finiteNumber(value[1], fallback[1]),
+    finiteNumber(value[2], fallback[2])
+  ];
+}
+function degToRad2(value) {
+  return finiteNumber(value, 0) * Math.PI / 180;
+}
+function rotationToRadians(config = {}) {
+  if (Array.isArray(config.rotationRad)) return arr3(config.rotationRad, [0, 0, 0]);
+  if (Array.isArray(config.rotationDeg)) return arr3(config.rotationDeg, [0, 0, 0]).map(degToRad2);
+  if (Array.isArray(config.rotation)) {
+    const values = arr3(config.rotation, [0, 0, 0]);
+    const looksLikeDegrees = values.some((v) => Math.abs(v) > Math.PI * 2 + 1e-3);
+    return looksLikeDegrees || config.rotationUnit === "deg" ? values.map(degToRad2) : values;
+  }
+  return [0, 0, 0];
+}
+function clampScale(value) {
+  const n = finiteNumber(value, 1);
+  return Math.min(100, Math.max(1e-3, n));
+}
+function safeScale(value, fallback = [1, 1, 1]) {
+  return arr3(value, fallback).map(clampScale);
+}
+function getItemSlotTransform(item = {}, slot = null) {
+  const selectedSlot = normalizeItemSlot(slot || item.defaultSlot || item.slot || item.default_interaction || "right_hand");
+  const base = getSlotDefinition(selectedSlot);
+  const transforms = item.transform || item.transforms || {};
+  const override = transforms[selectedSlot] || transforms[ITEM_SLOT_ALIASES[selectedSlot]] || {};
+  const bone = override.bone !== void 0 ? override.bone : base.bone;
+  const kind = override.kind || base.kind;
+  const rotation = rotationToRadians({
+    rotation: override.rotation ?? base.rotation,
+    rotationDeg: override.rotationDeg ?? base.rotationDeg,
+    rotationRad: override.rotationRad ?? base.rotationRad,
+    rotationUnit: override.rotationUnit
+  });
+  return {
+    slot: selectedSlot,
+    label: base.label,
+    kind: bone === null || kind === "scene" ? "scene" : "bone",
+    bone: bone === void 0 ? base.bone : bone,
+    position: arr3(override.position, base.position || [0, 0, 0]),
+    rotation,
+    scale: safeScale(override.scale, base.scale || [1, 1, 1]),
+    targetSize: finiteNumber(override.targetSize ?? override.target_size ?? item.targetSize ?? item.target_size ?? base.targetSize, base.targetSize || 0.18),
+    ground: Boolean(override.ground ?? base.ground ?? kind === "scene")
+  };
+}
+function slotCandidateOrder(item = {}) {
+  const raw = [
+    item.defaultSlot,
+    item.slot,
+    item.default_interaction,
+    ...Array.isArray(item.supportedSlots) ? item.supportedSlots : [],
+    ...Array.isArray(item.supported_slots) ? item.supported_slots : [],
+    ...Array.isArray(item.supported_modes) ? item.supported_modes : []
+  ];
+  const list = raw.map((slot) => normalizeItemSlot(slot, "")).filter(Boolean);
+  if (item.category === "scene" || item.category === "scene_prop") list.push("front_floor", "scene_left", "scene_right");
+  else list.push("right_hand", "left_hand", "front_table");
+  return [...new Set(list.map((slot) => normalizeItemSlot(slot)))];
+}
+function validateItemTransform(item = {}) {
+  const errors = [];
+  const slots = slotCandidateOrder(item);
+  for (const slot of slots) {
+    const transform = getItemSlotTransform(item, slot);
+    if (!Array.isArray(transform.position) || transform.position.length !== 3) errors.push(`${item.id}:${slot}: position inv\xE1lida`);
+    if (!Array.isArray(transform.rotation) || transform.rotation.length !== 3) errors.push(`${item.id}:${slot}: rotation inv\xE1lida`);
+    if (!Array.isArray(transform.scale) || transform.scale.length !== 3) errors.push(`${item.id}:${slot}: scale inv\xE1lida`);
+    if (transform.kind === "scene" && transform.position[1] < -1e-3) errors.push(`${item.id}:${slot}: scene abaixo do ch\xE3o`);
+  }
+  return errors;
+}
+
+// src/renderer/item_behaviors.js
+var FALLBACK_BEHAVIORS = {
+  agua: { onEquip: { playMotion: "006_drinkwater", expression: "happy", delayMs: 180 } },
+  cafe: { onEquip: { expression: "happy" } },
+  iphone_14_pro: { onEquip: { playMotion: "005_smartphone", delayMs: 120 } },
+  microfone: { onEquip: { expression: "happy" } },
+  acoustic_guitar_black: { onEquip: { expression: "happy" } },
+  basketball: { onEquip: { expression: "happy" } }
+};
+function itemBehavior(item = {}) {
+  return item.behavior || FALLBACK_BEHAVIORS[item.id] || {};
+}
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms || 0))));
+}
+async function runItemBehavior(item, slot, api = {}) {
+  const behavior = itemBehavior(item);
+  const onEquip = behavior?.onEquip || {};
+  const results = [];
+  if (onEquip.expression && typeof api.showExpression === "function") {
+    try {
+      await api.showExpression(onEquip.expression);
+      results.push({ ok: true, type: "expression", value: onEquip.expression });
+    } catch (err) {
+      results.push({ ok: false, type: "expression", error: String(err?.message || err) });
+    }
+  }
+  if (onEquip.delayMs) await wait(onEquip.delayMs);
+  if (onEquip.playMotion && typeof api.playMotion === "function") {
+    try {
+      await api.playMotion(onEquip.playMotion);
+      results.push({ ok: true, type: "motion", value: onEquip.playMotion });
+    } catch (err) {
+      results.push({ ok: false, type: "motion", error: String(err?.message || err) });
+    }
+  }
+  if (typeof api.setStatus === "function") {
+    const readable = item.label || item.id || "Item";
+    if (onEquip.playMotion) api.setStatus(`${readable} equipado \xB7 motion ${onEquip.playMotion}`);
+    else api.setStatus(`${readable} equipado em ${slot}`);
+  }
+  return { ok: results.every((r) => r.ok !== false), results };
+}
+
+// src/renderer/items.js
 var HAND_SLOTS = ["right_hand", "left_hand"];
-var ALLOWED_SLOTS = ["right_hand", "left_hand", "back_mount", "two_hands", "scene_front", "head", "waist"];
-var ITEM_PRESETS = {
+var ITEM_DEFAULTS = {
   basketball: {
-    right_hand: { position: [0.045, -0.028, 0.03], rotation: [0.2, 0, 0.2], scale: [1, 1, 1] },
-    left_hand: { position: [-0.045, -0.028, 0.03], rotation: [0.2, 0, -0.2], scale: [1, 1, 1] },
-    two_hands: { position: [0, -0.1, -0.22], rotation: [0.15, 0, 0], scale: [1, 1, 1] }
-  },
-  iphone_14_pro: {
-    left_hand: { position: [-0.01, 5e-3, 0.04], rotation: [1.57, 0, 1.57], scale: [1, 1, 1] },
-    right_hand: { position: [0.01, 5e-3, 0.04], rotation: [1.57, 0, -1.57], scale: [1, 1, 1] }
-  },
-  tablet: {
-    left_hand: { position: [-0.02, 0, 0.06], rotation: [1.57, 0, 1.57], scale: [1, 1, 1] },
-    right_hand: { position: [0.02, 0, 0.06], rotation: [1.57, 0, -1.57], scale: [1, 1, 1] }
+    defaultSlot: "two_hands",
+    supportedSlots: ["right_hand", "left_hand", "two_hands", "front_floor"],
+    behavior: { onEquip: { expression: "happy" } },
+    transform: { front_floor: { bone: null, position: [0.42, 0, -0.88], rotationDeg: [0, 0, 0], targetSize: 0.24 } }
   },
   agua: {
-    right_hand: { position: [0.02, -0.01, 0.02], rotation: [0, 0, -0.2], scale: [1, 1, 1] },
-    left_hand: { position: [-0.02, -0.01, 0.02], rotation: [0, 0, 0.2], scale: [1, 1, 1] }
+    category: "hand_prop",
+    defaultSlot: "right_hand",
+    supportedSlots: ["right_hand", "left_hand", "mouth_near", "front_table"],
+    recommendedMotion: "006_drinkwater",
+    behavior: { onEquip: { playMotion: "006_drinkwater", expression: "happy", delayMs: 180 } },
+    transform: {
+      right_hand: { bone: "rightHand", position: [0.018, -0.025, 0.035], rotationDeg: [80, 5, 12], targetSize: 0.16 },
+      left_hand: { bone: "leftHand", position: [-0.018, -0.025, 0.035], rotationDeg: [80, -5, -12], targetSize: 0.16 },
+      mouth_near: { bone: "head", position: [0.05, -0.075, 0.16], rotationDeg: [80, 0, 8], targetSize: 0.16 },
+      front_table: { bone: null, position: [0.18, 0.76, -1.04], rotationDeg: [0, 180, 0], targetSize: 0.18, ground: true }
+    }
   },
   cafe: {
-    right_hand: { position: [0.02, -0.01, 0.02], rotation: [0, 0, -0.15], scale: [1, 1, 1] },
-    left_hand: { position: [-0.02, -0.01, 0.02], rotation: [0, 0, 0.15], scale: [1, 1, 1] }
+    category: "hand_prop",
+    defaultSlot: "right_hand",
+    supportedSlots: ["right_hand", "left_hand", "front_table"],
+    behavior: { onEquip: { expression: "happy" } },
+    transform: {
+      right_hand: { bone: "rightHand", position: [0.02, -0.018, 0.025], rotationDeg: [0, 0, -10], targetSize: 0.12 },
+      left_hand: { bone: "leftHand", position: [-0.02, -0.018, 0.025], rotationDeg: [0, 0, 10], targetSize: 0.12 },
+      front_table: { bone: null, position: [0.24, 0.74, -1.04], rotationDeg: [0, 180, 0], targetSize: 0.14, ground: true }
+    }
+  },
+  iphone_14_pro: {
+    defaultSlot: "left_hand",
+    supportedSlots: ["left_hand", "right_hand", "front_table"],
+    recommendedMotion: "005_smartphone",
+    behavior: { onEquip: { playMotion: "005_smartphone", delayMs: 120 } },
+    transform: {
+      left_hand: { bone: "leftHand", position: [-0.01, 5e-3, 0.04], rotationDeg: [90, 0, 90], targetSize: 0.15 },
+      right_hand: { bone: "rightHand", position: [0.01, 5e-3, 0.04], rotationDeg: [90, 0, -90], targetSize: 0.15 },
+      front_table: { bone: null, position: [-0.2, 0.76, -1.02], rotationDeg: [0, 180, 0], targetSize: 0.16, ground: true }
+    }
+  },
+  tablet: {
+    defaultSlot: "left_hand",
+    supportedSlots: ["left_hand", "right_hand", "front_table"],
+    transform: { front_table: { bone: null, position: [-0.28, 0.76, -1.03], rotationDeg: [0, 180, 0], targetSize: 0.26, ground: true } }
   },
   microfone: {
-    right_hand: { position: [0.018, 0.03, 0.02], rotation: [0, 0, 0], scale: [1, 1, 1] },
-    left_hand: { position: [-0.018, 0.03, 0.02], rotation: [0, 0, 0], scale: [1, 1, 1] }
+    defaultSlot: "mouth_near",
+    supportedSlots: ["mouth_near", "right_hand", "left_hand"],
+    behavior: { onEquip: { expression: "happy" } },
+    transform: {
+      mouth_near: { bone: "head", position: [0.04, -0.08, 0.14], rotationDeg: [72, 0, 0], targetSize: 0.18 },
+      right_hand: { bone: "rightHand", position: [0.018, 0.03, 0.02], rotationDeg: [0, 0, 0], targetSize: 0.18 },
+      left_hand: { bone: "leftHand", position: [-0.018, 0.03, 0.02], rotationDeg: [0, 0, 0], targetSize: 0.18 }
+    }
   },
   acoustic_guitar_black: {
-    right_hand: { position: [0.06, -0.16, -0.02], rotation: [0.1, 0.15, 0.95], scale: [1, 1, 1] },
-    back_mount: { position: [-0.18, -0.08, -0.2], rotation: [0, 0.45, 1.1], scale: [1, 1, 1] },
-    two_hands: { position: [0.08, -0.24, -0.24], rotation: [0.2, 0.05, 0.72], scale: [0.92, 0.92, 0.92] }
+    defaultSlot: "chest",
+    supportedSlots: ["chest", "two_hands", "back_mount"],
+    behavior: { onEquip: { expression: "happy" } },
+    transform: {
+      chest: { bone: "chest", position: [0.08, -0.24, -0.24], rotationDeg: [12, 3, 41], targetSize: 0.82 },
+      two_hands: { bone: "chest", position: [0.08, -0.24, -0.24], rotationDeg: [12, 3, 41], targetSize: 0.82 },
+      back_mount: { bone: "chest", position: [-0.18, -0.08, -0.2], rotationDeg: [0, 26, 63], targetSize: 0.86 }
+    }
   },
   kendo_shinai_blade: {
-    back_mount: { position: [-0.12, -0.1, -0.22], rotation: [0, 0.4, 1.35], scale: [1, 1, 1] },
-    right_hand: { position: [0.02, -0.05, 0.1], rotation: [0, 0, 1.57], scale: [1, 1, 1] },
-    left_hand: { position: [-0.02, -0.05, 0.1], rotation: [0, 0, -1.57], scale: [1, 1, 1] }
+    defaultSlot: "back_mount",
+    supportedSlots: ["back_mount", "right_hand", "left_hand"],
+    transform: {
+      back_mount: { bone: "chest", position: [-0.12, -0.1, -0.22], rotationDeg: [0, 23, 77], targetSize: 0.86 },
+      right_hand: { bone: "rightHand", position: [0.02, -0.05, 0.1], rotationDeg: [0, 0, 90], targetSize: 0.64 },
+      left_hand: { bone: "leftHand", position: [-0.02, -0.05, 0.1], rotationDeg: [0, 0, -90], targetSize: 0.64 }
+    }
   },
-  d20: {
-    right_hand: { position: [0.018, -0.012, 0.02], rotation: [0, 0, 0], scale: [1, 1, 1] },
-    left_hand: { position: [-0.018, -0.012, 0.02], rotation: [0, 0, 0], scale: [1, 1, 1] }
+  dado_de_20_lados: {
+    defaultSlot: "front_table",
+    supportedSlots: ["front_table", "right_hand", "left_hand", "front_floor"],
+    transform: { front_table: { bone: null, position: [0.1, 0.78, -1.05], rotationDeg: [0, 25, 0], targetSize: 0.08, ground: true } }
   },
-  dice: {
-    right_hand: { position: [0.018, -0.012, 0.02], rotation: [0, 0, 0], scale: [1, 1, 1] },
-    left_hand: { position: [-0.018, -0.012, 0.02], rotation: [0, 0, 0], scale: [1, 1, 1] }
+  dado_obj: {
+    defaultSlot: "front_table",
+    supportedSlots: ["front_table", "right_hand", "left_hand", "front_floor"],
+    transform: { front_table: { bone: null, position: [-0.1, 0.78, -1.05], rotationDeg: [0, -20, 0], targetSize: 0.08, ground: true } }
   },
   office_desk: {
-    scene_front: { position: [0, -0.02, -0.1], rotation: [0, 0, 0], scale: [1, 1, 1] }
+    category: "scene_prop",
+    defaultSlot: "front_floor",
+    supportedSlots: ["front_floor"],
+    behavior: { type: "scene" },
+    transform: { front_floor: { bone: null, position: [0, 0, -1.15], rotationDeg: [0, 180, 0], targetSize: 1.35, ground: true } }
   },
   grand_piano: {
-    scene_front: { position: [0, -0.02, -0.2], rotation: [0, 0.7, 0], scale: [1, 1, 1] }
+    category: "scene_prop",
+    defaultSlot: "front_floor",
+    supportedSlots: ["front_floor", "scene_left", "scene_right"],
+    behavior: { type: "scene" },
+    transform: {
+      front_floor: { bone: null, position: [0.35, 0, -1.45], rotationDeg: [0, 180, 0], targetSize: 1.35, ground: true },
+      scene_left: { bone: null, position: [-0.55, 0, -1.45], rotationDeg: [0, 160, 0], targetSize: 1.35, ground: true },
+      scene_right: { bone: null, position: [0.55, 0, -1.45], rotationDeg: [0, 200, 0], targetSize: 1.35, ground: true }
+    }
   }
 };
 function cloneItemRoot(root) {
-  return root.clone(true);
-}
-function deepClone(value) {
   try {
-    return structuredClone(value);
-  } catch {
-    return JSON.parse(JSON.stringify(value));
-  }
-}
-function setBoneEuler2(vrm, boneName, x = 0, y = 0, z = 0) {
-  try {
-    const bone = vrm?.humanoid?.getNormalizedBoneNode?.(boneName);
-    if (bone) bone.rotation.set(x, y, z);
-  } catch {
-  }
-}
-function applyTwoHandPose(vrm, itemId) {
-  if (!vrm) return;
-  if (itemId === "acoustic_guitar_black") {
-    setBoneEuler2(vrm, "leftUpperArm", 0.25, 0.05, -0.7);
-    setBoneEuler2(vrm, "rightUpperArm", 0.2, -0.04, 0.7);
-    setBoneEuler2(vrm, "leftLowerArm", -0.65, 0.1, -0.1);
-    setBoneEuler2(vrm, "rightLowerArm", -0.58, -0.1, 0.16);
-    setBoneEuler2(vrm, "leftHand", 0, 0, 0.12);
-    setBoneEuler2(vrm, "rightHand", 0, 0, -0.12);
-    return;
-  }
-  if (itemId === "basketball") {
-    setBoneEuler2(vrm, "leftUpperArm", 0.35, 0.05, -0.52);
-    setBoneEuler2(vrm, "rightUpperArm", 0.35, -0.05, 0.52);
-    setBoneEuler2(vrm, "leftLowerArm", -0.72, 0, -0.16);
-    setBoneEuler2(vrm, "rightLowerArm", -0.72, 0, 0.16);
-    setBoneEuler2(vrm, "leftHand", 0, 0, 0.08);
-    setBoneEuler2(vrm, "rightHand", 0, 0, -0.08);
-  }
-}
-function applyTransform(node, preset) {
-  if (!preset) return;
-  const p = preset.position || [0, 0, 0];
-  const r = preset.rotation || [0, 0, 0];
-  node.position.set(...p);
-  node.rotation.set(...r);
-}
-function getTargetSize(item, slot) {
-  if (slot === "two_hands") {
-    if (item?.id === "basketball") return 0.24;
-    if (item?.id === "acoustic_guitar_black") return 0.82;
-  }
-  if (Number.isFinite(item?.target_size) && item.target_size > 0) return item.target_size;
-  if (slot === "scene_front") return 1.4;
-  if (slot === "back_mount") return 0.86;
-  return 0.18;
-}
-function fitNodeToTargetSize(node, item, slot, preset) {
-  try {
-    node.updateMatrixWorld(true);
-    const box = new Box3().setFromObject(node);
-    if (box.isEmpty()) return;
-    const size = new Vector3();
-    box.getSize(size);
-    const maxDim = Math.max(size.x, size.y, size.z);
-    if (!Number.isFinite(maxDim) || maxDim <= 1e-4) return;
-    const targetSize = getTargetSize(item, slot);
-    const baseScale = targetSize / maxDim;
-    const mult = preset?.scale || [1, 1, 1];
-    node.scale.set(baseScale * mult[0], baseScale * mult[1], baseScale * mult[2]);
+    return clone(root);
   } catch (err) {
-    console.warn("Falha ao ajustar tamanho do item", item?.id, err);
+    console.warn("[Noelle] SkeletonUtils.clone falhou, usando clone(true):", err);
+    return root.clone(true);
   }
 }
-function cleanItemAssetPath(value) {
+function cleanAssetPath2(value) {
   return String(value || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").trim();
 }
-function uniqueItemPaths(values) {
+function filenameStem2(value) {
+  const clean = cleanAssetPath2(value).split(/[?#]/)[0];
+  const name = clean.split("/").pop() || clean;
+  return name.replace(/\.[^.]+$/, "");
+}
+function unique2(values) {
   return [...new Set(values.filter(Boolean))];
 }
 function itemAssetCandidates(file) {
-  const clean = cleanItemAssetPath(file);
+  const clean = cleanAssetPath2(file);
   const noAssets = clean.replace(/^assets\//i, "");
   const noItems = noAssets.replace(/^items\//i, "");
-  return uniqueItemPaths([
+  return unique2([
     clean.startsWith("assets/") ? clean : null,
     clean.startsWith("items/") ? "assets/" + clean : null,
     "assets/items/" + noItems,
@@ -54306,10 +54609,10 @@ function itemAssetCandidates(file) {
   ]);
 }
 function thumbnailAssetCandidates(file) {
-  const clean = cleanItemAssetPath(file);
+  const clean = cleanAssetPath2(file);
   const noAssets = clean.replace(/^assets\//i, "");
   const noItems = noAssets.replace(/^items\//i, "");
-  return uniqueItemPaths([
+  return unique2([
     clean.startsWith("assets/") ? clean : null,
     clean.startsWith("items/") ? "assets/" + clean : null,
     clean.startsWith("thumbnails/") ? "assets/items/" + clean : null,
@@ -54326,11 +54629,22 @@ async function resolveFirstLocalAsset(candidates) {
   }
   return { rel: candidates[0] || "", url: null };
 }
+function mergeItemDefaults(item) {
+  const defaults = ITEM_DEFAULTS[item.id] || {};
+  return {
+    ...defaults,
+    ...item,
+    supportedSlots: [.../* @__PURE__ */ new Set([...defaults.supportedSlots || [], ...item.supportedSlots || item.supported_slots || item.supported_modes || []])],
+    transform: { ...defaults.transform || {}, ...item.transform || item.transforms || {} },
+    behavior: item.behavior || defaults.behavior
+  };
+}
 async function loadItemManifest() {
   const raw = await readJsonAssetLocal("assets/item_manifest.json");
   const items = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
   const validated = [];
-  for (const item of items) {
+  for (const baseItem of items) {
+    const item = mergeItemDefaults(baseItem);
     const file = item.file || item.path || item.name || "";
     const resolvedFile = await resolveFirstLocalAsset(itemAssetCandidates(file));
     const thumbRel = item.thumbnail ? await resolveFirstLocalAsset(thumbnailAssetCandidates(item.thumbnail)) : { rel: null, url: null };
@@ -54338,50 +54652,122 @@ async function loadItemManifest() {
       console.warn("[Noelle] Item ignorado porque o arquivo n\xE3o foi encontrado:", item.id || file, itemAssetCandidates(file));
       continue;
     }
-    validated.push({
+    const id = item.id || filenameStem2(file);
+    const normalized = {
       ...item,
-      id: item.id || String(file).split("/").pop().replace(/\.[^.]+$/, ""),
-      supported_modes: item.supported_modes || [],
+      id,
+      label: item.label || id,
+      supported_modes: item.supported_modes || item.supportedSlots || [],
+      supportedSlots: slotCandidateOrder(item),
+      defaultSlot: normalizeSlotName(item.defaultSlot || item.slot || item.default_interaction || "right_hand"),
       __available: true,
       assetRel: resolvedFile.rel,
       assetUrl: resolvedFile.url,
       thumbnailUrl: thumbRel.url,
       thumbnail: thumbRel.url ? item.thumbnail : null
-    });
+    };
+    const errors = validateItemTransform(normalized);
+    if (errors.length) console.warn("[Noelle] Transform de item com avisos:", normalized.id, errors);
+    validated.push(normalized);
   }
   return validated;
 }
 function normalizeSlotName(slot) {
-  if (!slot) return "right_hand";
-  return ALLOWED_SLOTS.includes(slot) ? slot : "right_hand";
+  return normalizeItemSlot(slot, "right_hand");
 }
-function slotLabel(slot) {
-  return SLOT_LABELS[slot] || slot;
+function slotLabel2(slot) {
+  return slotLabel(slot) || SLOT_LABELS?.[slot] || slot;
+}
+function setBoneEuler2(vrm, boneName, x = 0, y = 0, z = 0) {
+  try {
+    const bone = vrm?.humanoid?.getNormalizedBoneNode?.(boneName);
+    if (bone) bone.rotation.set(x, y, z);
+  } catch {
+  }
+}
+function applyTwoHandPose(vrm, itemId) {
+  if (!vrm) return;
+  if (itemId === "acoustic_guitar_black") {
+    setBoneEuler2(vrm, "leftUpperArm", 0.25, 0.05, -0.7);
+    setBoneEuler2(vrm, "rightUpperArm", 0.2, -0.04, 0.7);
+    setBoneEuler2(vrm, "leftLowerArm", -0.65, 0.1, -0.1);
+    setBoneEuler2(vrm, "rightLowerArm", -0.58, -0.1, 0.16);
+    return;
+  }
+  if (itemId === "basketball") {
+    setBoneEuler2(vrm, "leftUpperArm", 0.35, 0.05, -0.52);
+    setBoneEuler2(vrm, "rightUpperArm", 0.35, -0.05, 0.52);
+    setBoneEuler2(vrm, "leftLowerArm", -0.72, 0, -0.16);
+    setBoneEuler2(vrm, "rightLowerArm", -0.72, 0, 0.16);
+  }
+}
+function getBoundingBoxSafe(node) {
+  try {
+    node.updateMatrixWorld(true);
+    const box = new Box3().setFromObject(node);
+    if (!box.isEmpty()) return box;
+  } catch {
+  }
+  return null;
+}
+function createNormalizedItemNode(source, item, slot, transform) {
+  const wrapper = new Group();
+  wrapper.name = `item:${item.id}:${slot}`;
+  const model = cloneItemRoot(source);
+  model.name = `item-model:${item.id}`;
+  model.traverse((obj) => {
+    obj.frustumCulled = false;
+  });
+  wrapper.add(model);
+  const box = getBoundingBoxSafe(model);
+  if (box) {
+    const center = new Vector3();
+    const size = new Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+    if (transform.kind === "scene" || transform.ground) {
+      model.position.set(-center.x, -box.min.y, -center.z);
+    } else {
+      model.position.set(-center.x, -center.y, -center.z);
+    }
+    const maxDim = Math.max(size.x, size.y, size.z);
+    if (Number.isFinite(maxDim) && maxDim > 1e-4) {
+      const baseScale = Math.max(1e-4, Number(transform.targetSize || 0.18)) / maxDim;
+      wrapper.scale.set(
+        baseScale * transform.scale[0],
+        baseScale * transform.scale[1],
+        baseScale * transform.scale[2]
+      );
+    }
+  } else {
+    wrapper.scale.set(...transform.scale);
+  }
+  wrapper.position.set(...transform.position);
+  wrapper.rotation.set(...transform.rotation);
+  wrapper.userData.noelleItem = { itemId: item.id, slot, kind: transform.kind };
+  return wrapper;
+}
+function createBehaviorApi(setStatus2) {
+  return {
+    setStatus: setStatus2,
+    playMotion: async (motionId) => {
+      window.dispatchEvent(new CustomEvent("noelle:item-behavior:motion", { detail: { motionId } }));
+    },
+    showExpression: async (expressionId) => {
+      window.dispatchEvent(new CustomEvent("noelle:item-behavior:expression", { detail: { expressionId } }));
+    }
+  };
 }
 function createInventoryManager({ loader, vrmState, sceneAnchor, onInventoryChanged, setStatus: setStatus2 }) {
   const itemCache = /* @__PURE__ */ new Map();
   const failedItems = /* @__PURE__ */ new Set();
-  const equipped = {
-    right_hand: null,
-    left_hand: null,
-    two_hands: null,
-    back_mount: null,
-    scene_front: null,
-    head: null,
-    waist: null
-  };
+  const equipped = {};
   function saveEquippedState() {
     const state2 = {};
-    for (const [slot, entry] of Object.entries(equipped)) {
-      state2[slot] = entry ? { id: entry.item.id, label: entry.item.label || entry.item.id, slot } : null;
+    for (const [key, entry] of Object.entries(equipped)) {
+      if (entry) state2[key] = { id: entry.item.id, label: entry.item.label || entry.item.id, slot: entry.slot };
     }
     localStorage.setItem("noelle_equipped_items", JSON.stringify(state2));
-  }
-  function getPreset(item, slot) {
-    const itemPreset = ITEM_PRESETS[item.id] || {};
-    const preset = deepClone(itemPreset[slot] || {});
-    if (!preset.scale) preset.scale = [1, 1, 1];
-    return preset;
   }
   async function getLoadedItem(item) {
     if (failedItems.has(item.id)) throw new Error("Item indispon\xEDvel: " + item.id);
@@ -54394,8 +54780,13 @@ function createInventoryManager({ loader, vrmState, sceneAnchor, onInventoryChan
       return root;
     } catch (err) {
       failedItems.add(item.id);
-      throw new Error(`Falha ao carregar item ${item.label}: ${err}`);
+      throw new Error(`Falha ao carregar item ${item.label || item.id}: ${err}`);
     }
+  }
+  function equippedKey(item, slot) {
+    const normalized = normalizeSlotName(slot);
+    if (isSceneSlot(normalized)) return `${normalized}:${item.id}`;
+    return normalized;
   }
   function detachEntry(entry) {
     if (!entry) return;
@@ -54404,52 +54795,50 @@ function createInventoryManager({ loader, vrmState, sceneAnchor, onInventoryChan
     } catch {
     }
   }
-  function detachSlot(slot) {
-    const entry = equipped[slot];
+  function detachKey(key) {
+    const entry = equipped[key];
     if (entry) detachEntry(entry);
-    equipped[slot] = null;
+    delete equipped[key];
   }
   function detachItem(itemId) {
-    for (const [slot, entry] of Object.entries(equipped)) {
-      if (entry?.item?.id === itemId) detachSlot(slot);
+    for (const [key, entry] of Object.entries(equipped)) {
+      if (entry?.item?.id === itemId) detachKey(key);
     }
   }
   function isEquipped(itemId) {
     return Object.values(equipped).some((entry) => entry?.item?.id === itemId);
   }
   function getEquippedSlot(itemId) {
-    for (const [slot, entry] of Object.entries(equipped)) {
-      if (entry?.item?.id === itemId) return slot;
+    for (const entry of Object.values(equipped)) {
+      if (entry?.item?.id === itemId) return entry.slot;
     }
     return null;
   }
-  function clearConflictsForSlot(slot) {
-    if (slot === "two_hands") {
-      HAND_SLOTS.forEach(detachSlot);
-      detachSlot("two_hands");
+  function clearConflictsForSlot(item, slot) {
+    const normalized = normalizeSlotName(slot);
+    if (isSceneSlot(normalized)) {
+      detachItem(item.id);
       return;
     }
-    if (HAND_SLOTS.includes(slot)) {
-      detachSlot("two_hands");
+    if (normalized === "two_hands") {
+      for (const key of [...HAND_SLOTS, "two_hands"]) detachKey(key);
+      return;
     }
-    detachSlot(slot);
+    if (HAND_SLOTS.includes(normalized)) detachKey("two_hands");
+    detachKey(normalized);
   }
-  function attachToSlot(item, node, slot) {
-    const preset = getPreset(item, slot);
-    fitNodeToTargetSize(node, item, slot, preset);
-    applyTransform(node, preset);
-    if (slot === "scene_front") {
-      if (sceneAnchor?.clear) sceneAnchor.clear();
+  function attachNode(item, node, slot, transform) {
+    const key = equippedKey(item, slot);
+    if (transform.kind === "scene" || transform.bone === null || isSceneSlot(slot)) {
       sceneAnchor?.add?.(node);
-      equipped.scene_front = { item, node, slot };
+      equipped[key] = { item, node, slot, key };
       return;
     }
-    const boneName = BONE_MAP[slot] || "rightHand";
-    const bone = vrmState.currentVRM?.humanoid?.getNormalizedBoneNode?.(boneName);
-    if (!bone) throw new Error("Bone n\xE3o encontrado para slot " + slot);
+    const bone = vrmState.currentVRM?.humanoid?.getNormalizedBoneNode?.(transform.bone || "rightHand");
+    if (!bone) throw new Error(`Bone n\xE3o encontrado para slot ${slot}: ${transform.bone}`);
     bone.add(node);
-    equipped[slot] = { item, node, slot };
-    if (slot === "two_hands") {
+    equipped[key] = { item, node, slot, key };
+    if (slot === "two_hands" || item.default_interaction === "two_hand_guitar" || item.default_interaction === "two_hand_ball") {
       applyTwoHandPose(vrmState.currentVRM, item.id);
     }
   }
@@ -54459,31 +54848,30 @@ function createInventoryManager({ loader, vrmState, sceneAnchor, onInventoryChan
     onInventoryChanged?.();
     setStatus2?.("Item desequipado");
   }
-  async function equip(item, slot) {
-    slot = normalizeSlotName(slot);
-    clearConflictsForSlot(slot);
+  async function equip(item, slot = null) {
+    const targetSlot = normalizeSlotName(slot || item.defaultSlot || item.slot || item.default_interaction || "right_hand");
+    clearConflictsForSlot(item, targetSlot);
     detachItem(item.id);
-    const root = await getLoadedItem(item);
-    const node = cloneItemRoot(root);
-    node.traverse((o) => {
-      o.frustumCulled = false;
-    });
-    attachToSlot(item, node, slot);
+    const source = await getLoadedItem(item);
+    const transform = getItemSlotTransform(item, targetSlot);
+    const node = createNormalizedItemNode(source, item, targetSlot, transform);
+    attachNode(item, node, targetSlot, transform);
     saveEquippedState();
     onInventoryChanged?.();
-    setStatus2?.(`${item.label} equipado em ${slotLabel(slot)}`);
+    await runItemBehavior(item, targetSlot, createBehaviorApi(setStatus2));
+    setStatus2?.(`${item.label || item.id} equipado em ${slotLabel2(targetSlot)}`);
   }
   async function restore(itemsById2) {
     try {
       const raw = localStorage.getItem("noelle_equipped_items");
       if (!raw) return;
       const state2 = JSON.parse(raw);
-      for (const [slot, entry] of Object.entries(state2)) {
+      for (const entry of Object.values(state2)) {
         if (!entry?.id) continue;
         const item = itemsById2.get(entry.id);
         if (!item) continue;
         try {
-          await equip(item, normalizeSlotName(slot));
+          await equip(item, entry.slot || item.defaultSlot);
         } catch (err) {
           console.warn("Falha ao restaurar item:", item.id, err);
         }
@@ -54493,11 +54881,11 @@ function createInventoryManager({ loader, vrmState, sceneAnchor, onInventoryChan
     }
   }
   function clearAll() {
-    for (const slot of Object.keys(equipped)) detachSlot(slot);
+    for (const key of Object.keys(equipped)) detachKey(key);
     saveEquippedState();
     onInventoryChanged?.();
   }
-  return { equipped, equip, unequip, clearAll, isEquipped, getEquippedSlot, restore, slotLabel };
+  return { equipped, equip, unequip, clearAll, isEquipped, getEquippedSlot, restore, slotLabel: slotLabel2 };
 }
 
 // src/renderer/avatar_window_app.js
@@ -54660,6 +55048,25 @@ function showRandomExpression() {
   badge.classList.add("show");
   clearTimeout(expressionHideTimer);
   expressionHideTimer = setTimeout(() => hideExpression(), 8500);
+}
+function showExpressionById(expressionId) {
+  if (!expressionDefs.length) return;
+  const key = String(expressionId || "").toLowerCase();
+  const chosen = expressionDefs.find((item) => {
+    const haystack = [item.id, item.label, item.file].map((value) => String(value || "").toLowerCase()).join(" ");
+    return key && haystack.includes(key);
+  }) || expressionDefs[0];
+  const overlay = byId("expressionOverlay");
+  const image = byId("expressionImage");
+  const badge = byId("expressionBadge");
+  if (!overlay || !image || !badge || !chosen) return;
+  image.src = chosen.file;
+  badge.textContent = chosen.label || chosen.id || "Express\xE3o";
+  overlay.classList.add("show");
+  badge.classList.add("show");
+  clearTimeout(expressionHideTimer);
+  expressionHideTimer = setTimeout(() => hideExpression(), 8500);
+  setStatus("Express\xE3o: " + (chosen.label || chosen.id || "ativa"));
 }
 function startExpressionLoop() {
   clearInterval(expressionTimer);
@@ -55070,6 +55477,14 @@ async function main() {
     handleAvatarCommand(loader, payload).catch((err) => showError(err?.stack || err));
   });
   window.desktopWidget?.onWindowState?.((_payload) => {
+  });
+  window.addEventListener("noelle:item-behavior:motion", (event) => {
+    const motionId = event?.detail?.motionId;
+    if (motionId) playMotion(loader, motionId).catch((err) => showError(err?.stack || err));
+  });
+  window.addEventListener("noelle:item-behavior:expression", (event) => {
+    const expressionId = event?.detail?.expressionId;
+    if (expressionId && typeof showExpressionById === "function") showExpressionById(expressionId);
   });
   window.addEventListener("storage", () => {
     applyUiPrefsToShell();
