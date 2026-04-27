@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - V18.2 Room Ultra Robusta
+title Noelle IA - V18.4 Room Safety
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,12 +9,12 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - V18.2 ROOM ULTRA ROBUSTA
+echo  NOELLE IA - V18.4 ROOM SAFETY / UNDO / AUTOSAVE
 echo ============================================================
 echo.
-echo [1] Aplicar Room ultra robusta e iniciar Noelle
-echo [2] Aplicar Room ultra robusta sem iniciar
-echo [3] Diagnostico Room ultra
+echo [1] Aplicar Room V18.4 e iniciar Noelle
+echo [2] Aplicar Room V18.4 sem iniciar
+echo [3] Diagnostico Room V18.4
 echo [4] Rebuild Room bundle
 echo [5] Limpar outros .bat da raiz para backup
 echo [0] Sair
@@ -64,11 +64,11 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 
 echo.
-echo [1/5] Aplicando Room ultra robusta...
-node scripts\harden_room_v18_2.cjs --apply
+echo [1/5] Aplicando Room V18.4...
+node scripts\harden_room_v18_4.cjs --apply
 if errorlevel 1 (
   echo.
-  echo [ERRO] Room ultra robusta falhou com codigo %errorlevel%.
+  echo [ERRO] Room V18.4 falhou com codigo %errorlevel%.
   pause
   goto MENU
 )
@@ -80,7 +80,7 @@ if errorlevel 1 goto MENU
 
 echo.
 echo [3/5] Gerando bundle da Room...
-node scripts\build_room_v18_2.cjs
+node scripts\build_room_v18_4.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Build da Room falhou com codigo %errorlevel%.
@@ -90,7 +90,7 @@ if errorlevel 1 (
 
 echo.
 echo [4/5] Diagnostico...
-node scripts\diagnostico_room_v18_2.cjs
+node scripts\diagnostico_room_v18_4.cjs
 if errorlevel 1 (
   echo.
   echo [AVISO] Diagnostico encontrou problemas. Veja acima.
@@ -108,12 +108,11 @@ goto MENU
 :APPLY_ONLY
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-
-node scripts\harden_room_v18_2.cjs --apply
+node scripts\harden_room_v18_4.cjs --apply
 if errorlevel 1 (
-  echo [ERRO] Room ultra robusta falhou com codigo %errorlevel%.
+  echo [ERRO] Room V18.4 falhou com codigo %errorlevel%.
 ) else (
-  echo [OK] Room ultra robusta aplicada.
+  echo [OK] Room V18.4 aplicada.
 )
 pause
 goto MENU
@@ -121,7 +120,7 @@ goto MENU
 :DIAG
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\diagnostico_room_v18_2.cjs
+node scripts\diagnostico_room_v18_4.cjs
 pause
 goto MENU
 
@@ -130,8 +129,7 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 call :ENSURE_DEPS
 if errorlevel 1 goto MENU
-
-node scripts\build_room_v18_2.cjs
+node scripts\build_room_v18_4.cjs
 if errorlevel 1 (
   echo [ERRO] Build da Room falhou com codigo %errorlevel%.
 ) else (
@@ -143,7 +141,7 @@ goto MENU
 :CLEAN_BATS
 set "STAMP=%DATE:/=-%_%TIME::=-%"
 set "STAMP=%STAMP: =0%"
-set "DEST=backups\bats_v18_2_room_%STAMP%"
+set "DEST=backups\bats_v18_4_room_%STAMP%"
 if not exist "backups" mkdir "backups" >nul 2>nul
 if not exist "%DEST%" mkdir "%DEST%" >nul 2>nul
 
