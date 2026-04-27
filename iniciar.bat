@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - Hotfix V17.2 Widget Avatar
+title Noelle IA - V17.4 Tray Icon
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,12 +9,12 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - HOTFIX V17.2 WIDGET / AVATAR / EMOTES
+echo  NOELLE IA - V17.4 BANDEJA / WIDGET / INTERACOES
 echo ============================================================
 echo.
 echo [1] Aplicar correcao e iniciar Noelle
 echo [2] Aplicar correcao sem iniciar
-echo [3] Diagnostico widget/avatar/assets
+echo [3] Diagnostico bandeja/avatar/assets
 echo [4] Limpar outros .bat da raiz para backup
 echo [0] Sair
 echo.
@@ -31,7 +31,6 @@ goto MENU
 where node >nul 2>nul
 if errorlevel 1 (
   echo [ERRO] Node nao encontrado no PATH.
-  echo Instale Node.js ou abra o terminal correto.
   pause
   exit /b 1
 )
@@ -43,8 +42,8 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 
 echo.
-echo [1/3] Aplicando hotfix V17.2...
-node scripts\hotfix_v17_2_widget_ipc_assets.cjs --apply
+echo [1/4] Aplicando hotfix V17.4...
+node scripts\hotfix_v17_4_tray_widget_interactions.cjs --apply
 if errorlevel 1 (
   echo.
   echo [ERRO] Hotfix falhou com codigo %errorlevel%.
@@ -53,53 +52,48 @@ if errorlevel 1 (
 )
 
 echo.
-echo [2/3] Rodando diagnostico...
-node scripts\diagnostico_v17_2_widget_avatar.cjs
+echo [2/4] Rodando diagnostico...
+node scripts\diagnostico_v17_4_tray.cjs
 if errorlevel 1 (
   echo.
   echo [AVISO] Diagnostico encontrou problemas. Veja acima.
-  echo A Noelle ainda pode abrir, mas o avatar pode precisar de ajuste.
 )
 
 echo.
-echo [3/3] Iniciando Noelle...
+echo [3/4] Verificando Electron local...
 if exist "node_modules\.bin\electron.cmd" (
   echo [OK] Electron local encontrado.
-  call "node_modules\.bin\electron.cmd" .
+) else (
+  where npm.cmd >nul 2>nul
   if errorlevel 1 (
-    echo [ERRO] Electron saiu com codigo %errorlevel%.
+    echo [ERRO] Electron local nao encontrado e npm nao esta no PATH.
+    echo Se node_modules ja existe, confira se electron foi instalado.
     pause
+    goto MENU
   )
-  goto MENU
-)
-
-where npm.cmd >nul 2>nul
-if not errorlevel 1 (
-  echo [INFO] Electron local nao encontrado. Tentando npm install...
+  echo [INFO] Instalando dependencias npm porque Electron local nao foi encontrado...
   call npm install
   if errorlevel 1 (
     echo [ERRO] npm install falhou com codigo %errorlevel%.
     pause
     goto MENU
   )
-  call npm start
-  if errorlevel 1 (
-    echo [ERRO] npm start falhou com codigo %errorlevel%.
-    pause
-  )
-  goto MENU
 )
 
-echo [ERRO] Nao encontrei node_modules\.bin\electron.cmd nem npm.
-echo Se o node_modules ja existe, confira se electron foi instalado.
-pause
+echo.
+echo [4/4] Iniciando Noelle...
+call "node_modules\.bin\electron.cmd" .
+if errorlevel 1 (
+  echo [ERRO] Electron saiu com codigo %errorlevel%.
+  pause
+)
 goto MENU
 
 :APPLY_ONLY
 call :CHECK_NODE
 if errorlevel 1 goto MENU
 
-node scripts\hotfix_v17_2_widget_ipc_assets.cjs --apply
+node scripts\hotfix_v17_4_tray_widget_interactions.cjs --apply
 if errorlevel 1 (
   echo [ERRO] Hotfix falhou com codigo %errorlevel%.
 ) else (
@@ -112,13 +106,13 @@ goto MENU
 call :CHECK_NODE
 if errorlevel 1 goto MENU
 
-node scripts\diagnostico_v17_2_widget_avatar.cjs
+node scripts\diagnostico_v17_4_tray.cjs
 if errorlevel 1 (
   echo.
   echo [AVISO] Diagnostico encontrou problemas.
 ) else (
   echo.
-  echo [OK] Diagnostico finalizado sem erro critico.
+  echo [OK] Diagnostico sem erro critico.
 )
 pause
 goto MENU
@@ -126,7 +120,7 @@ goto MENU
 :CLEAN_BATS
 set "STAMP=%DATE:/=-%_%TIME::=-%"
 set "STAMP=%STAMP: =0%"
-set "DEST=backups\bats_v17_2_%STAMP%"
+set "DEST=backups\bats_v17_4_%STAMP%"
 if not exist "backups" mkdir "backups" >nul 2>nul
 if not exist "%DEST%" mkdir "%DEST%" >nul 2>nul
 
@@ -138,7 +132,6 @@ for %%F in (*.bat) do (
     move /Y "%%~fF" "%DEST%\" >nul
   )
 )
-
 if "%FOUND%"=="0" echo [OK] Nenhum outro .bat na raiz.
 pause
 goto MENU
