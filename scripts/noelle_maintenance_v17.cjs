@@ -108,7 +108,6 @@ function run(cmd, args, options = {}) {
   if (!options.quiet) log(`[CMD] ${printable}`);
   const result = cp.spawnSync(cmd, args, {
     cwd: ROOT,
-    shell: process.platform === "win32",
     stdio: options.capture ? "pipe" : "inherit",
     encoding: "utf8",
     timeout: options.timeout || undefined

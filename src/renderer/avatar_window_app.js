@@ -214,6 +214,25 @@ function showRandomExpression() {
   expressionHideTimer = setTimeout(() => hideExpression(), 8500);
 }
 
+function showExpressionById(expressionId) {
+  if (!expressionDefs.length) return;
+  const key = String(expressionId || "").toLowerCase();
+  const chosen = expressionDefs.find((item) => {
+    const haystack = [item.id, item.label, item.file].map((value) => String(value || "").toLowerCase()).join(" ");
+    return key && haystack.includes(key);
+  }) || expressionDefs[0];
+  const overlay = byId("expressionOverlay");
+  const image = byId("expressionImage");
+  const badge = byId("expressionBadge");
+  if (!overlay || !image || !badge || !chosen) return;
+  image.src = chosen.file;
+  badge.textContent = chosen.label || chosen.id || "Expressão";
+  overlay.classList.add("show");
+  badge.classList.add("show");
+  clearTimeout(expressionHideTimer);
+  expressionHideTimer = setTimeout(() => hideExpression(), 8500);
+  setStatus("Expressão: " + (chosen.label || chosen.id || "ativa"));
+}
 function startExpressionLoop() {
   clearInterval(expressionTimer);
   if (!expressionDefs.length) return;

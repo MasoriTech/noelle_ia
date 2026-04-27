@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "17.0.0-maintenance",
+  "version": "17.2.0",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -8,16 +8,10 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "diagnostico": "node scripts/diagnostico_v17.cjs",
-    "doctor": "node scripts/diagnostico_v17.cjs",
-    "bootstrap": "node scripts/noelle_maintenance_v17.cjs --apply",
-    "rebuild:manifests": "node scripts/rebuild_manifests_noelle.cjs",
-    "dist:win": "electron-builder --win nsis portable",
-    "build-renderers": "node scripts/bundle-renderers.mjs",
-    "check": "node --check main.js && node --check preload.js && node --check scripts/noelle_maintenance_v17.cjs && node --check scripts/diagnostico_v17.cjs && node --check scripts/rebuild_manifests_noelle.cjs && node --check src/renderer/controls_window_app.js && node --check src/renderer/avatar_window_app.js",
-    "lint": "node scripts/diagnostico_v17.cjs --ci",
-    "format": "node scripts/diagnostico_v17.cjs --format-check",
-    "test": "node scripts/diagnostico_v17.cjs --ci"
+    "diagnostico": "node scripts/diagnostico_v17_2_widget_avatar.cjs",
+    "doctor": "node scripts/diagnostico_v17_2_widget_avatar.cjs",
+    "check": "node scripts/diagnostico_v17_2_widget_avatar.cjs --ci",
+    "dist:win": "electron-builder --win nsis portable"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

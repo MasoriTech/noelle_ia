@@ -1,50 +1,22 @@
-# Dependencias
 node_modules/
-
-# Builds / empacotamento
 release/
 dist/
 build/
 out/
-
-# Logs e backups
 logs/
 backups/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Estado/cache local da Noelle
-.noelle_*bootstrap*.json
-.noelle_*state*.json
-.noelle_*.cache
-
-# Python / STT / TTS
 .venv/
 venv/
 __pycache__/
 *.pyc
-tools/noelle_stt/models/
-tools/noelle_stt/cache/
-tools/noelle_stt/tmp/
-tools/noelle_stt/temp/
-tools/noelle_tts/models/
-tools/noelle_tts/cache/
-tools/noelle_tts/tmp/
-tools/noelle_tts/temp/
-
-# Arquivos grandes temporarios
+*.log
 *.zip
 *.rar
 *.7z
-
-# Sistema/editor
 .DS_Store
 Thumbs.db
-.idea/
-
-# Importante: nao ignorar assets reais do app
+.noelle_*bootstrap*.json
+.noelle_*state*.json
 !src/assets/
 !src/assets/Noelle.vrm
 !src/assets/avatars/
