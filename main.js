@@ -7,13 +7,12 @@ const http = require("http");
 const { spawn } = require("child_process");
 
 const APP_YEAR = 2026;
-const OLLAMA_HOST = "127.0.0.1";
-const OLLAMA_PORT = 11434;
-
+const OLLAMA_HOST = process.env.OLLAMA_HOST || "127.0.0.1";
+const OLLAMA_PORT = Number(process.env.OLLAMA_PORT || 11434);
 const ROOT_DIR = __dirname;
 const SRC_DIR = path.join(ROOT_DIR, "src");
-const ASSETS_DIR = path.join(SRC_DIR, "assets"); const APP_ICONS_DIR = path.join(ROOT_DIR, "assets", "icons"); const APP_ICONS_DIR = path.join(ROOT_DIR, "assets", "icons");
-const USER_DATA_READY = () => app.getPath("userData");
+const ASSETS_DIR = path.join(SRC_DIR, "assets");
+const APP_ICONS_DIR = path.join(ROOT_DIR, "assets", "icons");
 
 const CORE_DEFAULTS = {
   model: "qwen3:0.6b",
@@ -30,21 +29,57 @@ const MODEL_OPTIONS = {
 };
 
 const PROFILE_OPTIONS = {
-  turbo: { label: "Turbo", timeoutMs: 90000, keep_alive: "20m", options: { num_ctx: 768, num_predict: 160, temperature: 0.35, top_p: 0.70, repeat_penalty: 1.08 } },
-  rapido: { label: "Rápido", timeoutMs: 120000, keep_alive: "20m", options: { num_ctx: 1024, num_predict: 256, temperature: 0.45, top_p: 0.78, repeat_penalty: 1.08 } },
-  economico: { label: "Econômico", timeoutMs: 120000, keep_alive: 0, options: { num_ctx: 768, num_predict: 160, temperature: 0.40, top_p: 0.72, repeat_penalty: 1.08 } }
+  turbo: {
+    label: "Turbo",
+    timeoutMs: 90000,
+    keep_alive: "20m",
+    options: { num_ctx: 768, num_predict: 160, temperature: 0.35, top_p: 0.7, repeat_penalty: 1.08 }
+  },
+  rapido: {
+    label: "Rápido",
+    timeoutMs: 120000,
+    keep_alive: "20m",
+    options: { num_ctx: 1024, num_predict: 256, temperature: 0.45, top_p: 0.78, repeat_penalty: 1.08 }
+  },
+  economico: {
+    label: "Econômico",
+    timeoutMs: 120000,
+    keep_alive: 0,
+    options: { num_ctx: 768, num_predict: 160, temperature: 0.4, top_p: 0.72, repeat_penalty: 1.08 }
+  }
 };
 
 const PERSONA_OPTIONS = {
-  nobre: { label: "Nobre rica", prompt: "Você é Noelle, uma IA local elegante, confiante, educada e levemente majestosa. Responda em português brasileiro, com clareza, sem enrolar e considerando 2026 como contexto atual do projeto." },
-  direta: { label: "Direta", prompt: "Você é Noelle, uma IA local direta e prática. Responda em português brasileiro, curto, claro e focado na solução. Considere 2026 como contexto atual do projeto." },
-  fofa: { label: "Fofa", prompt: "Você é Noelle, uma IA local gentil e acolhedora. Responda em português brasileiro com tom leve, útil e objetivo. Considere 2026 como contexto atual do projeto." },
-  seria: { label: "Séria", prompt: "Você é Noelle, uma IA local séria, calma e focada. Responda em português brasileiro com precisão e sem brincadeiras. Considere 2026 como contexto atual do projeto." }
+  nobre: {
+    label: "Nobre rica",
+    prompt: "Você é Noelle, uma IA local elegante, confiante, educada e levemente majestosa.\nResponda em português brasileiro, com clareza, sem enrolar e considerando 2026 como contexto atual do projeto."
+  },
+  direta: {
+    label: "Direta",
+    prompt: "Você é Noelle, uma IA local direta e prática. Responda em português brasileiro, curto, claro e focado na solução. Considere 2026 como contexto atual do projeto."
+  },
+  fofa: {
+    label: "Fofa",
+    prompt: "Você é Noelle, uma IA local gentil e acolhedora. Responda em português brasileiro com tom leve, útil e objetivo.\nConsidere 2026 como contexto atual do projeto."
+  },
+  seria: {
+    label: "Séria",
+    prompt: "Você é Noelle, uma IA local séria, calma e focada. Responda em português brasileiro com precisão e sem brincadeiras.\nConsidere 2026 como contexto atual do projeto."
+  }
 };
 
 let mainWin = null;
 let avatarWin = null;
-let runtime = { lastStatus: "iniciando", lastError: null, lastChatSeconds: null, lastSuccessAt: null, lastAvatarCommand: null };
+let tray = null;
+let isQuitting = false;
+
+const runtime = {
+  lastStatus: "iniciando",
+  lastError: null,
+  lastChatSeconds: null,
+  lastSuccessAt: null,
+  lastAvatarCommand: null
+};
 
 function ensureDir(dirPath) {
   if (!dirPath) return;
@@ -52,30 +87,37 @@ function ensureDir(dirPath) {
 }
 
 function fileExists(filePath) {
-  try { return fs.existsSync(filePath); } catch (_) { return false; }
+  try {
+    return fs.existsSync(filePath);
+  } catch {
+    return false;
+  }
 }
 
 function toFileUrl(filePath) {
   return "file:///" + String(filePath).replace(/\\/g, "/").replace(/^\/+/, "");
 }
 
+function getUserDataSafe() {
+  return app.isReady() ? app.getPath("userData") : path.join(ROOT_DIR, ".runtime");
+}
+
 function stateFile() {
-  const dir = path.join(USER_DATA_READY(), "state");
+  const dir = path.join(getUserDataSafe(), "state");
   ensureDir(dir);
   return path.join(dir, "noelle-state.json");
 }
 
 function logFile() {
-  const dir = path.join(USER_DATA_READY(), "logs");
+  const dir = path.join(getUserDataSafe(), "logs");
   ensureDir(dir);
   return path.join(dir, "noelle-core.log");
 }
 
 function appendLog(message, extra = null) {
   try {
-    const line = JSON.stringify({ at: new Date().toISOString(), message, extra }) + "\n";
-    fs.appendFileSync(logFile(), line, "utf8");
-  } catch (_) {}
+    fs.appendFileSync(logFile(), JSON.stringify({ at: new Date().toISOString(), message, extra }) + "\n", "utf8");
+  } catch {}
 }
 
 function readJson(file, fallback) {
@@ -140,8 +182,9 @@ function ollamaRequest(method, apiPath, payload = null, timeoutMs = 30000) {
         });
         res.on("end", () => {
           let parsed = {};
-          try { parsed = data ? JSON.parse(data) : {}; }
-          catch (err) {
+          try {
+            parsed = data ? JSON.parse(data) : {};
+          } catch (err) {
             resolve({ ok: false, statusCode: res.statusCode, error: "Resposta inválida do Ollama: " + trimErr(err.message), raw: data.slice(0, 500) });
             return;
           }
@@ -150,11 +193,12 @@ function ollamaRequest(method, apiPath, payload = null, timeoutMs = 30000) {
         });
       }
     );
+
     req.on("timeout", () => req.destroy(new Error("timeout")));
     req.on("error", (err) => {
       const msg = trimErr(err?.message || err);
       if (/ECONNREFUSED|connect/i.test(msg)) {
-        resolve({ ok: false, error: "Ollama fechado/offline em 127.0.0.1:11434." });
+        resolve({ ok: false, error: `Ollama fechado/offline em ${OLLAMA_HOST}:${OLLAMA_PORT}.` });
         return;
       }
       resolve({ ok: false, error: msg === "timeout" ? "Ollama demorou demais para responder." : msg });
@@ -191,39 +235,49 @@ async function chatWithNoelle(payload) {
   const profileKey = PROFILE_OPTIONS[payload?.profile] ? payload.profile : state.profile;
   const persona = PERSONA_OPTIONS[payload?.persona] ? payload.persona : state.persona;
   const profile = PROFILE_OPTIONS[profileKey] || PROFILE_OPTIONS.rapido;
+
   saveState({ model, profile: profileKey, persona });
-  const userText = String(payload?.message || "").trim();
+
+  const userText = String(payload?.message || "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").trim().slice(0, 4000);
   if (!userText) return { ok: false, error: "Mensagem vazia." };
+
   const history = Array.isArray(payload?.history) ? payload.history.map(normalizeMessage).filter(Boolean).slice(-12) : [];
   const currentState = loadState();
   currentState.model = model;
   currentState.profile = profileKey;
   currentState.persona = persona;
+
   const messages = [
     { role: "system", content: buildSystemPrompt(currentState) },
     ...history,
     { role: "user", content: userText }
   ];
+
   runtime.lastStatus = "gerando";
   const result = await ollamaRequest("POST", "/api/chat", { model, messages, stream: false, keep_alive: profile.keep_alive, options: profile.options }, profile.timeoutMs);
   const seconds = ((Date.now() - start) / 1000).toFixed(2);
   runtime.lastChatSeconds = seconds;
+
   if (!result.ok) {
     runtime.lastStatus = "erro";
     runtime.lastError = result.error;
     appendLog("chat_error", { error: result.error, model, profile: profileKey });
     return { ok: false, error: result.error, seconds, ollamaUrl: `http://${OLLAMA_HOST}:${OLLAMA_PORT}` };
   }
+
   const text = String(result.data?.message?.content || result.data?.response || "").trim();
   if (!text) {
     runtime.lastStatus = "erro";
     runtime.lastError = "Resposta vazia do Ollama.";
     return { ok: false, error: runtime.lastError, seconds };
   }
+
   runtime.lastStatus = "pronto";
   runtime.lastError = null;
   runtime.lastSuccessAt = new Date().toISOString();
   appendLog("chat_ok", { seconds, model, profile: profileKey });
+  updateTrayMenu();
+
   return { ok: true, message: text, seconds, model, profile: profileKey, persona };
 }
 
@@ -240,16 +294,18 @@ function normalizeManifestArray(raw, defaultBase, extList) {
     return fs.readdirSync(defaultBase)
       .filter((name) => extList.some((ext) => name.toLowerCase().endsWith(ext)))
       .map((name) => ({ id: path.basename(name, path.extname(name)), label: path.basename(name, path.extname(name)), file: name }));
-  } catch (_) { return []; }
+  } catch {
+    return [];
+  }
 }
 
 function makeAssetEntry(entry, baseDir, fallbackKind) {
   const file = String(entry.file || entry.path || entry.name || "").trim();
   const id = String(entry.id || path.basename(file, path.extname(file)) || entry.label || fallbackKind).replace(/[^a-zA-Z0-9_-]+/g, "_");
   const label = String(entry.label || entry.title || entry.name || id).replace(/[_-]+/g, " ");
-  const abs = path.isAbsolute(file) ? file : path.join(baseDir, file);
-  const rel = path.relative(ROOT_DIR, abs).replace(/\\/g, "/");
-  return { id, label, file: file || path.basename(abs), abs, rel, url: toFileUrl(abs), exists: fileExists(abs), kind: fallbackKind, meta: entry };
+  const filePath = path.isAbsolute(file) ? file : path.join(baseDir, file);
+  const rel = path.relative(ROOT_DIR, filePath).replace(/\\/g, "/");
+  return { id, label, file: file || path.basename(filePath), abs: filePath, rel, url: toFileUrl(filePath), exists: fileExists(filePath), kind: fallbackKind, meta: entry };
 }
 
 function scanAssets() {
@@ -266,16 +322,16 @@ function scanAssets() {
   const motions = normalizeManifestArray(motionsRaw, motionsDir, [".vrma", ".vmd"]).map((entry) => makeAssetEntry(entry, motionsDir, "motion"));
   const items = normalizeManifestArray(itemsRaw, itemsDir, [".glb", ".gltf", ".vrm"]).map((entry) => makeAssetEntry(entry, itemsDir, "item"));
 
-  const avatarCandidates = [];
+  const avatars = [];
   const noelleVrm = path.join(ASSETS_DIR, "Noelle.vrm");
-  if (fileExists(noelleVrm)) avatarCandidates.push(makeAssetEntry({ id: "noelle", label: "Noelle", file: noelleVrm }, ASSETS_DIR, "avatar"));
+  if (fileExists(noelleVrm)) avatars.push(makeAssetEntry({ id: "noelle", label: "Noelle", file: noelleVrm }, ASSETS_DIR, "avatar"));
   try {
     if (fs.existsSync(avatarsDir)) {
       for (const name of fs.readdirSync(avatarsDir)) {
-        if (name.toLowerCase().endsWith(".vrm")) avatarCandidates.push(makeAssetEntry({ id: path.basename(name, ".vrm"), label: path.basename(name, ".vrm"), file: name }, avatarsDir, "avatar"));
+        if (name.toLowerCase().endsWith(".vrm")) avatars.push(makeAssetEntry({ id: path.basename(name, ".vrm"), label: path.basename(name, ".vrm"), file: name }, avatarsDir, "avatar"));
       }
     }
-  } catch (_) {}
+  } catch {}
 
   return {
     root: ROOT_DIR,
@@ -289,8 +345,8 @@ function scanAssets() {
     expressions,
     motions,
     items,
-    avatars: avatarCandidates,
-    counts: { expressions: expressions.length, motions: motions.length, items: items.length, avatars: avatarCandidates.length }
+    avatars,
+    counts: { expressions: expressions.length, motions: motions.length, items: items.length, avatars: avatars.length }
   };
 }
 
@@ -300,19 +356,19 @@ function getAppIconPath() {
     path.join(APP_ICONS_DIR, "noelle_256.png"),
     path.join(APP_ICONS_DIR, "noelle_128.png"),
     path.join(APP_ICONS_DIR, "noelle_64.png"),
-    path.join(APP_ICONS_DIR, "noelle_32.png"),
-    path.join(APP_ICONS_DIR, "noelle_16.png")
+    path.join(APP_ICONS_DIR, "noelle_32.png")
   ];
   return candidates.find((file) => fileExists(file)) || null;
 }
+
 function getTrayImage() {
   const iconPath = getAppIconPath();
   if (!iconPath) return null;
   const image = nativeImage.createFromPath(iconPath);
   if (!image || image.isEmpty()) return null;
-  if (process.platform === "win32") return image.resize({ width: 16, height: 16 });
-  return image;
+  return process.platform === "win32" ? image.resize({ width: 16, height: 16 }) : image;
 }
+
 function showMainWindow() {
   if (!mainWin || mainWin.isDestroyed()) createMainWindow();
   if (mainWin) {
@@ -321,6 +377,7 @@ function showMainWindow() {
     mainWin.focus();
   }
 }
+
 function toggleMainWindow() {
   if (!mainWin || mainWin.isDestroyed()) {
     createMainWindow();
@@ -329,12 +386,12 @@ function toggleMainWindow() {
   if (mainWin.isVisible()) mainWin.hide();
   else showMainWindow();
 }
+
 function updateTrayMenu() {
   if (!tray) return;
-  const avatarOpen = !!(avatarWin && !avatarWin.isDestroyed() && avatarWin.isVisible());
   const menu = Menu.buildFromTemplate([
     { label: "Mostrar/Ocultar Noelle", click: () => toggleMainWindow() },
-    { label: avatarOpen ? "Mostrar widget/avatar" : "Abrir widget/avatar", click: () => createAvatarWindow({ show: true }) },
+    { label: "Abrir widget/avatar", click: () => createAvatarWindow({ show: true }) },
     { label: "Centralizar avatar", click: () => sendAvatarCommand("center", {}) },
     { label: "Parar emote", click: () => sendAvatarCommand("stop", {}) },
     { type: "separator" },
@@ -344,6 +401,7 @@ function updateTrayMenu() {
   ]);
   tray.setContextMenu(menu);
 }
+
 function createTrayIcon() {
   if (tray) return tray;
   const image = getTrayImage();
@@ -361,13 +419,15 @@ function createTrayIcon() {
   updateTrayMenu();
   return tray;
 }
+
 function createMainWindow() {
   mainWin = new BrowserWindow({
-    icon: getAppIconPath(), width: 1180,
+    width: 1180,
     height: 760,
     minWidth: 900,
     minHeight: 620,
     title: "Noelle Companion",
+    icon: getAppIconPath(),
     backgroundColor: "#090711",
     autoHideMenuBar: true,
     frame: true,
@@ -380,8 +440,16 @@ function createMainWindow() {
       sandbox: false
     }
   });
+
   mainWin.once("ready-to-show", () => mainWin.show());
-  mainWin.on("close", (event) => { if (!isQuitting) { event.preventDefault(); mainWin.hide(); updateTrayMenu(); } }); mainWin.on("closed", () => { mainWin = null; });
+  mainWin.on("close", (event) => {
+    if (!isQuitting) {
+      event.preventDefault();
+      mainWin.hide();
+      updateTrayMenu();
+    }
+  });
+  mainWin.on("closed", () => { mainWin = null; });
   mainWin.loadFile(path.join(SRC_DIR, "controls.html"));
 }
 
@@ -391,13 +459,15 @@ function createAvatarWindow({ show = true } = {}) {
     avatarWin.focus();
     return avatarWin;
   }
+
   const saved = loadState();
   avatarWin = new BrowserWindow({
-    icon: getAppIconPath(), width: 420,
+    width: 420,
     height: 680,
     minWidth: 280,
     minHeight: 360,
     title: "Noelle Avatar Widget",
+    icon: getAppIconPath(),
     backgroundColor: "#00000000",
     transparent: true,
     frame: false,
@@ -412,9 +482,11 @@ function createAvatarWindow({ show = true } = {}) {
       sandbox: false
     }
   });
+
   avatarWin.once("ready-to-show", () => { if (show) avatarWin.show(); });
-  avatarWin.on("closed", () => { avatarWin = null; });
-  const avatarHtmlPath = fs.existsSync(path.join(SRC_DIR, "avatar_view.html")) ? path.join(SRC_DIR, "avatar_view.html") : path.join(SRC_DIR, "avatar.html"); avatarWin.loadFile(avatarHtmlPath);
+  avatarWin.on("closed", () => { avatarWin = null; updateTrayMenu(); });
+  avatarWin.loadFile(path.join(SRC_DIR, "avatar_view.html"));
+  updateTrayMenu();
   return avatarWin;
 }
 
@@ -445,39 +517,23 @@ function normalizeAvatarCommandPayload(command, payload = {}) {
   if (key === "resetrotation" || key === "resetavatarrotation") return { type: "resetAvatarRotation" };
   return entry.type ? entry : { type: raw || "noop", source: entry };
 }
+
 function emitAvatarCommandPayload(win, payload) {
-  try { win.webContents.send("avatar:command", payload); } catch (_) {}
-  try { win.webContents.send("avatar-command", payload); } catch (_) {}
+  try { win.webContents.send("avatar:command", payload); } catch {}
+  try { win.webContents.send("avatar-command", payload); } catch {}
 }
+
 function sendAvatarCommand(command, payload = {}) {
   const win = createAvatarWindow({ show: true });
   const avatarPayload = normalizeAvatarCommandPayload(command, payload);
   const data = { command, payload, avatarPayload, at: Date.now() };
   runtime.lastAvatarCommand = data;
   updateTrayMenu();
+
   const emit = () => setTimeout(() => emitAvatarCommandPayload(win, avatarPayload), 250);
   if (win.webContents.isLoading()) win.webContents.once("did-finish-load", emit);
   else emit();
-  return { ok: true, sent: data };
-}) {
-  const win = createAvatarWindow({ show: true });
-  const avatarPayload = normalizeAvatarCommandPayload(command, payload);
-  const data = { command, payload, avatarPayload, at: Date.now() };
-  runtime.lastAvatarCommand = data;
-  updateTrayMenu();
-  const emit = () => setTimeout(() => emitAvatarCommandPayload(win, avatarPayload), 250);
-  if (win.webContents.isLoading()) win.webContents.once("did-finish-load", emit);
-  else emit();
-  return { ok: true, sent: data };
-}) {
-  const win = createAvatarWindow({ show: true });
-  const data = { command, payload, at: Date.now() };
-  runtime.lastAvatarCommand = data;
-  if (win.webContents.isLoading()) {
-    win.webContents.once("did-finish-load", () => win.webContents.send("avatar:command", data));
-  } else {
-    win.webContents.send("avatar:command", data);
-  }
+
   return { ok: true, sent: data };
 }
 
@@ -492,19 +548,24 @@ function safeSpawn(command, args, options = {}) {
       resolve({ ok: false, error: trimErr(err.message || err) });
       return;
     }
+
     let stdout = "";
     let stderr = "";
     child.stdout?.on("data", (data) => { stdout += data.toString(); if (stdout.length > 2000) stdout = stdout.slice(-2000); });
     child.stderr?.on("data", (data) => { stderr += data.toString(); if (stderr.length > 2000) stderr = stderr.slice(-2000); });
     child.on("error", (err) => resolve({ ok: false, error: trimErr(err.message || err), stdout, stderr }));
-    child.on("close", (code) => resolve({ ok: code === 0, code, stdout: trimErr(stdout, 2000), stderr: trimErr(stderr, 2000), error: code === 0 ? null : trimErr(stderr || stdout || `Processo saiu com código ${code}`) }));
+    child.on("close", (code) => resolve({
+      ok: code === 0,
+      code,
+      stdout: trimErr(stdout, 2000),
+      stderr: trimErr(stderr, 2000),
+      error: code === 0 ? null : trimErr(stderr || stdout || `Processo saiu com código ${code}`)
+    }));
   });
 }
 
 function pythonCandidates() {
-  const venv = process.platform === "win32"
-    ? path.join(ROOT_DIR, ".venv", "Scripts", "python.exe")
-    : path.join(ROOT_DIR, ".venv", "bin", "python");
+  const venv = process.platform === "win32" ? path.join(ROOT_DIR, ".venv", "Scripts", "python.exe") : path.join(ROOT_DIR, ".venv", "bin", "python");
   const list = [];
   if (fileExists(venv)) list.push({ cmd: venv, argsPrefix: [] });
   if (process.platform === "win32") list.push({ cmd: "py", argsPrefix: ["-3"] });
@@ -516,6 +577,7 @@ function pythonCandidates() {
 async function speakText(text) {
   const clean = String(text || "").trim().slice(0, 1000);
   if (!clean) return { ok: false, error: "Texto vazio." };
+
   const ttsScript = path.join(ROOT_DIR, "tools", "noelle_tts", "speak_piper.py");
   if (fileExists(ttsScript)) {
     for (const py of pythonCandidates()) {
@@ -523,12 +585,14 @@ async function speakText(text) {
       if (result.ok) return { ok: true, engine: "python-tts", detail: result.stdout };
     }
   }
+
   if (process.platform === "win32") {
     const ps = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Rate = 0; $s.Volume = 100; $s.Speak(${JSON.stringify(clean)});`;
     const result = await safeSpawn("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps], { cwd: ROOT_DIR });
     if (result.ok) return { ok: true, engine: "windows-sapi" };
     return { ok: false, error: result.error || "Falha no TTS Windows." };
   }
+
   return { ok: false, error: "TTS não configurado neste sistema." };
 }
 
@@ -536,6 +600,7 @@ async function getStatus() {
   const state = loadState();
   const ping = await ollamaRequest("GET", "/api/tags", null, 3500);
   const assets = scanAssets();
+
   return {
     ok: true,
     year: APP_YEAR,
@@ -543,7 +608,7 @@ async function getStatus() {
     electron: process.versions.electron,
     node: process.versions.node,
     platform: process.platform,
-    userData: USER_DATA_READY(),
+    userData: getUserDataSafe(),
     ollama: {
       ok: !!ping.ok,
       url: `http://${OLLAMA_HOST}:${OLLAMA_PORT}`,
@@ -561,17 +626,26 @@ async function getStatus() {
   };
 }
 
-app.whenReady().then(() => { if (process.platform === "win32") { try { app.setAppUserModelId("com.masoritech.noelle"); } catch (_) {} }
-  ensureDir(path.join(USER_DATA_READY(), "state"));
-  ensureDir(path.join(USER_DATA_READY(), "logs"));
+app.whenReady().then(() => {
+  if (process.platform === "win32") {
+    try { app.setAppUserModelId("com.masoritech.noelle"); } catch {}
+  }
+
+  ensureDir(path.join(getUserDataSafe(), "state"));
+  ensureDir(path.join(getUserDataSafe(), "logs"));
+
+  createTrayIcon();
   createMainWindow();
+
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    else showMainWindow();
   });
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+app.on("before-quit", () => { isQuitting = true; });
+app.on("window-all-closed", (event) => {
+  if (!isQuitting) event.preventDefault();
 });
 
 ipcMain.handle("noelle:status", async () => getStatus());
@@ -588,14 +662,8 @@ ipcMain.handle("noelle:open-external", async (_event, url) => {
   return { ok: false, error: "URL inválida." };
 });
 
-ipcMain.handle("avatar:open", async () => {
-  createAvatarWindow({ show: true });
-  return { ok: true };
-});
-ipcMain.handle("avatar:close", async () => {
-  if (avatarWin && !avatarWin.isDestroyed()) avatarWin.hide();
-  return { ok: true };
-});
+ipcMain.handle("avatar:open", async () => { createAvatarWindow({ show: true }); return { ok: true }; });
+ipcMain.handle("avatar:close", async () => { if (avatarWin && !avatarWin.isDestroyed()) avatarWin.hide(); updateTrayMenu(); return { ok: true }; });
 ipcMain.handle("avatar:command", async (_event, command, payload) => sendAvatarCommand(command, payload || {}));
 ipcMain.handle("avatar:always-on-top", async (_event, enabled) => {
   const win = createAvatarWindow({ show: true });

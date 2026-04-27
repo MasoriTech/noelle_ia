@@ -866,3 +866,34 @@ Comportamento esperado:
 ```
 
 Não remover a bandeja ao mexer em main.js.
+
+
+## Nota de estabilidade do main.js
+
+O arquivo main.js não pode ter quebras literais dentro de strings com aspas duplas ou simples.
+
+Errado:
+
+```js
+prompt: "linha 1
+linha 2"
+```
+
+Certo:
+
+```js
+prompt: "linha 1\nlinha 2"
+```
+
+ou template literal bem controlado:
+
+```js
+prompt: `linha 1
+linha 2`
+```
+
+Antes de entregar qualquer pack, sempre rodar:
+
+```bat
+node --check main.js
+```

@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "17.4.0",
+  "version": "17.4.1",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -8,9 +8,9 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "diagnostico": "node scripts/diagnostico_v17_4_tray.cjs",
+    "diagnostico": "node scripts/diagnostico_v17_4_1_main.cjs",
     "doctor": "node scripts/diagnostico_v17_4_tray.cjs",
-    "check": "node --check main.js && node --check preload.js && node --check scripts/diagnostico_v17_4_tray.cjs && node --check src/renderer/controls_window_app.js && node --check src/renderer/avatar_window_app.js",
+    "check": "node --check main.js && node --check preload.js && node --check src/renderer/controls_window_app.js && node --check src/renderer/avatar_window_app.js",
     "dist:win": "electron-builder --win nsis portable"
   },
   "dependencies": {
