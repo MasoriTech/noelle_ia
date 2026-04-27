@@ -1,15 +1,27 @@
-export function createRoomControls({ manager, renderLayoutList, updateInspector, saveLayout, toast, grid }) {
+export function createRoomControls({ manager, renderLayoutList, updateInspector, saveLayout, undo, redo, toast, grid }) {
   let gridEnabled = true;
   let collisionEnabled = true;
 
-  function handleKey(event) {
+  async function handleKey(event) {
     const tag = String(event.target?.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "textarea") return;
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
 
+    const key = event.key.toLowerCase();
     const fine = event.shiftKey;
-    if (event.ctrlKey && event.key.toLowerCase() === "s") {
+
+    if (event.ctrlKey && key === "s") {
       event.preventDefault();
-      saveLayout();
+      await saveLayout();
+      return;
+    }
+    if (event.ctrlKey && key === "z") {
+      event.preventDefault();
+      await undo();
+      return;
+    }
+    if (event.ctrlKey && (key === "y" || (event.shiftKey && key === "z"))) {
+      event.preventDefault();
+      await redo();
       return;
     }
 
@@ -25,9 +37,8 @@ export function createRoomControls({ manager, renderLayoutList, updateInspector,
     if (event.key === "3") { manager.setMode("scale"); toast("Modo escalar"); return; }
 
     const map = { w: [0, 0, -1], s: [0, 0, 1], a: [-1, 0, 0], d: [1, 0, 0], q: [0, 1, 0], e: [0, -1, 0] };
-    const lower = event.key.toLowerCase();
-    if (map[lower]) {
-      const [x, y, z] = map[lower];
+    if (map[key]) {
+      const [x, y, z] = map[key];
       manager.moveSelected(x, y, z, fine);
       updateInspector();
       return;
@@ -38,9 +49,9 @@ export function createRoomControls({ manager, renderLayoutList, updateInspector,
     if (event.key === "+" || event.key === "=") { manager.scaleSelected(0.05); updateInspector(); }
     if (event.key === "-" || event.key === "_") { manager.scaleSelected(-0.05); updateInspector(); }
 
-    if (lower === "g") toggleGrid();
-    if (lower === "c") toggleCollision();
-    if (lower === "f") updateInspector(true);
+    if (key === "g") toggleGrid();
+    if (key === "c") toggleCollision();
+    if (key === "f") updateInspector(true);
   }
 
   function toggleGrid() {

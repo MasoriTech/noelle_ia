@@ -1,8 +1,10 @@
 import { createRoomScene } from "./room_scene.js";
-import { loadRoomCatalog, filterCatalogForRoom } from "./room_catalog.js";
+import { loadRoomCatalog, filterCatalogForRoom, groupCatalogCounts } from "./room_catalog.js";
 import { createRoomItemManager } from "./room_items.js";
-import { loadRoomLayout, saveRoomLayout } from "./room_layout_store.js";
+import { loadRoomLayout, saveRoomLayout, DEFAULT_ROOM_PRESETS, presetToLayout, safeLayout } from "./room_layout_store.js";
 import { createRoomControls } from "./room_controls.js";
+import { createRoomHistory } from "./room_history.js";
+import { createAutosaveScheduler, loadRoomAutosave, clearRoomAutosave } from "./room_autosave.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -11,6 +13,9 @@ let layout = null;
 let manager = null;
 let sceneApi = null;
 let controlsApi = null;
+let historyApi = null;
+let autosaveApi = null;
+let suppressHistory = false;
 
 function toast(message) {
   const el = $("toast");
@@ -26,15 +31,32 @@ function setStatus(message) {
   if (el) el.textContent = message;
 }
 
+function setSafety(message, type = "ok") {
+  const el = $("safetyBox");
+  if (!el) return;
+  el.className = `validation-box ${type}`;
+  el.textContent = message;
+}
+
+function currentLayout() {
+  return safeLayout({
+    version: 1,
+    roomId: "default_room",
+    grid: layout?.grid || { size: 0.25, enabled: true },
+    items: manager?.serialize?.() || []
+  });
+}
+
 function renderCatalog() {
   const list = $("catalogList");
-  const query = String($("catalogSearch")?.value || "").toLowerCase();
+  const category = $("categoryFilter")?.value || "all";
+  const query = $("catalogSearch")?.value || "";
   if (!list) return;
-  const filtered = catalog.filter((item) => `${item.id} ${item.label} ${item.category}`.toLowerCase().includes(query));
+  const filtered = filterCatalogForRoom(catalog, category, query);
   list.innerHTML = "";
 
   if (!filtered.length) {
-    list.innerHTML = `<div class="catalog-item"><strong>Nenhum item</strong><small>Sem room_item no catálogo.</small></div>`;
+    list.innerHTML = `<div class="catalog-item"><strong>Nenhum item</strong><small>Sem room_item nesta categoria.</small></div>`;
     return;
   }
 
@@ -45,13 +67,13 @@ function renderCatalog() {
       <strong>${item.label || item.id}</strong>
       <small>${item.file || ""}</small>
       <span class="badge">${item.category || "room_item"}</span>
+      ${item.raw?.dualUse ? '<span class="badge warn">dual</span>' : ''}
       <button data-add="${item.id}" class="primary">Adicionar</button>
     `;
     card.querySelector("button").addEventListener("click", async () => {
       try {
         await manager.addItem(item, item.placement || {});
-        renderLayoutList();
-        updateInspector();
+        commitRoomChange("add");
       } catch (err) {
         console.error(err);
         toast("Falha ao adicionar: " + (err?.message || err));
@@ -61,13 +83,45 @@ function renderCatalog() {
   }
 }
 
+function renderPresetList() {
+  const list = $("presetList");
+  if (!list) return;
+  list.innerHTML = "";
+  for (const preset of DEFAULT_ROOM_PRESETS) {
+    const card = document.createElement("div");
+    card.className = "preset-item";
+    card.innerHTML = `
+      <strong>${preset.label}</strong>
+      <small>${preset.description || ""}</small>
+      <button class="primary">Aplicar preset</button>
+    `;
+    card.querySelector("button").addEventListener("click", async () => {
+      const presetLayout = presetToLayout(preset);
+      await manager.loadLayout(presetLayout, catalog);
+      commitRoomChange(`preset:${preset.id}`);
+      toast(`Preset aplicado: ${preset.label}`);
+    });
+    list.appendChild(card);
+  }
+}
+
+function updateCategoryLabels() {
+  const counts = groupCatalogCounts(catalog);
+  const select = $("categoryFilter");
+  if (!select) return;
+  for (const option of select.options) {
+    if (option.value === "all") option.textContent = `Todas categorias (${catalog.length})`;
+    else option.textContent = `${option.textContent.replace(/\s*\(.+\)$/, "")} (${counts[option.value] || 0})`;
+  }
+}
+
 function renderLayoutList() {
   const list = $("layoutList");
   if (!list || !manager) return;
   const items = [...manager.placed.values()];
   list.innerHTML = "";
   if (!items.length) {
-    list.innerHTML = `<div class="layout-item"><strong>Room vazia</strong><small>Adicione móveis pelo catálogo.</small></div>`;
+    list.innerHTML = `<div class="layout-item"><strong>Room vazia</strong><small>Adicione móveis pelo catálogo ou use um preset.</small></div>`;
     return;
   }
 
@@ -76,7 +130,7 @@ function renderLayoutList() {
     card.className = "layout-item";
     card.innerHTML = `
       <strong>${entry.item.label || entry.item.id}</strong>
-      <small>${entry.uid}${entry.locked ? " · travado" : ""}</small>
+      <small>${entry.uid}${entry.locked ? " · travado" : ""}${entry.object.userData?.noelleMissingAsset ? " · placeholder" : ""}</small>
       <button data-select="${entry.uid}">Selecionar</button>
     `;
     card.querySelector("button").addEventListener("click", () => {
@@ -127,7 +181,8 @@ function updateInspector(focus = false) {
     info.innerHTML = `
       <b>${entry.item.label || entry.item.id}</b><br>
       UID: ${entry.uid}<br>
-      Room item · ${entry.locked ? "travado" : "editável"}
+      ${entry.item.category || "room_item"} · ${entry.locked ? "travado" : "editável"}
+      ${entry.object.userData?.noelleMissingAsset ? "<br><b>placeholder:</b> asset não carregou" : ""}
     `;
   }
 
@@ -139,29 +194,79 @@ function updateInspector(focus = false) {
 
   renderValidation(manager.validateSelected());
 
-  if (focus && sceneApi?.controls) {
-    sceneApi.controls.target.copy(position);
-  }
+  if (focus && sceneApi?.focusOnObject) sceneApi.focusOnObject(entry.object);
+}
+
+function updateHistoryButtons(state = historyApi?.state?.()) {
+  $("btnUndo") && ($("btnUndo").disabled = !state?.canUndo);
+  $("btnRedo") && ($("btnRedo").disabled = !state?.canRedo);
+}
+
+function commitRoomChange(label = "change") {
+  renderLayoutList();
+  updateInspector();
+  autosaveApi?.schedule();
+  if (!suppressHistory) historyApi?.push(label);
 }
 
 async function saveCurrentLayout() {
-  const current = {
-    version: 1,
-    roomId: "default_room",
-    grid: layout?.grid || { size: 0.25, enabled: true },
-    items: manager.serialize()
-  };
-  const result = await saveRoomLayout(current);
-  if (result?.ok) toast("Room salva");
-  else toast("Falha ao salvar Room");
+  autosaveApi?.flush();
+  const result = await saveRoomLayout(currentLayout());
+  if (result?.ok) {
+    clearRoomAutosave();
+    setSafety("Salvo. Autosave limpo.", "ok");
+    toast("Room salva");
+  } else {
+    setSafety("Falha ao salvar. Autosave mantido.", "warn");
+    toast("Falha ao salvar Room");
+  }
 }
 
 async function loadCurrentLayout() {
   layout = await loadRoomLayout();
+  suppressHistory = true;
   await manager.loadLayout(layout, catalog);
+  suppressHistory = false;
+  historyApi?.reset(currentLayout());
   renderLayoutList();
   updateInspector();
+  autosaveApi?.schedule();
   toast("Room carregada");
+}
+
+async function recoverAutosave() {
+  const result = loadRoomAutosave();
+  if (!result.ok) {
+    toast("Nenhum autosave encontrado");
+    setSafety("Nenhum autosave encontrado.", "warn");
+    return;
+  }
+  suppressHistory = true;
+  await manager.loadLayout(result.layout, catalog);
+  suppressHistory = false;
+  historyApi?.reset(result.layout);
+  commitRoomChange("recover-autosave");
+  setSafety(`Autosave recuperado: ${new Date(result.savedAt).toLocaleString()}`, "ok");
+}
+
+async function undoRoom() {
+  const ok = await historyApi?.undo?.();
+  if (ok) {
+    renderLayoutList();
+    updateInspector();
+    autosaveApi?.schedule();
+    toast("Undo");
+  }
+}
+
+async function redoRoom() {
+  const ok = await historyApi?.redo?.();
+  if (ok) {
+    renderLayoutList();
+    updateInspector();
+    autosaveApi?.schedule();
+    toast("Redo");
+  }
 }
 
 function setMode(mode) {
@@ -174,15 +279,24 @@ function setMode(mode) {
 
 function bindUi() {
   $("catalogSearch")?.addEventListener("input", renderCatalog);
+  $("categoryFilter")?.addEventListener("change", renderCatalog);
   $("btnSave")?.addEventListener("click", saveCurrentLayout);
   $("btnLoad")?.addEventListener("click", loadCurrentLayout);
+  $("btnRecover")?.addEventListener("click", recoverAutosave);
+  $("btnUndo")?.addEventListener("click", undoRoom);
+  $("btnRedo")?.addEventListener("click", redoRoom);
   $("btnGrid")?.addEventListener("click", () => controlsApi?.toggleGrid());
   $("btnCollision")?.addEventListener("click", () => controlsApi?.toggleCollision());
   $("btnFocus")?.addEventListener("click", () => updateInspector(true));
-  $("btnRemove")?.addEventListener("click", () => { manager.remove(); renderLayoutList(); updateInspector(); });
-  $("btnDuplicate")?.addEventListener("click", async () => { await manager.duplicate(); renderLayoutList(); updateInspector(); });
-  $("btnReset")?.addEventListener("click", async () => { await manager.resetSelected(); renderLayoutList(); updateInspector(); });
-  $("btnLock")?.addEventListener("click", () => { manager.toggleLock(); renderLayoutList(); updateInspector(); });
+  $("btnRemove")?.addEventListener("click", () => { manager.remove(); commitRoomChange("remove"); });
+  $("btnDuplicate")?.addEventListener("click", async () => { await manager.duplicate(); commitRoomChange("duplicate"); });
+  $("btnDuplicateX")?.addEventListener("click", async () => { await manager.duplicate(undefined, [0.5, 0, 0]); commitRoomChange("duplicate-x"); });
+  $("btnDuplicateZ")?.addEventListener("click", async () => { await manager.duplicate(undefined, [0, 0, 0.5]); commitRoomChange("duplicate-z"); });
+  $("btnReset")?.addEventListener("click", async () => { await manager.resetSelected(); commitRoomChange("reset"); });
+  $("btnLock")?.addEventListener("click", () => { manager.toggleLock(); commitRoomChange("lock"); });
+  $("btnCenterItem")?.addEventListener("click", () => { manager.centerSelected(); commitRoomChange("center"); });
+  $("btnGroundItem")?.addEventListener("click", () => { manager.groundSelected(); commitRoomChange("ground"); });
+  $("btnRotate90")?.addEventListener("click", () => { manager.rotateSelected90(); commitRoomChange("rot90"); });
   $("btnModeMove")?.addEventListener("click", () => setMode("translate"));
   $("btnModeRotate")?.addEventListener("click", () => setMode("rotate"));
   $("btnModeScale")?.addEventListener("click", () => setMode("scale"));
@@ -194,8 +308,7 @@ function bindUi() {
     const ry = Number($("rotY").value || 0);
     const s = Number($("scaleAll").value || 1);
     manager.setSelectedTransform({ position: [x, y, z], rotationDeg: [0, ry, 0], scale: [s, s, s] });
-    renderLayoutList();
-    updateInspector();
+    commitRoomChange("apply-transform");
   });
 }
 
@@ -205,26 +318,76 @@ async function init() {
     sceneApi = createRoomScene($("roomCanvas"));
 
     setStatus("Carregando catálogo...");
-    catalog = filterCatalogForRoom(await loadRoomCatalog());
+    catalog = await loadRoomCatalog();
 
     manager = createRoomItemManager({
       ...sceneApi,
       gridSize: 0.25,
       toast,
-      onValidate: renderValidation
+      onValidate: renderValidation,
+      onObjectChanged: () => {
+        updateInspector();
+        autosaveApi?.schedule();
+      },
+      onObjectCommitted: (label) => {
+        if (!suppressHistory) {
+          autosaveApi?.schedule();
+          historyApi?.push(label);
+          updateHistoryButtons();
+        }
+      }
     });
 
     setStatus("Carregando layout...");
     layout = await loadRoomLayout();
+    suppressHistory = true;
     await manager.loadLayout(layout, catalog);
+    suppressHistory = false;
 
-    controlsApi = createRoomControls({ manager, renderLayoutList, updateInspector, saveLayout: saveCurrentLayout, toast, grid: sceneApi.grid });
+    autosaveApi = createAutosaveScheduler({
+      getLayout: currentLayout,
+      onStatus: (message) => setSafety(message, "ok")
+    });
+
+    historyApi = createRoomHistory({
+      getLayout: currentLayout,
+      applyLayout: async (nextLayout) => {
+        suppressHistory = true;
+        await manager.loadLayout(nextLayout, catalog);
+        suppressHistory = false;
+      },
+      onChange: updateHistoryButtons
+    });
+    historyApi.reset(currentLayout());
+
+    controlsApi = createRoomControls({
+      manager,
+      renderLayoutList,
+      updateInspector,
+      saveLayout: saveCurrentLayout,
+      undo: undoRoom,
+      redo: redoRoom,
+      toast,
+      grid: sceneApi.grid
+    });
 
     bindUi();
     setMode("translate");
+    updateCategoryLabels();
     renderCatalog();
+    renderPresetList();
     renderLayoutList();
     updateInspector();
+    updateHistoryButtons();
+    autosaveApi.schedule();
+
+    const autosave = loadRoomAutosave();
+    if (autosave.ok && autosave.layout?.items?.length) {
+      setSafety(`Autosave disponível: ${new Date(autosave.savedAt).toLocaleString()}`, "warn");
+    } else {
+      setSafety("Autosave ativo.", "ok");
+    }
+
     setStatus("Room pronta");
     toast("Room pronta");
   } catch (err) {
@@ -235,7 +398,13 @@ async function init() {
 }
 
 window.addEventListener("beforeunload", () => {
-  try { manager?.dispose?.(); sceneApi?.dispose?.(); } catch {}
+  try {
+    autosaveApi?.flush?.();
+    controlsApi?.destroy?.();
+    historyApi = null;
+    manager?.dispose?.();
+    sceneApi?.dispose?.();
+  } catch {}
 });
 
 window.addEventListener("DOMContentLoaded", init);

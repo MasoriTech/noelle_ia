@@ -14,15 +14,18 @@
         <span class="brand-dot">✦</span>
         <div>
           <strong>Noelle Room</strong>
-          <small>Build Mode ultra robusto · cenário separado do avatar</small>
+          <small>Build Mode · undo/redo · autosave · placeholders seguros</small>
         </div>
       </div>
       <div class="toolbar">
         <button id="btnModeMove" class="primary">Mover</button>
         <button id="btnModeRotate">Girar</button>
         <button id="btnModeScale">Escalar</button>
+        <button id="btnUndo">↶ Undo</button>
+        <button id="btnRedo">↷ Redo</button>
         <button id="btnSave" class="primary">Salvar</button>
         <button id="btnLoad">Carregar</button>
+        <button id="btnRecover">Recuperar auto</button>
         <button id="btnGrid">Grid</button>
         <button id="btnCollision">Colisão</button>
         <button id="btnFocus">Focar</button>
@@ -34,7 +37,20 @@
         <section class="panel">
           <h2>Catálogo Room</h2>
           <input id="catalogSearch" class="input" placeholder="Buscar móvel/cenário..." />
+          <select id="categoryFilter" class="input">
+            <option value="all">Todas categorias</option>
+            <option value="furniture">Móveis</option>
+            <option value="electronics">Eletrônicos</option>
+            <option value="decor">Decoração</option>
+            <option value="table_prop">Props de mesa</option>
+            <option value="floor_prop">Props de chão</option>
+          </select>
           <div id="catalogList" class="catalog-list"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Presets</h2>
+          <div id="presetList" class="preset-list"></div>
         </section>
 
         <section class="panel">
@@ -42,9 +58,14 @@
           <div id="selectedInfo" class="selected-info">Nenhum item selecionado.</div>
           <div class="actions-grid">
             <button id="btnDuplicate">Duplicar</button>
+            <button id="btnDuplicateX">+X</button>
+            <button id="btnDuplicateZ">+Z</button>
             <button id="btnRemove" class="danger">Remover</button>
             <button id="btnReset">Resetar</button>
             <button id="btnLock">Travar</button>
+            <button id="btnCenterItem">Centralizar</button>
+            <button id="btnGroundItem">Chão</button>
+            <button id="btnRotate90">Rot +90</button>
           </div>
         </section>
       </aside>
@@ -54,7 +75,7 @@
         <div id="statusPill" class="status-pill">Room inicializando...</div>
         <div class="room-help">
           <b>Controles:</b>
-          Gizmo = mover/girar/escalar · W/A/S/D = mover · Q/E = altura · Setas = girar · +/- = escala · Ctrl+S = salvar · Delete = remover · 1/2/3 = modo
+          Gizmo = mover/girar/escalar · Ctrl+Z/Y = undo/redo · W/A/S/D = mover · Q/E = altura · Ctrl+S = salvar · Delete = remover · 1/2/3 = modo
         </div>
         <div id="toast" class="toast"></div>
       </section>
@@ -68,6 +89,11 @@
           <label>Rot Y <input id="rotY" type="number" step="5"></label>
           <label>Escala <input id="scaleAll" type="number" step="0.05" min="0.01"></label>
           <button id="btnApplyTransform" class="primary">Aplicar</button>
+        </section>
+
+        <section class="panel">
+          <h2>Segurança</h2>
+          <div id="safetyBox" class="validation-box">Autosave aguardando.</div>
         </section>
 
         <section class="panel">

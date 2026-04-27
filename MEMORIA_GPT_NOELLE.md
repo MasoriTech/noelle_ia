@@ -1002,3 +1002,21 @@ Correções importantes:
 - A escala salva no room_layout.json é userScale, não escala final normalizada, evitando dobrar o tamanho ao recarregar.
 - Room usa Box3/BoxHelper para seleção e colisão simples.
 - Layout salvo é sanitizado no main.js e escrito via arquivo temporário + rename.
+
+
+## V18.4 Room Safety / Undo / Autosave
+
+A Room V18.4 adiciona:
+- Undo/Redo com Ctrl+Z/Ctrl+Y;
+- room_history.js;
+- room_autosave.js;
+- autosave local com botão "Recuperar auto";
+- placeholder seguro quando GLB não carrega;
+- callbacks de commit/change no room_items.js;
+- save continua por IPC no main;
+- layout ainda sanitizado no renderer e main.
+
+Regra:
+- Se um asset quebrar, a Room não deve crashar. Deve mostrar placeholder.
+- Se salvar falhar, autosave deve ficar disponível.
+- Undo/Redo não deve mexer no Avatar, Chat, motions ou expressions.

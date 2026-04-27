@@ -28,6 +28,8 @@ export function validateRoomObject(entry, allEntries, options = {}) {
   const warnings = [];
   if (!entry?.object) return { ok: false, errors: ["Objeto inválido"], warnings };
 
+  if (entry.object.userData?.noelleMissingAsset) warnings.push("Asset original não carregou; usando placeholder.");
+
   const pos = entry.object.position;
   if (pos.y < -0.001) errors.push("Item abaixo do chão.");
   if (pos.x < ROOM_LIMITS.minX || pos.x > ROOM_LIMITS.maxX || pos.z < ROOM_LIMITS.minZ || pos.z > ROOM_LIMITS.maxZ) {

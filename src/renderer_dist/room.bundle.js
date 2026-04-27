@@ -43866,6 +43866,22 @@ void main() {
     const roomRoot = new Group();
     roomRoot.name = "room-root";
     scene.add(roomRoot);
+    function focusOnObject(object) {
+      if (!object) return;
+      const box = new Box3().setFromObject(object);
+      if (box.isEmpty()) return;
+      const center = new Vector3();
+      const size = new Vector3();
+      box.getCenter(center);
+      box.getSize(size);
+      controls.target.copy(center);
+      const distance = Math.max(2.5, Math.max(size.x, size.y, size.z) * 2.6);
+      camera.position.set(center.x + distance, center.y + distance * 0.62 + 0.9, center.z + distance);
+    }
+    function resetCamera() {
+      camera.position.set(4.2, 3, 5);
+      controls.target.set(0, 0.75, 0);
+    }
     function resize() {
       const rect = canvas.getBoundingClientRect();
       const width = Math.max(1, Math.floor(rect.width));
@@ -43891,50 +43907,86 @@ void main() {
       controls.dispose();
       renderer.dispose();
     }
-    return { THREE: three_module_exports, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, dispose };
+    return { THREE: three_module_exports, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, focusOnObject, resetCamera, dispose };
   }
 
   // src/renderer/room_catalog.js
+  var PURE_AVATAR_CATEGORIES = /* @__PURE__ */ new Set(["hand", "avatar_item", "hand_prop", "wearable"]);
+  var ROOM_CATEGORY_BY_ID = [
+    [/piano|grand_piano/i, "furniture"],
+    [/desk|mesa|table|chair|cadeira|bed|sofa|shelf|estante/i, "furniture"],
+    [/monitor|tablet|phone|iphone|computer|pc|keyboard/i, "electronics"],
+    [/lamp|light|plant|decor|poster|frame/i, "decor"],
+    [/dado|dice|cafe|cup|book|paper/i, "table_prop"]
+  ];
+  function inferCategory(item) {
+    const hay = `${item.id || ""} ${item.label || ""} ${item.file || ""} ${item.category || ""}`;
+    for (const [regex, category] of ROOM_CATEGORY_BY_ID) {
+      if (regex.test(hay)) return category;
+    }
+    if (String(item.category || "").includes("scene")) return "furniture";
+    return item.category || "floor_prop";
+  }
+  function canAppearInRoom(item) {
+    const kind = String(item.kind || "").toLowerCase();
+    const category = String(item.category || "").toLowerCase();
+    const roomMode = item.allowInRoom || item.room === true || item.kind === "room_item";
+    const dual = item.dualUse === true || item.roomUse === true;
+    const hay = `${item.id || ""} ${item.label || ""} ${item.file || ""} ${category} ${kind}`.toLowerCase();
+    const looksRoom = /desk|piano|chair|cadeira|mesa|table|bed|sofa|monitor|lamp|shelf|estante|dado|dice|tablet|book|paper/.test(hay);
+    if (kind === "room_item" || kind === "scene_prop") return true;
+    if (category === "scene_prop" || category === "furniture") return true;
+    if (roomMode || dual || looksRoom) return true;
+    if (PURE_AVATAR_CATEGORIES.has(category) || PURE_AVATAR_CATEGORIES.has(kind)) return false;
+    return false;
+  }
   function normalizeCatalogItem(item) {
     const file = String(item.file || item.path || "");
     const id = String(item.id || file.split("/").pop()?.replace(/\.[^.]+$/, "") || "item");
-    const kind = item.kind || (item.category === "scene_prop" ? "room_item" : item.kind) || "room_item";
+    const category = inferCategory({ ...item, id, file });
     return {
       id,
       label: item.label || item.title || id,
       file,
-      category: item.category || "room_item",
-      kind,
+      category,
+      kind: "room_item",
+      allowInRoom: true,
       placement: {
-        surface: "floor",
-        snap: true,
+        surface: category === "table_prop" ? "table" : "floor",
+        snap: category !== "decor",
         rotateStepDeg: 15,
-        canCollide: true,
-        targetSize: item.targetSize || item.target_size || 1,
+        canCollide: category === "furniture",
+        targetSize: item.targetSize || item.target_size || item.placement?.targetSize || (category === "table_prop" ? 0.18 : 1),
         ...item.placement || {}
       },
       raw: item
     };
   }
   async function loadRoomCatalog() {
+    let list = [];
     if (window.noelleRoom?.listCatalog) {
       const result = await window.noelleRoom.listCatalog();
-      if (result?.ok && Array.isArray(result.items)) return result.items.map(normalizeCatalogItem);
+      if (result?.ok && Array.isArray(result.items)) list = result.items;
     }
-    const res = await fetch("./assets/room_manifest.json");
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
-    return list.map(normalizeCatalogItem);
+    if (!list.length) {
+      const res = await fetch("./assets/room_manifest.json");
+      const data = await res.json();
+      list = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
+    }
+    return list.filter(canAppearInRoom).map(normalizeCatalogItem);
   }
-  function filterCatalogForRoom(items) {
+  function filterCatalogForRoom(items, category = "all", query = "") {
+    const cleanQuery = String(query || "").toLowerCase();
     return (Array.isArray(items) ? items : []).filter((item) => {
-      const id = String(item.id || "").toLowerCase();
-      const file = String(item.file || "").toLowerCase();
-      const kind = String(item.kind || "").toLowerCase();
-      const category = String(item.category || "").toLowerCase();
-      const hay = id + " " + file + " " + kind + " " + category;
-      return kind === "room_item" || kind === "scene_prop" || category.includes("scene") || category.includes("furniture") || /desk|piano|chair|cadeira|mesa|table|bed|sofa|monitor|lamp|shelf|estante/.test(hay);
+      const okCategory = category === "all" || item.category === category;
+      const okQuery = !cleanQuery || `${item.id} ${item.label} ${item.category} ${item.file}`.toLowerCase().includes(cleanQuery);
+      return okCategory && okQuery;
     });
+  }
+  function groupCatalogCounts(items) {
+    const counts = {};
+    for (const item of Array.isArray(items) ? items : []) counts[item.category] = (counts[item.category] || 0) + 1;
+    return counts;
   }
 
   // node_modules/three/examples/jsm/utils/BufferGeometryUtils.js
@@ -46615,6 +46667,7 @@ void main() {
     const errors = [];
     const warnings = [];
     if (!entry?.object) return { ok: false, errors: ["Objeto inv\xE1lido"], warnings };
+    if (entry.object.userData?.noelleMissingAsset) warnings.push("Asset original n\xE3o carregou; usando placeholder.");
     const pos = entry.object.position;
     if (pos.y < -1e-3) errors.push("Item abaixo do ch\xE3o.");
     if (pos.x < ROOM_LIMITS.minX || pos.x > ROOM_LIMITS.maxX || pos.z < ROOM_LIMITS.minZ || pos.z > ROOM_LIMITS.maxZ) {
@@ -46721,6 +46774,36 @@ void main() {
       }
     });
   }
+  function createMissingAssetPlaceholder(item, error) {
+    const group = new Group();
+    group.userData.noelleMissingAsset = true;
+    group.userData.noelleMissingError = String(error?.message || error || "asset missing");
+    const body = new Mesh(
+      new BoxGeometry(0.65, 0.45, 0.65),
+      new MeshStandardMaterial({ color: 8003381, roughness: 0.85, metalness: 0 })
+    );
+    body.castShadow = true;
+    body.receiveShadow = true;
+    const top = new Mesh(
+      new BoxGeometry(0.72, 0.05, 0.72),
+      new MeshStandardMaterial({ color: 16729982, roughness: 0.8 })
+    );
+    top.position.y = 0.25;
+    group.add(body, top);
+    group.name = `missing:${item?.id || "item"}`;
+    return group;
+  }
+  async function loadSourceOrPlaceholder(loader, item) {
+    try {
+      const gltf = await loader.loadAsync(itemUrl(item));
+      const root = gltf.scene || gltf.scenes?.[0];
+      if (!root) throw new Error(`GLB sem cena: ${item.id}`);
+      return root;
+    } catch (err) {
+      console.warn("[Noelle Room] Asset ausente ou inv\xE1lido, usando placeholder:", item?.id, err);
+      return createMissingAssetPlaceholder(item, err);
+    }
+  }
   function normalizeLoadedObject(source, targetSize = 1, alignGround = true) {
     const wrapper = new Group();
     const object = (() => {
@@ -46730,6 +46813,10 @@ void main() {
         return source.clone(true);
       }
     })();
+    if (source.userData?.noelleMissingAsset) {
+      object.userData.noelleMissingAsset = true;
+      object.userData.noelleMissingError = source.userData.noelleMissingError;
+    }
     makeCloneResourcesUnique(object);
     wrapper.add(object);
     object.updateMatrixWorld(true);
@@ -46751,6 +46838,10 @@ void main() {
       }
     }
     wrapper.userData.noelleRoom = { baseScale, userScale: [1, 1, 1] };
+    if (object.userData?.noelleMissingAsset) {
+      wrapper.userData.noelleMissingAsset = true;
+      wrapper.userData.noelleMissingError = object.userData.noelleMissingError;
+    }
     return wrapper;
   }
   function setUserScale(object, scale = [1, 1, 1]) {
@@ -46768,7 +46859,7 @@ void main() {
     if (!base) return [object.scale.x, object.scale.y, object.scale.z];
     return [object.scale.x / base, object.scale.y / base, object.scale.z / base];
   }
-  function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera, renderer, transformControls, gridSize = 0.25, toast: toast2, onValidate }) {
+  function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera, renderer, transformControls, gridSize = 0.25, toast: toast2, onValidate, onObjectChanged, onObjectCommitted }) {
     const loader = new GLTFLoader();
     loader.setCrossOrigin?.("anonymous");
     const cache = /* @__PURE__ */ new Map();
@@ -46778,10 +46869,7 @@ void main() {
     let collisionEnabled = true;
     async function loadSource(item) {
       if (cache.has(item.id)) return cache.get(item.id);
-      const url = itemUrl(item);
-      const gltf = await loader.loadAsync(url);
-      const root = gltf.scene || gltf.scenes?.[0];
-      if (!root) throw new Error(`GLB sem cena: ${item.id}`);
+      const root = await loadSourceOrPlaceholder(loader, item);
       cache.set(item.id, root);
       return root;
     }
@@ -46833,6 +46921,7 @@ void main() {
       placed.set(uid, { uid, item, object, locked: !!transform.locked, original: { item, transform } });
       select(uid);
       toast2?.(`${item.label || item.id} adicionado`);
+      onObjectCommitted?.("add");
       return placed.get(uid);
     }
     function remove(uid = selectedUid) {
@@ -46847,15 +46936,17 @@ void main() {
       disposeObject(entry.object);
       placed.delete(uid);
       validateSelected();
+      onObjectCommitted?.("remove");
       return true;
     }
-    async function duplicate(uid = selectedUid) {
+    async function duplicate(uid = selectedUid, offset = [gridSize * 2, 0, gridSize * 2]) {
       const entry = placed.get(uid);
       if (!entry) return null;
       const data = serializeEntry(entry);
       data.uid = uidFor(entry.item.id);
-      data.position[0] += gridSize * 2;
-      data.position[2] += gridSize * 2;
+      data.position[0] += offset[0] || 0;
+      data.position[1] += offset[1] || 0;
+      data.position[2] += offset[2] || 0;
       return addItem(entry.item, data);
     }
     async function resetSelected() {
@@ -46863,20 +46954,43 @@ void main() {
       if (!entry) return;
       const item = entry.item;
       remove(entry.uid);
-      return addItem(item, item.placement || {});
+      const result = await addItem(item, item.placement || {});
+      onObjectCommitted?.("reset");
+      return result;
     }
-    function clear() {
-      for (const uid of [...placed.keys()]) remove(uid);
+    function clear({ silent = false } = {}) {
+      for (const uid of [...placed.keys()]) {
+        const entry = placed.get(uid);
+        if (entry) {
+          entry.object.removeFromParent();
+          disposeObject(entry.object);
+        }
+        placed.delete(uid);
+      }
+      transformControls?.detach();
+      boxHelper.attach(null);
+      selectedUid = null;
+      validateSelected();
+      if (!silent) onObjectCommitted?.("clear");
     }
+    let transformDirty = false;
     function postTransformChanged() {
       const entry = getSelected();
       if (entry) {
+        transformDirty = true;
         clampToRoom(entry.object.position);
         boxHelper.update(entry.object);
       }
       validateSelected();
+      onObjectChanged?.("transform");
     }
     transformControls?.addEventListener("objectChange", postTransformChanged);
+    transformControls?.addEventListener("mouseUp", () => {
+      if (transformDirty) {
+        transformDirty = false;
+        onObjectCommitted?.("transform");
+      }
+    });
     function moveSelected(dx = 0, dy = 0, dz = 0, fine = false) {
       const entry = getSelected();
       if (!entry || entry.locked) return;
@@ -46886,6 +47000,7 @@ void main() {
       entry.object.position.z = snap(entry.object.position.z + dz * step, gridSize);
       clampToRoom(entry.object.position);
       postTransformChanged();
+      onObjectCommitted?.("move");
     }
     function rotateSelected(degY = 0, fine = false) {
       const entry = getSelected();
@@ -46893,13 +47008,16 @@ void main() {
       const step = fine ? 5 : degY;
       entry.object.rotation.y += degToRad2(step);
       postTransformChanged();
+      onObjectCommitted?.("rotate");
     }
     function scaleSelected(delta = 0) {
       const entry = getSelected();
       if (!entry || entry.locked) return;
       const factor = Math.max(0.05, 1 + delta);
-      entry.object.scale.multiplyScalar(factor);
+      const scale = getUserScale(entry.object).map((v) => v * factor);
+      setUserScale(entry.object, scale);
       postTransformChanged();
+      onObjectCommitted?.("scale");
     }
     function setSelectedTransform({ position, rotationDeg, scale }) {
       const entry = getSelected();
@@ -46909,6 +47027,24 @@ void main() {
       if (Array.isArray(scale)) setUserScale(entry.object, scale);
       clampToRoom(entry.object.position);
       postTransformChanged();
+      onObjectCommitted?.("apply-transform");
+    }
+    function centerSelected() {
+      const entry = getSelected();
+      if (!entry || entry.locked) return;
+      entry.object.position.set(0, Math.max(0, entry.object.position.y), 0);
+      postTransformChanged();
+      onObjectCommitted?.("center");
+    }
+    function groundSelected() {
+      const entry = getSelected();
+      if (!entry || entry.locked) return;
+      entry.object.position.y = 0;
+      postTransformChanged();
+      onObjectCommitted?.("ground");
+    }
+    function rotateSelected90() {
+      rotateSelected(90, false);
     }
     function setMode2(mode) {
       const clean = ["translate", "rotate", "scale"].includes(mode) ? mode : "translate";
@@ -46920,6 +47056,7 @@ void main() {
       entry.locked = !entry.locked;
       if (entry.locked) transformControls?.detach();
       else select(uid);
+      onObjectCommitted?.("lock");
       return entry.locked;
     }
     function setCollisionEnabled(value) {
@@ -46942,17 +47079,21 @@ void main() {
       return [...placed.values()].map(serializeEntry);
     }
     async function loadLayout(layout2, catalog2) {
-      clear();
+      clear({ silent: true });
       const byId = new Map(catalog2.map((item) => [item.id, item]));
       for (const entry of Array.isArray(layout2?.items) ? layout2.items : []) {
         const item = byId.get(entry.itemId);
-        if (!item) continue;
+        if (!item) {
+          console.warn("Item do layout n\xE3o existe no cat\xE1logo:", entry.itemId);
+          continue;
+        }
         try {
           await addItem(item, entry);
         } catch (err) {
           console.warn("Falha ao carregar item da Room:", entry.itemId, err);
         }
       }
+      onObjectCommitted?.("load-layout");
     }
     const raycaster = new ThreeRef.Raycaster();
     const pointer = new ThreeRef.Vector2();
@@ -46969,15 +47110,17 @@ void main() {
       while (obj && !obj.userData?.room?.uid) obj = obj.parent;
       return obj?.userData?.room?.uid || null;
     }
-    renderer.domElement.addEventListener("pointerdown", (event) => {
+    const onPointerDown3 = (event) => {
       const uid = pickFromEvent(event);
       if (uid) select(uid);
-    });
+    };
+    renderer.domElement.addEventListener("pointerdown", onPointerDown3);
     function dispose() {
-      clear();
+      clear({ silent: true });
       cache.clear();
       boxHelper.dispose();
       transformControls?.removeEventListener("objectChange", postTransformChanged);
+      renderer.domElement.removeEventListener("pointerdown", onPointerDown3);
     }
     return {
       placed,
@@ -46990,8 +47133,11 @@ void main() {
       getSelected,
       moveSelected,
       rotateSelected,
+      rotateSelected90,
       scaleSelected,
       setSelectedTransform,
+      centerSelected,
+      groundSelected,
       setMode: setMode2,
       toggleLock,
       setCollisionEnabled,
@@ -47009,6 +47155,25 @@ void main() {
     grid: { size: 0.25, enabled: true },
     items: []
   };
+  var DEFAULT_ROOM_PRESETS = [
+    {
+      id: "clean_office",
+      label: "Escrit\xF3rio limpo",
+      description: "Mesa central com espa\xE7o para adicionar props.",
+      items: [
+        { uid: "office_desk_preset_001", itemId: "office_desk", position: [0, 0, 0], rotationDeg: [0, 0, 0], scale: [1, 1, 1], locked: false }
+      ]
+    },
+    {
+      id: "music_corner",
+      label: "Canto musical",
+      description: "Piano levemente \xE0 direita e mesa separada.",
+      items: [
+        { uid: "grand_piano_preset_001", itemId: "grand_piano", position: [1.25, 0, -0.75], rotationDeg: [0, -25, 0], scale: [1, 1, 1], locked: false },
+        { uid: "office_desk_preset_002", itemId: "office_desk", position: [-1.1, 0, 0.25], rotationDeg: [0, 10, 0], scale: [1, 1, 1], locked: false }
+      ]
+    }
+  ];
   function finite(value, fallback = 0) {
     const n = Number(value);
     return Number.isFinite(n) ? n : fallback;
@@ -47053,18 +47218,37 @@ void main() {
     localStorage.setItem("noelle_room_layout", JSON.stringify(safe));
     return { ok: true, layout: safe, localOnly: true };
   }
+  function presetToLayout(preset) {
+    return safeLayout({
+      version: 1,
+      roomId: preset?.id || "preset_room",
+      grid: DEFAULT_ROOM_LAYOUT.grid,
+      items: Array.isArray(preset?.items) ? preset.items : []
+    });
+  }
 
   // src/renderer/room_controls.js
-  function createRoomControls({ manager: manager2, renderLayoutList: renderLayoutList2, updateInspector: updateInspector2, saveLayout, toast: toast2, grid }) {
+  function createRoomControls({ manager: manager2, renderLayoutList: renderLayoutList2, updateInspector: updateInspector2, saveLayout, undo, redo, toast: toast2, grid }) {
     let gridEnabled = true;
     let collisionEnabled = true;
-    function handleKey(event) {
+    async function handleKey(event) {
       const tag = String(event.target?.tagName || "").toLowerCase();
-      if (tag === "input" || tag === "textarea") return;
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      const key = event.key.toLowerCase();
       const fine = event.shiftKey;
-      if (event.ctrlKey && event.key.toLowerCase() === "s") {
+      if (event.ctrlKey && key === "s") {
         event.preventDefault();
-        saveLayout();
+        await saveLayout();
+        return;
+      }
+      if (event.ctrlKey && key === "z") {
+        event.preventDefault();
+        await undo();
+        return;
+      }
+      if (event.ctrlKey && (key === "y" || event.shiftKey && key === "z")) {
+        event.preventDefault();
+        await redo();
         return;
       }
       if (event.key === "Delete" || event.key === "Backspace") {
@@ -47089,9 +47273,8 @@ void main() {
         return;
       }
       const map = { w: [0, 0, -1], s: [0, 0, 1], a: [-1, 0, 0], d: [1, 0, 0], q: [0, 1, 0], e: [0, -1, 0] };
-      const lower = event.key.toLowerCase();
-      if (map[lower]) {
-        const [x, y, z] = map[lower];
+      if (map[key]) {
+        const [x, y, z] = map[key];
         manager2.moveSelected(x, y, z, fine);
         updateInspector2();
         return;
@@ -47112,9 +47295,9 @@ void main() {
         manager2.scaleSelected(-0.05);
         updateInspector2();
       }
-      if (lower === "g") toggleGrid();
-      if (lower === "c") toggleCollision();
-      if (lower === "f") updateInspector2(true);
+      if (key === "g") toggleGrid();
+      if (key === "c") toggleCollision();
+      if (key === "f") updateInspector2(true);
     }
     function toggleGrid() {
       gridEnabled = !gridEnabled;
@@ -47138,6 +47321,121 @@ void main() {
     };
   }
 
+  // src/renderer/room_history.js
+  function createRoomHistory({ getLayout, applyLayout, limit = 50, onChange }) {
+    let stack = [];
+    let index = -1;
+    let restoring = false;
+    function same(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+    function notify() {
+      onChange?.({ canUndo: index > 0, canRedo: index >= 0 && index < stack.length - 1, index, length: stack.length });
+    }
+    function reset(layout2) {
+      stack = [safeLayout(layout2)];
+      index = 0;
+      notify();
+    }
+    function push(label = "change") {
+      if (restoring) return;
+      const snapshot = safeLayout(getLayout());
+      if (index >= 0 && same(stack[index], snapshot)) return;
+      stack = stack.slice(0, index + 1);
+      stack.push({ ...snapshot, label });
+      if (stack.length > limit) stack.shift();
+      index = stack.length - 1;
+      notify();
+    }
+    async function undo() {
+      if (index <= 0) {
+        notify();
+        return false;
+      }
+      index -= 1;
+      restoring = true;
+      await applyLayout(stack[index]);
+      restoring = false;
+      notify();
+      return true;
+    }
+    async function redo() {
+      if (index >= stack.length - 1) {
+        notify();
+        return false;
+      }
+      index += 1;
+      restoring = true;
+      await applyLayout(stack[index]);
+      restoring = false;
+      notify();
+      return true;
+    }
+    function state() {
+      return { canUndo: index > 0, canRedo: index >= 0 && index < stack.length - 1, index, length: stack.length };
+    }
+    return { reset, push, undo, redo, state };
+  }
+
+  // src/renderer/room_autosave.js
+  var KEY = "noelle_room_autosave_v18_4";
+  function saveRoomAutosave(layout2) {
+    try {
+      const payload = {
+        savedAt: (/* @__PURE__ */ new Date()).toISOString(),
+        layout: safeLayout(layout2)
+      };
+      localStorage.setItem(KEY, JSON.stringify(payload));
+      return { ok: true, payload };
+    } catch (err) {
+      return { ok: false, error: String(err?.message || err) };
+    }
+  }
+  function loadRoomAutosave() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { ok: false, reason: "empty" };
+      const payload = JSON.parse(raw);
+      return { ok: true, savedAt: payload.savedAt, layout: safeLayout(payload.layout) };
+    } catch (err) {
+      return { ok: false, error: String(err?.message || err) };
+    }
+  }
+  function clearRoomAutosave() {
+    try {
+      localStorage.removeItem(KEY);
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: String(err?.message || err) };
+    }
+  }
+  function createAutosaveScheduler({ getLayout, onStatus, intervalMs = 1200 }) {
+    let timer = null;
+    let lastHash = "";
+    function schedule() {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const layout2 = safeLayout(getLayout());
+        const hash = JSON.stringify(layout2);
+        if (hash === lastHash) return;
+        lastHash = hash;
+        const result = saveRoomAutosave(layout2);
+        if (result.ok) onStatus?.(`Autosave: ${new Date(result.payload.savedAt).toLocaleTimeString()}`);
+        else onStatus?.("Autosave falhou");
+      }, intervalMs);
+    }
+    function flush() {
+      clearTimeout(timer);
+      const layout2 = safeLayout(getLayout());
+      lastHash = JSON.stringify(layout2);
+      return saveRoomAutosave(layout2);
+    }
+    function destroy() {
+      clearTimeout(timer);
+    }
+    return { schedule, flush, destroy };
+  }
+
   // src/renderer/room_window_app.js
   var $ = (id) => document.getElementById(id);
   var catalog = [];
@@ -47145,6 +47443,9 @@ void main() {
   var manager = null;
   var sceneApi = null;
   var controlsApi = null;
+  var historyApi = null;
+  var autosaveApi = null;
+  var suppressHistory = false;
   function toast(message) {
     const el = $("toast");
     if (!el) return;
@@ -47157,14 +47458,29 @@ void main() {
     const el = $("statusPill");
     if (el) el.textContent = message;
   }
+  function setSafety(message, type = "ok") {
+    const el = $("safetyBox");
+    if (!el) return;
+    el.className = `validation-box ${type}`;
+    el.textContent = message;
+  }
+  function currentLayout() {
+    return safeLayout({
+      version: 1,
+      roomId: "default_room",
+      grid: layout?.grid || { size: 0.25, enabled: true },
+      items: manager?.serialize?.() || []
+    });
+  }
   function renderCatalog() {
     const list = $("catalogList");
-    const query = String($("catalogSearch")?.value || "").toLowerCase();
+    const category = $("categoryFilter")?.value || "all";
+    const query = $("catalogSearch")?.value || "";
     if (!list) return;
-    const filtered = catalog.filter((item) => `${item.id} ${item.label} ${item.category}`.toLowerCase().includes(query));
+    const filtered = filterCatalogForRoom(catalog, category, query);
     list.innerHTML = "";
     if (!filtered.length) {
-      list.innerHTML = `<div class="catalog-item"><strong>Nenhum item</strong><small>Sem room_item no cat\xE1logo.</small></div>`;
+      list.innerHTML = `<div class="catalog-item"><strong>Nenhum item</strong><small>Sem room_item nesta categoria.</small></div>`;
       return;
     }
     for (const item of filtered) {
@@ -47174,13 +47490,13 @@ void main() {
       <strong>${item.label || item.id}</strong>
       <small>${item.file || ""}</small>
       <span class="badge">${item.category || "room_item"}</span>
+      ${item.raw?.dualUse ? '<span class="badge warn">dual</span>' : ""}
       <button data-add="${item.id}" class="primary">Adicionar</button>
     `;
       card.querySelector("button").addEventListener("click", async () => {
         try {
           await manager.addItem(item, item.placement || {});
-          renderLayoutList();
-          updateInspector();
+          commitRoomChange("add");
         } catch (err) {
           console.error(err);
           toast("Falha ao adicionar: " + (err?.message || err));
@@ -47189,13 +47505,43 @@ void main() {
       list.appendChild(card);
     }
   }
+  function renderPresetList() {
+    const list = $("presetList");
+    if (!list) return;
+    list.innerHTML = "";
+    for (const preset of DEFAULT_ROOM_PRESETS) {
+      const card = document.createElement("div");
+      card.className = "preset-item";
+      card.innerHTML = `
+      <strong>${preset.label}</strong>
+      <small>${preset.description || ""}</small>
+      <button class="primary">Aplicar preset</button>
+    `;
+      card.querySelector("button").addEventListener("click", async () => {
+        const presetLayout = presetToLayout(preset);
+        await manager.loadLayout(presetLayout, catalog);
+        commitRoomChange(`preset:${preset.id}`);
+        toast(`Preset aplicado: ${preset.label}`);
+      });
+      list.appendChild(card);
+    }
+  }
+  function updateCategoryLabels() {
+    const counts = groupCatalogCounts(catalog);
+    const select = $("categoryFilter");
+    if (!select) return;
+    for (const option of select.options) {
+      if (option.value === "all") option.textContent = `Todas categorias (${catalog.length})`;
+      else option.textContent = `${option.textContent.replace(/\s*\(.+\)$/, "")} (${counts[option.value] || 0})`;
+    }
+  }
   function renderLayoutList() {
     const list = $("layoutList");
     if (!list || !manager) return;
     const items = [...manager.placed.values()];
     list.innerHTML = "";
     if (!items.length) {
-      list.innerHTML = `<div class="layout-item"><strong>Room vazia</strong><small>Adicione m\xF3veis pelo cat\xE1logo.</small></div>`;
+      list.innerHTML = `<div class="layout-item"><strong>Room vazia</strong><small>Adicione m\xF3veis pelo cat\xE1logo ou use um preset.</small></div>`;
       return;
     }
     for (const entry of items) {
@@ -47203,7 +47549,7 @@ void main() {
       card.className = "layout-item";
       card.innerHTML = `
       <strong>${entry.item.label || entry.item.id}</strong>
-      <small>${entry.uid}${entry.locked ? " \xB7 travado" : ""}</small>
+      <small>${entry.uid}${entry.locked ? " \xB7 travado" : ""}${entry.object.userData?.noelleMissingAsset ? " \xB7 placeholder" : ""}</small>
       <button data-select="${entry.uid}">Selecionar</button>
     `;
       card.querySelector("button").addEventListener("click", () => {
@@ -47249,7 +47595,8 @@ void main() {
       info.innerHTML = `
       <b>${entry.item.label || entry.item.id}</b><br>
       UID: ${entry.uid}<br>
-      Room item \xB7 ${entry.locked ? "travado" : "edit\xE1vel"}
+      ${entry.item.category || "room_item"} \xB7 ${entry.locked ? "travado" : "edit\xE1vel"}
+      ${entry.object.userData?.noelleMissingAsset ? "<br><b>placeholder:</b> asset n\xE3o carregou" : ""}
     `;
     }
     $("posX").value = position.x.toFixed(2);
@@ -47258,27 +47605,72 @@ void main() {
     $("rotY").value = (rotation.y * 180 / Math.PI).toFixed(1);
     $("scaleAll").value = userScale.toFixed(2);
     renderValidation(manager.validateSelected());
-    if (focus && sceneApi?.controls) {
-      sceneApi.controls.target.copy(position);
-    }
+    if (focus && sceneApi?.focusOnObject) sceneApi.focusOnObject(entry.object);
+  }
+  function updateHistoryButtons(state = historyApi?.state?.()) {
+    $("btnUndo") && ($("btnUndo").disabled = !state?.canUndo);
+    $("btnRedo") && ($("btnRedo").disabled = !state?.canRedo);
+  }
+  function commitRoomChange(label = "change") {
+    renderLayoutList();
+    updateInspector();
+    autosaveApi?.schedule();
+    if (!suppressHistory) historyApi?.push(label);
   }
   async function saveCurrentLayout() {
-    const current = {
-      version: 1,
-      roomId: "default_room",
-      grid: layout?.grid || { size: 0.25, enabled: true },
-      items: manager.serialize()
-    };
-    const result = await saveRoomLayout(current);
-    if (result?.ok) toast("Room salva");
-    else toast("Falha ao salvar Room");
+    autosaveApi?.flush();
+    const result = await saveRoomLayout(currentLayout());
+    if (result?.ok) {
+      clearRoomAutosave();
+      setSafety("Salvo. Autosave limpo.", "ok");
+      toast("Room salva");
+    } else {
+      setSafety("Falha ao salvar. Autosave mantido.", "warn");
+      toast("Falha ao salvar Room");
+    }
   }
   async function loadCurrentLayout() {
     layout = await loadRoomLayout();
+    suppressHistory = true;
     await manager.loadLayout(layout, catalog);
+    suppressHistory = false;
+    historyApi?.reset(currentLayout());
     renderLayoutList();
     updateInspector();
+    autosaveApi?.schedule();
     toast("Room carregada");
+  }
+  async function recoverAutosave() {
+    const result = loadRoomAutosave();
+    if (!result.ok) {
+      toast("Nenhum autosave encontrado");
+      setSafety("Nenhum autosave encontrado.", "warn");
+      return;
+    }
+    suppressHistory = true;
+    await manager.loadLayout(result.layout, catalog);
+    suppressHistory = false;
+    historyApi?.reset(result.layout);
+    commitRoomChange("recover-autosave");
+    setSafety(`Autosave recuperado: ${new Date(result.savedAt).toLocaleString()}`, "ok");
+  }
+  async function undoRoom() {
+    const ok = await historyApi?.undo?.();
+    if (ok) {
+      renderLayoutList();
+      updateInspector();
+      autosaveApi?.schedule();
+      toast("Undo");
+    }
+  }
+  async function redoRoom() {
+    const ok = await historyApi?.redo?.();
+    if (ok) {
+      renderLayoutList();
+      updateInspector();
+      autosaveApi?.schedule();
+      toast("Redo");
+    }
   }
   function setMode(mode) {
     manager.setMode(mode);
@@ -47289,30 +47681,50 @@ void main() {
   }
   function bindUi() {
     $("catalogSearch")?.addEventListener("input", renderCatalog);
+    $("categoryFilter")?.addEventListener("change", renderCatalog);
     $("btnSave")?.addEventListener("click", saveCurrentLayout);
     $("btnLoad")?.addEventListener("click", loadCurrentLayout);
+    $("btnRecover")?.addEventListener("click", recoverAutosave);
+    $("btnUndo")?.addEventListener("click", undoRoom);
+    $("btnRedo")?.addEventListener("click", redoRoom);
     $("btnGrid")?.addEventListener("click", () => controlsApi?.toggleGrid());
     $("btnCollision")?.addEventListener("click", () => controlsApi?.toggleCollision());
     $("btnFocus")?.addEventListener("click", () => updateInspector(true));
     $("btnRemove")?.addEventListener("click", () => {
       manager.remove();
-      renderLayoutList();
-      updateInspector();
+      commitRoomChange("remove");
     });
     $("btnDuplicate")?.addEventListener("click", async () => {
       await manager.duplicate();
-      renderLayoutList();
-      updateInspector();
+      commitRoomChange("duplicate");
+    });
+    $("btnDuplicateX")?.addEventListener("click", async () => {
+      await manager.duplicate(void 0, [0.5, 0, 0]);
+      commitRoomChange("duplicate-x");
+    });
+    $("btnDuplicateZ")?.addEventListener("click", async () => {
+      await manager.duplicate(void 0, [0, 0, 0.5]);
+      commitRoomChange("duplicate-z");
     });
     $("btnReset")?.addEventListener("click", async () => {
       await manager.resetSelected();
-      renderLayoutList();
-      updateInspector();
+      commitRoomChange("reset");
     });
     $("btnLock")?.addEventListener("click", () => {
       manager.toggleLock();
-      renderLayoutList();
-      updateInspector();
+      commitRoomChange("lock");
+    });
+    $("btnCenterItem")?.addEventListener("click", () => {
+      manager.centerSelected();
+      commitRoomChange("center");
+    });
+    $("btnGroundItem")?.addEventListener("click", () => {
+      manager.groundSelected();
+      commitRoomChange("ground");
+    });
+    $("btnRotate90")?.addEventListener("click", () => {
+      manager.rotateSelected90();
+      commitRoomChange("rot90");
     });
     $("btnModeMove")?.addEventListener("click", () => setMode("translate"));
     $("btnModeRotate")?.addEventListener("click", () => setMode("rotate"));
@@ -47324,8 +47736,7 @@ void main() {
       const ry = Number($("rotY").value || 0);
       const s = Number($("scaleAll").value || 1);
       manager.setSelectedTransform({ position: [x, y, z], rotationDeg: [0, ry, 0], scale: [s, s, s] });
-      renderLayoutList();
-      updateInspector();
+      commitRoomChange("apply-transform");
     });
   }
   async function init() {
@@ -47333,22 +47744,68 @@ void main() {
       setStatus("Criando cena...");
       sceneApi = createRoomScene($("roomCanvas"));
       setStatus("Carregando cat\xE1logo...");
-      catalog = filterCatalogForRoom(await loadRoomCatalog());
+      catalog = await loadRoomCatalog();
       manager = createRoomItemManager({
         ...sceneApi,
         gridSize: 0.25,
         toast,
-        onValidate: renderValidation
+        onValidate: renderValidation,
+        onObjectChanged: () => {
+          updateInspector();
+          autosaveApi?.schedule();
+        },
+        onObjectCommitted: (label) => {
+          if (!suppressHistory) {
+            autosaveApi?.schedule();
+            historyApi?.push(label);
+            updateHistoryButtons();
+          }
+        }
       });
       setStatus("Carregando layout...");
       layout = await loadRoomLayout();
+      suppressHistory = true;
       await manager.loadLayout(layout, catalog);
-      controlsApi = createRoomControls({ manager, renderLayoutList, updateInspector, saveLayout: saveCurrentLayout, toast, grid: sceneApi.grid });
+      suppressHistory = false;
+      autosaveApi = createAutosaveScheduler({
+        getLayout: currentLayout,
+        onStatus: (message) => setSafety(message, "ok")
+      });
+      historyApi = createRoomHistory({
+        getLayout: currentLayout,
+        applyLayout: async (nextLayout) => {
+          suppressHistory = true;
+          await manager.loadLayout(nextLayout, catalog);
+          suppressHistory = false;
+        },
+        onChange: updateHistoryButtons
+      });
+      historyApi.reset(currentLayout());
+      controlsApi = createRoomControls({
+        manager,
+        renderLayoutList,
+        updateInspector,
+        saveLayout: saveCurrentLayout,
+        undo: undoRoom,
+        redo: redoRoom,
+        toast,
+        grid: sceneApi.grid
+      });
       bindUi();
       setMode("translate");
+      updateCategoryLabels();
       renderCatalog();
+      renderPresetList();
       renderLayoutList();
       updateInspector();
+      updateHistoryButtons();
+      autosaveApi.schedule();
+      const autosave = loadRoomAutosave();
+      if (autosave.ok && autosave.layout?.items?.length) {
+        setSafety(`Autosave dispon\xEDvel: ${new Date(autosave.savedAt).toLocaleString()}`, "warn");
+      } else {
+        setSafety("Autosave ativo.", "ok");
+      }
       setStatus("Room pronta");
       toast("Room pronta");
     } catch (err) {
@@ -47359,6 +47816,9 @@ void main() {
   }
   window.addEventListener("beforeunload", () => {
     try {
+      autosaveApi?.flush?.();
+      controlsApi?.destroy?.();
+      historyApi = null;
       manager?.dispose?.();
       sceneApi?.dispose?.();
     } catch {

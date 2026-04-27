@@ -470,7 +470,7 @@ function createMainWindow() {
   mainWin.loadFile(path.join(SRC_DIR, "controls.html"));
 }
 
-// NOELLE_ROOM_V18_2_BEGIN
+// NOELLE_ROOM_V18_4_BEGIN
 function roomCatalogPath() {
   return path.join(ASSETS_DIR, "room_manifest.json");
 }
@@ -492,7 +492,7 @@ function readRoomJson(file, fallback) {
 function inferRoomManifestFromItems() {
   const itemManifest = readRoomJson(path.join(ASSETS_DIR, "item_manifest.json"), []);
   const list = Array.isArray(itemManifest) ? itemManifest : Array.isArray(itemManifest.items) ? itemManifest.items : [];
-  const roomIds = /desk|piano|chair|cadeira|mesa|table|bed|sofa|monitor|lamp|shelf|estante|room|floor/i;
+  const roomIds = /desk|piano|chair|cadeira|mesa|table|bed|sofa|monitor|lamp|shelf|estante|room|floor|dado|dice|tablet/i;
   return list.filter((item) => {
     const hay = [item.id, item.label, item.file, item.category, item.kind].join(" ");
     return item.kind === "room_item" || item.category === "scene_prop" || item.category === "furniture" || roomIds.test(hay);
@@ -502,6 +502,7 @@ function inferRoomManifestFromItems() {
     file: item.file,
     kind: "room_item",
     category: item.category || "furniture",
+    allowInRoom: true,
     placement: { surface: "floor", snap: true, rotateStepDeg: 15, canCollide: true, targetSize: item.id === "grand_piano" ? 1.35 : 1.0 }
   }));
 }
@@ -582,7 +583,8 @@ function createRoomWindow({ show = true } = {}) {
   roomWin.loadFile(path.join(SRC_DIR, "room.html"));
   return roomWin;
 }
-// NOELLE_ROOM_V18_2_END
+// NOELLE_ROOM_V18_4_END
+
 function createAvatarWindow({ show = true } = {}) {
   if (avatarWin && !avatarWin.isDestroyed()) {
     if (show) avatarWin.show();
@@ -818,10 +820,12 @@ ipcMain.handle("desktop-widget-command", async (_event, command, payload) => sen
 ipcMain.handle("noelle-core-chat", async (_event, payload) => chatWithNoelle(payload || {}));
 ipcMain.handle("noelle-core-status", async () => getStatus());
 
-// NOELLE_ROOM_IPC_V18_2_BEGIN
+
+
+// NOELLE_ROOM_IPC_V18_4_BEGIN
 ipcMain.handle("room:open", async () => { createRoomWindow({ show: true }); return { ok: true }; });
 ipcMain.handle("room:close", async () => { if (roomWin && !roomWin.isDestroyed()) roomWin.hide(); return { ok: true }; });
 ipcMain.handle("room:catalog", async () => ({ ok: true, items: scanRoomCatalog() }));
 ipcMain.handle("room:load-layout", async () => ({ ok: true, layout: loadRoomLayoutFile() }));
 ipcMain.handle("room:save-layout", async (_event, layout) => ({ ok: true, layout: saveRoomLayoutFile(layout || {}) }));
-// NOELLE_ROOM_IPC_V18_2_END
+// NOELLE_ROOM_IPC_V18_4_END

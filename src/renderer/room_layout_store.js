@@ -5,6 +5,26 @@ export const DEFAULT_ROOM_LAYOUT = {
   items: []
 };
 
+export const DEFAULT_ROOM_PRESETS = [
+  {
+    id: "clean_office",
+    label: "Escritório limpo",
+    description: "Mesa central com espaço para adicionar props.",
+    items: [
+      { uid: "office_desk_preset_001", itemId: "office_desk", position: [0, 0, 0], rotationDeg: [0, 0, 0], scale: [1, 1, 1], locked: false }
+    ]
+  },
+  {
+    id: "music_corner",
+    label: "Canto musical",
+    description: "Piano levemente à direita e mesa separada.",
+    items: [
+      { uid: "grand_piano_preset_001", itemId: "grand_piano", position: [1.25, 0, -0.75], rotationDeg: [0, -25, 0], scale: [1, 1, 1], locked: false },
+      { uid: "office_desk_preset_002", itemId: "office_desk", position: [-1.1, 0, 0.25], rotationDeg: [0, 10, 0], scale: [1, 1, 1], locked: false }
+    ]
+  }
+];
+
 function finite(value, fallback = 0) {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
@@ -15,7 +35,7 @@ function safeVec3(value, fallback) {
   return [finite(value[0], fallback[0]), finite(value[1], fallback[1]), finite(value[2], fallback[2])];
 }
 
-function safeLayout(layout) {
+export function safeLayout(layout) {
   return {
     version: 1,
     roomId: String(layout?.roomId || "default_room").replace(/[^a-zA-Z0-9_-]/g, "_"),
@@ -55,4 +75,13 @@ export async function saveRoomLayout(layout) {
 
   localStorage.setItem("noelle_room_layout", JSON.stringify(safe));
   return { ok: true, layout: safe, localOnly: true };
+}
+
+export function presetToLayout(preset) {
+  return safeLayout({
+    version: 1,
+    roomId: preset?.id || "preset_room",
+    grid: DEFAULT_ROOM_LAYOUT.grid,
+    items: Array.isArray(preset?.items) ? preset.items : []
+  });
 }

@@ -67,12 +67,52 @@ function disposeObject(object) {
   });
 }
 
+function createMissingAssetPlaceholder(item, error) {
+  const group = new THREE.Group();
+  group.userData.noelleMissingAsset = true;
+  group.userData.noelleMissingError = String(error?.message || error || "asset missing");
+
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.65, 0.45, 0.65),
+    new THREE.MeshStandardMaterial({ color: 0x7a1f35, roughness: 0.85, metalness: 0.0 })
+  );
+  body.castShadow = true;
+  body.receiveShadow = true;
+
+  const top = new THREE.Mesh(
+    new THREE.BoxGeometry(0.72, 0.05, 0.72),
+    new THREE.MeshStandardMaterial({ color: 0xff477e, roughness: 0.8 })
+  );
+  top.position.y = 0.25;
+
+  group.add(body, top);
+  group.name = `missing:${item?.id || "item"}`;
+  return group;
+}
+
+async function loadSourceOrPlaceholder(loader, item) {
+  try {
+    const gltf = await loader.loadAsync(itemUrl(item));
+    const root = gltf.scene || gltf.scenes?.[0];
+    if (!root) throw new Error(`GLB sem cena: ${item.id}`);
+    return root;
+  } catch (err) {
+    console.warn("[Noelle Room] Asset ausente ou inválido, usando placeholder:", item?.id, err);
+    return createMissingAssetPlaceholder(item, err);
+  }
+}
+
 function normalizeLoadedObject(source, targetSize = 1, alignGround = true) {
   const wrapper = new THREE.Group();
   const object = (() => {
     try { return cloneSkeleton(source); }
     catch { return source.clone(true); }
   })();
+
+  if (source.userData?.noelleMissingAsset) {
+    object.userData.noelleMissingAsset = true;
+    object.userData.noelleMissingError = source.userData.noelleMissingError;
+  }
 
   makeCloneResourcesUnique(object);
 
@@ -100,6 +140,10 @@ function normalizeLoadedObject(source, targetSize = 1, alignGround = true) {
   }
 
   wrapper.userData.noelleRoom = { baseScale, userScale: [1, 1, 1] };
+  if (object.userData?.noelleMissingAsset) {
+    wrapper.userData.noelleMissingAsset = true;
+    wrapper.userData.noelleMissingError = object.userData.noelleMissingError;
+  }
   return wrapper;
 }
 
@@ -120,7 +164,7 @@ function getUserScale(object) {
   return [object.scale.x / base, object.scale.y / base, object.scale.z / base];
 }
 
-export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera, renderer, transformControls, gridSize = 0.25, toast, onValidate }) {
+export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera, renderer, transformControls, gridSize = 0.25, toast, onValidate, onObjectChanged, onObjectCommitted }) {
   const loader = new GLTFLoader();
   loader.setCrossOrigin?.("anonymous");
 
@@ -132,10 +176,7 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
 
   async function loadSource(item) {
     if (cache.has(item.id)) return cache.get(item.id);
-    const url = itemUrl(item);
-    const gltf = await loader.loadAsync(url);
-    const root = gltf.scene || gltf.scenes?.[0];
-    if (!root) throw new Error(`GLB sem cena: ${item.id}`);
+    const root = await loadSourceOrPlaceholder(loader, item);
     cache.set(item.id, root);
     return root;
   }
@@ -196,6 +237,7 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     placed.set(uid, { uid, item, object, locked: !!transform.locked, original: { item, transform } });
     select(uid);
     toast?.(`${item.label || item.id} adicionado`);
+    onObjectCommitted?.("add");
     return placed.get(uid);
   }
 
@@ -211,16 +253,18 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     disposeObject(entry.object);
     placed.delete(uid);
     validateSelected();
+    onObjectCommitted?.("remove");
     return true;
   }
 
-  async function duplicate(uid = selectedUid) {
+  async function duplicate(uid = selectedUid, offset = [gridSize * 2, 0, gridSize * 2]) {
     const entry = placed.get(uid);
     if (!entry) return null;
     const data = serializeEntry(entry);
     data.uid = uidFor(entry.item.id);
-    data.position[0] += gridSize * 2;
-    data.position[2] += gridSize * 2;
+    data.position[0] += offset[0] || 0;
+    data.position[1] += offset[1] || 0;
+    data.position[2] += offset[2] || 0;
     return addItem(entry.item, data);
   }
 
@@ -229,23 +273,46 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     if (!entry) return;
     const item = entry.item;
     remove(entry.uid);
-    return addItem(item, item.placement || {});
+    const result = await addItem(item, item.placement || {});
+    onObjectCommitted?.("reset");
+    return result;
   }
 
-  function clear() {
-    for (const uid of [...placed.keys()]) remove(uid);
+  function clear({ silent = false } = {}) {
+    for (const uid of [...placed.keys()]) {
+      const entry = placed.get(uid);
+      if (entry) {
+        entry.object.removeFromParent();
+        disposeObject(entry.object);
+      }
+      placed.delete(uid);
+    }
+    transformControls?.detach();
+    boxHelper.attach(null);
+    selectedUid = null;
+    validateSelected();
+    if (!silent) onObjectCommitted?.("clear");
   }
 
+  let transformDirty = false;
   function postTransformChanged() {
     const entry = getSelected();
     if (entry) {
+      transformDirty = true;
       clampToRoom(entry.object.position);
       boxHelper.update(entry.object);
     }
     validateSelected();
+    onObjectChanged?.("transform");
   }
 
   transformControls?.addEventListener("objectChange", postTransformChanged);
+  transformControls?.addEventListener("mouseUp", () => {
+    if (transformDirty) {
+      transformDirty = false;
+      onObjectCommitted?.("transform");
+    }
+  });
 
   function moveSelected(dx = 0, dy = 0, dz = 0, fine = false) {
     const entry = getSelected();
@@ -256,6 +323,7 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     entry.object.position.z = snap(entry.object.position.z + dz * step, gridSize);
     clampToRoom(entry.object.position);
     postTransformChanged();
+    onObjectCommitted?.("move");
   }
 
   function rotateSelected(degY = 0, fine = false) {
@@ -264,14 +332,17 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     const step = fine ? 5 : degY;
     entry.object.rotation.y += degToRad(step);
     postTransformChanged();
+    onObjectCommitted?.("rotate");
   }
 
   function scaleSelected(delta = 0) {
     const entry = getSelected();
     if (!entry || entry.locked) return;
     const factor = Math.max(0.05, 1 + delta);
-    entry.object.scale.multiplyScalar(factor);
+    const scale = getUserScale(entry.object).map((v) => v * factor);
+    setUserScale(entry.object, scale);
     postTransformChanged();
+    onObjectCommitted?.("scale");
   }
 
   function setSelectedTransform({ position, rotationDeg, scale }) {
@@ -282,6 +353,27 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     if (Array.isArray(scale)) setUserScale(entry.object, scale);
     clampToRoom(entry.object.position);
     postTransformChanged();
+    onObjectCommitted?.("apply-transform");
+  }
+
+  function centerSelected() {
+    const entry = getSelected();
+    if (!entry || entry.locked) return;
+    entry.object.position.set(0, Math.max(0, entry.object.position.y), 0);
+    postTransformChanged();
+    onObjectCommitted?.("center");
+  }
+
+  function groundSelected() {
+    const entry = getSelected();
+    if (!entry || entry.locked) return;
+    entry.object.position.y = 0;
+    postTransformChanged();
+    onObjectCommitted?.("ground");
+  }
+
+  function rotateSelected90() {
+    rotateSelected(90, false);
   }
 
   function setMode(mode) {
@@ -295,6 +387,7 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     entry.locked = !entry.locked;
     if (entry.locked) transformControls?.detach();
     else select(uid);
+    onObjectCommitted?.("lock");
     return entry.locked;
   }
 
@@ -321,14 +414,18 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
   }
 
   async function loadLayout(layout, catalog) {
-    clear();
+    clear({ silent: true });
     const byId = new Map(catalog.map((item) => [item.id, item]));
     for (const entry of Array.isArray(layout?.items) ? layout.items : []) {
       const item = byId.get(entry.itemId);
-      if (!item) continue;
+      if (!item) {
+        console.warn("Item do layout não existe no catálogo:", entry.itemId);
+        continue;
+      }
       try { await addItem(item, entry); }
       catch (err) { console.warn("Falha ao carregar item da Room:", entry.itemId, err); }
     }
+    onObjectCommitted?.("load-layout");
   }
 
   const raycaster = new ThreeRef.Raycaster();
@@ -348,16 +445,18 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     return obj?.userData?.room?.uid || null;
   }
 
-  renderer.domElement.addEventListener("pointerdown", (event) => {
+  const onPointerDown = (event) => {
     const uid = pickFromEvent(event);
     if (uid) select(uid);
-  });
+  };
+  renderer.domElement.addEventListener("pointerdown", onPointerDown);
 
   function dispose() {
-    clear();
+    clear({ silent: true });
     cache.clear();
     boxHelper.dispose();
     transformControls?.removeEventListener("objectChange", postTransformChanged);
+    renderer.domElement.removeEventListener("pointerdown", onPointerDown);
   }
 
   return {
@@ -371,8 +470,11 @@ export function createRoomItemManager({ THREE: ThreeRef, roomRoot, scene, camera
     getSelected,
     moveSelected,
     rotateSelected,
+    rotateSelected90,
     scaleSelected,
     setSelectedTransform,
+    centerSelected,
+    groundSelected,
     setMode,
     toggleLock,
     setCollisionEnabled,

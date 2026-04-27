@@ -63,6 +63,24 @@ export function createRoomScene(canvas) {
   roomRoot.name = "room-root";
   scene.add(roomRoot);
 
+  function focusOnObject(object) {
+    if (!object) return;
+    const box = new THREE.Box3().setFromObject(object);
+    if (box.isEmpty()) return;
+    const center = new THREE.Vector3();
+    const size = new THREE.Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+    controls.target.copy(center);
+    const distance = Math.max(2.5, Math.max(size.x, size.y, size.z) * 2.6);
+    camera.position.set(center.x + distance, center.y + distance * 0.62 + 0.9, center.z + distance);
+  }
+
+  function resetCamera() {
+    camera.position.set(4.2, 3.0, 5.0);
+    controls.target.set(0, 0.75, 0);
+  }
+
   function resize() {
     const rect = canvas.getBoundingClientRect();
     const width = Math.max(1, Math.floor(rect.width));
@@ -92,5 +110,5 @@ export function createRoomScene(canvas) {
     renderer.dispose();
   }
 
-  return { THREE, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, dispose };
+  return { THREE, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, focusOnObject, resetCamera, dispose };
 }

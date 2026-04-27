@@ -6,41 +6,79 @@
       "label": "Grand Piano",
       "file": "items/grand_piano.glb",
       "kind": "room_item",
-      "category": "scene_prop",
+      "category": "furniture",
       "placement": {
         "surface": "floor",
         "snap": true,
         "rotateStepDeg": 15,
         "canCollide": true,
         "targetSize": 1.35
-      }
+      },
+      "allowInRoom": true,
+      "dualUse": false
     },
     {
       "id": "office_desk",
       "label": "Office Desk",
       "file": "items/office_desk.glb",
       "kind": "room_item",
-      "category": "scene_prop",
+      "category": "furniture",
       "placement": {
         "surface": "floor",
         "snap": true,
         "rotateStepDeg": 15,
         "canCollide": true,
         "targetSize": 1
-      }
+      },
+      "allowInRoom": true,
+      "dualUse": false
     },
     {
       "id": "tablet",
       "label": "Tablet",
       "file": "items/tablet.glb",
       "kind": "room_item",
-      "category": "hand",
+      "category": "electronics",
       "placement": {
         "surface": "floor",
         "snap": true,
         "rotateStepDeg": 15,
         "canCollide": true,
         "targetSize": 1
+      },
+      "allowInRoom": true,
+      "dualUse": true
+    },
+    {
+      "id": "dado_de_20_lados",
+      "label": "Dado De 20 Lados",
+      "file": "items/dado_de_20_lados.glb",
+      "kind": "room_item",
+      "category": "table_prop",
+      "allowInRoom": true,
+      "dualUse": true,
+      "placement": {
+        "surface": "table",
+        "snap": true,
+        "rotateStepDeg": 15,
+        "canCollide": false,
+        "targetSize": 0.18
+      }
+    },
+    {
+      "id": "dado_obj",
+      "label": "Dado Obj",
+      "file": "items/dado_obj.glb",
+      "kind": "room_item",
+      "category": "table_prop",
+      "allowInRoom": true,
+      "dualUse": true,
+      "placement": {
+        "surface": "table",
+        "snap": true,
+        "rotateStepDeg": 15,
+        "canCollide": false,
+        "targetSize": 0.18
       }
     }
   ]
