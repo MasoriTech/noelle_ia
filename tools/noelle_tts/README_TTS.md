@@ -1,14 +1,11 @@
-# Noelle TTS
+# TTS da Noelle
 
-Este módulo deixa a voz da Noelle pronta no início.
+O `INICIAR.bat` instala o motor `piper-tts` no `.venv`.
 
-- Instala `piper-tts` via `requirements.txt`.
-- Usa Piper se houver uma voz `.onnx` em `tools/noelle_tts/voices/`.
-- Se ainda não houver modelo de voz, usa o TTS nativo do Windows como fallback para a Noelle não ficar muda.
+Para voz Piper real, coloque um arquivo `.onnx` e o `.onnx.json` correspondente em:
 
-Teste manual:
-
-```bat
-.venv\Scripts\python.exe tools\noelle_tts\speak_piper.py --status
-.venv\Scripts\python.exe tools\noelle_tts\speak_piper.py "Olá, voz da Noelle funcionando."
+```txt
+tools/noelle_tts/voices/
 ```
+
+Enquanto não houver voz Piper, o app usa fallback local do Windows SAPI para não ficar mudo.

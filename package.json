@@ -1,53 +1,45 @@
 {
-  "name": "noelle-companion-2026",
-  "version": "14.0.0",
-  "description": "Noelle Companion 2026 - Electron limpo, Chat IA, expressões, diagnóstico e manutenção segura.",
+  "name": "noelle-companion-v16-restore",
+  "version": "16.0.0",
+  "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
   "license": "MIT",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "doctor": "node scripts/noelle_doctor_v14.cjs",
-    "diagnostico": "node scripts/noelle_doctor_v14.cjs",
-    "check": "node scripts/noelle_doctor_v14.cjs",
-    "build-renderers": "node scripts/build-renderers.mjs",
-    "verify-renderer-bundles": "node scripts/verify-renderer-bundles.js",
+    "diagnostico": "node scripts/diagnostico_v16.cjs",
+    "doctor": "node scripts/diagnostico_v16.cjs",
+    "bootstrap": "node scripts/bootstrap_v16.cjs",
+    "rebuild:manifests": "node scripts/rebuild_manifests_v16.cjs",
     "dist:win": "electron-builder --win nsis portable"
+  },
+  "dependencies": {
+    "@pixiv/three-vrm": "latest",
+    "three": "latest"
   },
   "devDependencies": {
     "electron": "41.3.0",
     "electron-builder": "26.8.1"
   },
   "build": {
-    "appId": "tech.masori.noelle",
+    "appId": "com.masoritech.noelle",
     "productName": "Noelle Companion",
+    "directories": {
+      "output": "release"
+    },
     "files": [
       "main.js",
       "preload.js",
       "package.json",
       "src/**/*",
-      "scripts/**/*",
       "tools/**/*",
-      "docs/**/*",
-      "!**/*.map",
-      "!logs/**",
-      "!backups/**",
-      "!node_modules/.cache/**"
+      "scripts/**/*",
+      "requirements.txt"
     ],
-    "directories": {
-      "output": "release"
-    },
     "win": {
-      "target": [
-        "nsis",
-        "portable"
-      ],
+      "target": ["nsis", "portable"],
       "icon": "assets/icons/app.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
     }
   }
 }

@@ -1,7 +1,46 @@
+# Dependências
 node_modules/
+
+# Builds / empacotamento
 release/
 dist/
+build/
+out/
+
+# Logs
 logs/
-backups/
-.DS_Store
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backups gerados pelos packs
+backups/
+
+# Python / STT / TTS
+.venv/
+venv/
+__pycache__/
+*.pyc
+tools/noelle_stt/models/
+tools/noelle_stt/cache/
+tools/noelle_stt/tmp/
+tools/noelle_stt/temp/
+
+# Áudios temporários
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.ogg
+
+# Pacotes compactados
+*.zip
+*.rar
+*.7z
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

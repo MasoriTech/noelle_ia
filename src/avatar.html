@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; img-src 'self' file: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' file:;" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Noelle Avatar</title>
+  <link rel="stylesheet" href="styles/avatar.css" />
+</head>
+<body>
+  <div class="avatar-shell" id="avatarShell">
+    <header class="avatar-titlebar">
+      <span>♛ Noelle Avatar</span>
+      <div>
+        <button id="minBtn">—</button>
+        <button id="closeBtn">×</button>
+      </div>
+    </header>
+    <main class="avatar-stage">
+      <canvas id="avatarCanvas"></canvas>
+      <div class="avatar-fallback" id="avatarFallback">
+        <div class="face" id="fallbackFace">♛</div>
+        <strong id="fallbackTitle">Carregando Noelle.vrm...</strong>
+        <p id="fallbackStatus">Se o viewer 3D não carregar, esta janela continua recebendo motions/expressions como fallback visual.</p>
+        <img id="expressionPreview" alt="expressão" />
+      </div>
+    </main>
+    <footer class="avatar-status" id="avatarStatus">Aguardando comando...</footer>
+  </div>
+  <script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js"}}</script>
+  <script type="module" src="renderer/avatar_window_app.mjs"></script>
+</body>
+</html>

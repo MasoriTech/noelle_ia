@@ -2,39 +2,55 @@
 
 const { contextBridge, ipcRenderer } = require("electron");
 
-function invoke(channel, payload) {
-  return ipcRenderer.invoke(channel, payload);
-}
+const invoke = (channel, ...args) => ipcRenderer.invoke(channel, ...args);
 
-const noelleAPI = Object.freeze({
-  status: () => ipcRenderer.invoke("noelle:status"),
-  chat: (payload) => ipcRenderer.invoke("noelle:chat", payload || {}),
-  loadState: () => ipcRenderer.invoke("noelle:load-state"),
-  saveState: (patch) => ipcRenderer.invoke("noelle:save-state", patch || {}),
-  listExpressions: () => ipcRenderer.invoke("noelle:list-expressions"),
-  applyExpression: (id) => ipcRenderer.invoke("noelle:apply-expression", id),
-  openExternal: (url) => ipcRenderer.invoke("noelle:open-external", url),
-});
+const noelleAPI = {
+  status: () => invoke("noelle:status"),
+  chat: (payload) => invoke("noelle:chat", payload),
+  loadState: () => invoke("noelle:load-state"),
+  saveState: (patch) => invoke("noelle:save-state", patch),
+  assets: () => invoke("noelle:assets"),
+  openExternal: (url) => invoke("noelle:open-external", url),
+  openAvatar: () => invoke("avatar:open"),
+  closeAvatar: () => invoke("avatar:close"),
+  avatarCommand: (command, payload) => invoke("avatar:command", command, payload),
+  setAvatarAlwaysOnTop: (enabled) => invoke("avatar:always-on-top", enabled),
+  saveAvatarPosition: () => invoke("avatar:save-position"),
+  speak: (text) => invoke("tts:speak", text),
+  onAvatarCommand: (callback) => {
+    if (typeof callback !== "function") return () => {};
+    const listener = (_event, data) => callback(data);
+    ipcRenderer.on("avatar:command", listener);
+    return () => ipcRenderer.removeListener("avatar:command", listener);
+  }
+};
 
-// Compatibilidade com nomes usados em versões antigas da janela.
-// Assim a UI nova e partes antigas podem coexistir durante a reintegração.
-const desktopWidget = Object.freeze({
+// API nova.
+contextBridge.exposeInMainWorld("noelleAPI", noelleAPI);
+
+// Compatibilidade com código antigo que chamava window.desktopWidget.
+contextBridge.exposeInMainWorld("desktopWidget", {
   status: noelleAPI.status,
-  getStatus: noelleAPI.status,
-  noelleCoreStatus: noelleAPI.status,
   coreStatus: noelleAPI.status,
+  noelleCoreStatus: noelleAPI.status,
   chat: noelleAPI.chat,
   noelleCoreChat: noelleAPI.chat,
-  coreChat: noelleAPI.chat,
   loadState: noelleAPI.loadState,
   saveState: noelleAPI.saveState,
-  listExpressions: noelleAPI.listExpressions,
-  getExpressions: noelleAPI.listExpressions,
-  applyExpression: noelleAPI.applyExpression,
-  setExpression: noelleAPI.applyExpression,
+  getAssets: noelleAPI.assets,
+  listAssets: noelleAPI.assets,
+  openAvatar: noelleAPI.openAvatar,
+  closeAvatar: noelleAPI.closeAvatar,
+  saveAvatarPosition: noelleAPI.saveAvatarPosition,
+  setAlwaysOnTop: noelleAPI.setAvatarAlwaysOnTop,
+  setAvatarAlwaysOnTop: noelleAPI.setAvatarAlwaysOnTop,
+  avatarCommand: noelleAPI.avatarCommand,
+  playMotion: (motion) => noelleAPI.avatarCommand("motion", motion),
+  setExpression: (expression) => noelleAPI.avatarCommand("expression", expression),
+  equipItem: (item) => noelleAPI.avatarCommand("item", item),
+  setCamera: (camera) => noelleAPI.avatarCommand("camera", camera),
+  speak: noelleAPI.speak,
+  ttsSpeak: noelleAPI.speak,
   openExternal: noelleAPI.openExternal,
-  invoke,
+  onAvatarCommand: noelleAPI.onAvatarCommand
 });
-
-contextBridge.exposeInMainWorld("noelleAPI", noelleAPI);
-contextBridge.exposeInMainWorld("desktopWidget", desktopWidget);

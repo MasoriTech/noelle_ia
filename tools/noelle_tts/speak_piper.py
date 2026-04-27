@@ -1,112 +1,92 @@
 # -*- coding: utf-8 -*-
-"""
-Noelle TTS helper 2026.
-Usa Piper quando houver voz .onnx configurada; caso contrário usa o TTS nativo do Windows como fallback.
+"""TTS essencial da Noelle.
+
+Prioridade:
+1. Se houver uma voz Piper .onnx em tools/noelle_tts/voices, usa Piper.
+2. No Windows, se não houver voz Piper, usa SAPI como fallback local.
+
+Isso evita que o app fique mudo enquanto você escolhe/baixa uma voz Piper específica.
 """
 from __future__ import annotations
 
 import argparse
 import os
-import shutil
+import platform
 import subprocess
 import sys
 from pathlib import Path
 
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
-def _default_voice_model() -> Path | None:
-    env_voice = os.environ.get("NOELLE_PIPER_VOICE", "").strip()
-    if env_voice:
-        p = Path(env_voice)
-        if p.exists():
-            return p
-
-    voices_dir = _repo_root() / "tools" / "noelle_tts" / "voices"
-    if voices_dir.exists():
-        voices = sorted(voices_dir.glob("*.onnx"))
-        if voices:
-            return voices[0]
-    return None
+ROOT = Path(__file__).resolve().parents[2]
+VOICES_DIR = Path(__file__).resolve().parent / "voices"
 
 
-def _powershell_speak(text: str, output: Path | None = None) -> int:
-    # Usa System.Speech do Windows. Não precisa instalar nada e evita a Noelle ficar muda.
-    escaped = text.replace("'", "''")
-    ps = [
-        "Add-Type -AssemblyName System.Speech;",
-        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer;",
-        "$s.Rate = 0;",
-        "$s.Volume = 100;",
-    ]
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        out = str(output).replace("'", "''")
-        ps.append(f"$s.SetOutputToWaveFile('{out}');")
-    ps.append(f"$s.Speak('{escaped}');")
-    ps.append("$s.Dispose();")
-    cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", " ".join(ps)]
-    return subprocess.call(cmd)
+def find_voice() -> Path | None:
+    if not VOICES_DIR.exists():
+        return None
+    voices = sorted(VOICES_DIR.glob("*.onnx"))
+    return voices[0] if voices else None
 
 
-def _piper_speak(text: str, voice_model: Path, output: Path | None = None) -> int:
-    piper_cmd = shutil.which("piper") or shutil.which("piper.exe")
-    if not piper_cmd:
-        return 2
+def speak_windows_sapi(text: str) -> int:
+    ps = (
+        "Add-Type -AssemblyName System.Speech; "
+        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+        "$s.Rate = 0; $s.Volume = 100; "
+        f"$s.Speak({text!r});"
+    )
+    completed = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps],
+        cwd=str(ROOT),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return int(completed.returncode)
 
-    if output is None:
-        output = _repo_root() / "logs" / "tts_last.wav"
-    output.parent.mkdir(parents=True, exist_ok=True)
 
-    cmd = [piper_cmd, "--model", str(voice_model), "--output_file", str(output)]
-    proc = subprocess.run(cmd, input=text, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if proc.returncode != 0:
-        sys.stderr.write(proc.stderr or "Piper falhou sem detalhe.\n")
-        return proc.returncode
-
-    # Toca o wav gerado quando nenhum arquivo de saída foi solicitado explicitamente.
-    if os.name == "nt" and output.name == "tts_last.wav":
-        ps = f"(New-Object Media.SoundPlayer '{str(output).replace("'", "''")}').PlaySync();"
-        subprocess.call(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps])
+def speak_piper(text: str, voice: Path) -> int:
+    wav_out = Path(os.environ.get("TEMP", str(ROOT))) / "noelle_tts_out.wav"
+    cmd = [sys.executable, "-m", "piper", "--model", str(voice), "--output_file", str(wav_out)]
+    completed = subprocess.run(
+        cmd,
+        input=text.encode("utf-8"),
+        cwd=str(ROOT),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if completed.returncode != 0 or not wav_out.exists():
+        return int(completed.returncode or 1)
+    if platform.system().lower() == "windows":
+        subprocess.Popen(
+            ["powershell.exe", "-NoProfile", "-Command", f"(New-Object Media.SoundPlayer {str(wav_out)!r}).PlaySync();"],
+            cwd=str(ROOT),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).wait(timeout=30)
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Noelle TTS helper")
-    parser.add_argument("text", nargs="*", help="Texto para falar")
-    parser.add_argument("--out", dest="out", default="", help="Arquivo wav de saída opcional")
-    parser.add_argument("--status", action="store_true", help="Mostra status do TTS")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--text", required=True)
     args = parser.parse_args()
-
-    voice = _default_voice_model()
-    piper_cmd = shutil.which("piper") or shutil.which("piper.exe")
-
-    if args.status:
-        print("NOELLE_TTS_STATUS")
-        print(f"python={sys.version.split()[0]}")
-        print(f"piper_cmd={piper_cmd or 'nao encontrado'}")
-        print(f"voice_model={str(voice) if voice else 'nao configurado'}")
-        print("fallback_windows_sapi=disponivel" if os.name == "nt" else "fallback_windows_sapi=indisponivel")
-        return 0
-
-    text = " ".join(args.text).strip()
+    text = " ".join(str(args.text).split())[:1000]
     if not text:
-        text = "Olá, eu sou a Noelle. O sistema de voz está pronto."
-
-    out = Path(args.out).resolve() if args.out else None
-
-    if voice and piper_cmd:
-        code = _piper_speak(text, voice, out)
+        print("texto vazio")
+        return 1
+    voice = find_voice()
+    if voice:
+        code = speak_piper(text, voice)
         if code == 0:
+            print(f"piper ok: {voice.name}")
             return 0
-        print("Piper falhou. Tentando fallback nativo do Windows...", file=sys.stderr)
-
-    if os.name == "nt":
-        return _powershell_speak(text, out)
-
-    print("Sem voz Piper configurada e sem fallback disponível neste sistema.", file=sys.stderr)
+    if platform.system().lower() == "windows":
+        code = speak_windows_sapi(text)
+        if code == 0:
+            print("windows sapi ok")
+            return 0
+    print("TTS indisponível. Coloque uma voz .onnx em tools/noelle_tts/voices ou use Windows SAPI.")
     return 1
 
 
