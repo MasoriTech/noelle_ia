@@ -827,3 +827,42 @@ Depois te passo o plano dos arquivos que serão alterados.
 ```
 
 Só gerar ZIP depois do plano, exceto se o usuário pedir explicitamente para já gerar.
+
+
+## Bandeja do sistema
+
+A Noelle tinha um ícone bonito na bandeja do Windows e isso deve ser preservado.
+
+Arquivos e pontos importantes:
+
+```txt
+assets/icons/app.ico
+assets/icons/noelle_16.png
+assets/icons/noelle_32.png
+assets/icons/noelle_48.png
+assets/icons/noelle_128.png
+assets/icons/noelle_256.png
+main.js
+Electron Tray
+Electron Menu
+app.setAppUserModelId(...)
+BrowserWindow({ icon: ... })
+```
+
+Comportamento esperado:
+
+```txt
+- Ícone aparece na bandeja do sistema.
+- Clique no ícone mostra/oculta a janela principal.
+- Duplo clique mostra a janela principal e abre o widget/avatar.
+- Menu da bandeja tem:
+  Mostrar/Ocultar Noelle
+  Abrir widget/avatar
+  Centralizar avatar
+  Parar emote
+  Sair da Noelle
+- Fechar a janela principal deve esconder na bandeja, não encerrar tudo.
+- Sair de verdade deve ser pelo menu da bandeja ou opção explícita.
+```
+
+Não remover a bandeja ao mexer em main.js.

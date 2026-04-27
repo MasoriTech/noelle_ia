@@ -1,6 +1,6 @@
 "use strict";
 
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -12,7 +12,7 @@ const OLLAMA_PORT = 11434;
 
 const ROOT_DIR = __dirname;
 const SRC_DIR = path.join(ROOT_DIR, "src");
-const ASSETS_DIR = path.join(SRC_DIR, "assets");
+const ASSETS_DIR = path.join(SRC_DIR, "assets"); const APP_ICONS_DIR = path.join(ROOT_DIR, "assets", "icons"); const APP_ICONS_DIR = path.join(ROOT_DIR, "assets", "icons");
 const USER_DATA_READY = () => app.getPath("userData");
 
 const CORE_DEFAULTS = {
@@ -294,9 +294,76 @@ function scanAssets() {
   };
 }
 
+function getAppIconPath() {
+  const candidates = [
+    path.join(APP_ICONS_DIR, "app.ico"),
+    path.join(APP_ICONS_DIR, "noelle_256.png"),
+    path.join(APP_ICONS_DIR, "noelle_128.png"),
+    path.join(APP_ICONS_DIR, "noelle_64.png"),
+    path.join(APP_ICONS_DIR, "noelle_32.png"),
+    path.join(APP_ICONS_DIR, "noelle_16.png")
+  ];
+  return candidates.find((file) => fileExists(file)) || null;
+}
+function getTrayImage() {
+  const iconPath = getAppIconPath();
+  if (!iconPath) return null;
+  const image = nativeImage.createFromPath(iconPath);
+  if (!image || image.isEmpty()) return null;
+  if (process.platform === "win32") return image.resize({ width: 16, height: 16 });
+  return image;
+}
+function showMainWindow() {
+  if (!mainWin || mainWin.isDestroyed()) createMainWindow();
+  if (mainWin) {
+    mainWin.show();
+    if (mainWin.isMinimized()) mainWin.restore();
+    mainWin.focus();
+  }
+}
+function toggleMainWindow() {
+  if (!mainWin || mainWin.isDestroyed()) {
+    createMainWindow();
+    return;
+  }
+  if (mainWin.isVisible()) mainWin.hide();
+  else showMainWindow();
+}
+function updateTrayMenu() {
+  if (!tray) return;
+  const avatarOpen = !!(avatarWin && !avatarWin.isDestroyed() && avatarWin.isVisible());
+  const menu = Menu.buildFromTemplate([
+    { label: "Mostrar/Ocultar Noelle", click: () => toggleMainWindow() },
+    { label: avatarOpen ? "Mostrar widget/avatar" : "Abrir widget/avatar", click: () => createAvatarWindow({ show: true }) },
+    { label: "Centralizar avatar", click: () => sendAvatarCommand("center", {}) },
+    { label: "Parar emote", click: () => sendAvatarCommand("stop", {}) },
+    { type: "separator" },
+    { label: "Status: " + (runtime.lastStatus || "iniciando"), enabled: false },
+    { type: "separator" },
+    { label: "Sair da Noelle", click: () => { isQuitting = true; app.quit(); } }
+  ]);
+  tray.setContextMenu(menu);
+}
+function createTrayIcon() {
+  if (tray) return tray;
+  const image = getTrayImage();
+  if (!image) {
+    appendLog("tray_icon_missing", { expected: "assets/icons/app.ico" });
+    return null;
+  }
+  tray = new Tray(image);
+  tray.setToolTip("Noelle IA");
+  tray.on("click", () => toggleMainWindow());
+  tray.on("double-click", () => {
+    showMainWindow();
+    createAvatarWindow({ show: true });
+  });
+  updateTrayMenu();
+  return tray;
+}
 function createMainWindow() {
   mainWin = new BrowserWindow({
-    width: 1180,
+    icon: getAppIconPath(), width: 1180,
     height: 760,
     minWidth: 900,
     minHeight: 620,
@@ -314,7 +381,7 @@ function createMainWindow() {
     }
   });
   mainWin.once("ready-to-show", () => mainWin.show());
-  mainWin.on("closed", () => { mainWin = null; });
+  mainWin.on("close", (event) => { if (!isQuitting) { event.preventDefault(); mainWin.hide(); updateTrayMenu(); } }); mainWin.on("closed", () => { mainWin = null; });
   mainWin.loadFile(path.join(SRC_DIR, "controls.html"));
 }
 
@@ -326,7 +393,7 @@ function createAvatarWindow({ show = true } = {}) {
   }
   const saved = loadState();
   avatarWin = new BrowserWindow({
-    width: 420,
+    icon: getAppIconPath(), width: 420,
     height: 680,
     minWidth: 280,
     minHeight: 360,
@@ -351,7 +418,58 @@ function createAvatarWindow({ show = true } = {}) {
   return avatarWin;
 }
 
+function normalizeAvatarCommandPayload(command, payload = {}) {
+  const entry = payload && typeof payload === "object" ? payload : {};
+  const raw = String(command || entry.command || entry.type || "").trim();
+  const key = raw.toLowerCase();
+  const pickId = (...names) => {
+    for (const name of names) {
+      const value = entry?.[name];
+      if (value !== undefined && value !== null && String(value).trim()) return String(value).trim();
+    }
+    if (entry?.file) return String(entry.file).replace(/\\/g, "/").split("/").pop().replace(/\.[^.]+$/, "");
+    return "";
+  };
+  const id = pickId("id", "motionId", "itemId", "expressionId", "value", "name", "label", "file");
+
+  if (key === "motion" || key === "emote" || key === "playmotion") return { type: "playMotion", motionId: id, source: entry };
+  if (key === "expression" || key === "setexpression" || key === "showexpression") return { type: "showExpression", expressionId: id, source: entry };
+  if (key === "item" || key === "equip" || key === "equipitem") return { type: "equipItem", itemId: id, slot: entry.slot || entry.meta?.slot || "right_hand", source: entry };
+  if (key === "camera" || key === "preset" || key === "setpreset") return { type: "setPreset", preset: entry.value || entry.preset || entry.id || "full", source: entry };
+  if (key === "center" || key === "centeravatar") return { type: "centerAvatar" };
+  if (key === "pause" || key === "togglepausemotion") return { type: "togglePauseMotion" };
+  if (key === "stop" || key === "stopmotion") return { type: "stopMotion" };
+  if (key === "clearitems" || key === "clearavataritems") return { type: "clearAvatarItems" };
+  if (key === "rotateleft") return { type: "rotateAvatar", deltaY: -0.15 };
+  if (key === "rotateright") return { type: "rotateAvatar", deltaY: 0.15 };
+  if (key === "resetrotation" || key === "resetavatarrotation") return { type: "resetAvatarRotation" };
+  return entry.type ? entry : { type: raw || "noop", source: entry };
+}
+function emitAvatarCommandPayload(win, payload) {
+  try { win.webContents.send("avatar:command", payload); } catch (_) {}
+  try { win.webContents.send("avatar-command", payload); } catch (_) {}
+}
 function sendAvatarCommand(command, payload = {}) {
+  const win = createAvatarWindow({ show: true });
+  const avatarPayload = normalizeAvatarCommandPayload(command, payload);
+  const data = { command, payload, avatarPayload, at: Date.now() };
+  runtime.lastAvatarCommand = data;
+  updateTrayMenu();
+  const emit = () => setTimeout(() => emitAvatarCommandPayload(win, avatarPayload), 250);
+  if (win.webContents.isLoading()) win.webContents.once("did-finish-load", emit);
+  else emit();
+  return { ok: true, sent: data };
+}) {
+  const win = createAvatarWindow({ show: true });
+  const avatarPayload = normalizeAvatarCommandPayload(command, payload);
+  const data = { command, payload, avatarPayload, at: Date.now() };
+  runtime.lastAvatarCommand = data;
+  updateTrayMenu();
+  const emit = () => setTimeout(() => emitAvatarCommandPayload(win, avatarPayload), 250);
+  if (win.webContents.isLoading()) win.webContents.once("did-finish-load", emit);
+  else emit();
+  return { ok: true, sent: data };
+}) {
   const win = createAvatarWindow({ show: true });
   const data = { command, payload, at: Date.now() };
   runtime.lastAvatarCommand = data;
@@ -443,7 +561,7 @@ async function getStatus() {
   };
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(() => { if (process.platform === "win32") { try { app.setAppUserModelId("com.masoritech.noelle"); } catch (_) {} }
   ensureDir(path.join(USER_DATA_READY(), "state"));
   ensureDir(path.join(USER_DATA_READY(), "logs"));
   createMainWindow();
