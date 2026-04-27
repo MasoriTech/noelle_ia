@@ -1,0 +1,73 @@
+.noelle-v15-section {
+  margin: 14px 0;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(9, 8, 18, .46);
+  box-shadow: 0 18px 46px rgba(0,0,0,.22);
+}
+.noelle-v15-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #fff;
+}
+.noelle-v15-section-head span,
+.noelle-v15-avatar-badge span {
+  color: rgba(255,255,255,.62);
+  font-size: 13px;
+}
+.noelle-v15-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+  gap: 12px;
+}
+.noelle-v15-card,
+.noelle-v15-btn {
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  border-radius: 18px;
+  min-height: 48px;
+  padding: 12px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.noelle-v15-card:hover,
+.noelle-v15-btn:hover {
+  border-color: rgba(255,70,155,.50);
+  background: rgba(255,70,155,.13);
+}
+.noelle-v15-card img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 8px;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+}
+.noelle-v15-card span {
+  display: block;
+  text-align: center;
+}
+.noelle-v15-avatar-badge,
+.noelle-v15-tts-test {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.noelle-v15-avatar-badge strong {
+  display: block;
+  color: #fff;
+}
+.noelle-v15-empty {
+  color: rgba(255,255,255,.65);
+  padding: 10px 4px;
+}
+@media (max-width: 720px) {
+  .noelle-v15-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .noelle-v15-avatar-badge, .noelle-v15-tts-test { align-items: stretch; flex-direction: column; }
+}
