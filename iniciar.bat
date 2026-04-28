@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - V18.6 Room Walk Robust
+title Noelle IA - V18.8 Yoru Player Robust
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,14 +9,13 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - V18.6 ROOM WALK ROBUST
+echo  NOELLE IA - V18.8 YORU PLAYER ROBUST
 echo ============================================================
 echo.
-echo [1] Aplicar Room V18.6 e iniciar Noelle
-echo [2] Aplicar Room V18.6 sem iniciar
-echo [3] Diagnostico Room V18.6
+echo [1] Aplicar Yoru Player robusto e iniciar Noelle
+echo [2] Aplicar Yoru Player robusto sem iniciar
+echo [3] Diagnostico Yoru Player
 echo [4] Rebuild Room bundle
-echo [5] Limpar outros .bat da raiz para backup
 echo [0] Sair
 echo.
 set /p "OP=Escolha: "
@@ -25,7 +24,6 @@ if "%OP%"=="1" goto APPLY_START
 if "%OP%"=="2" goto APPLY_ONLY
 if "%OP%"=="3" goto DIAG
 if "%OP%"=="4" goto BUILD_ROOM
-if "%OP%"=="5" goto CLEAN_BATS
 if "%OP%"=="0" exit /b 0
 goto MENU
 
@@ -64,11 +62,11 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 
 echo.
-echo [1/5] Aplicando Room V18.6...
-node scripts\harden_room_v18_6.cjs --apply
+echo [1/5] Aplicando V18.8...
+node scripts\harden_room_v18_8.cjs --apply
 if errorlevel 1 (
   echo.
-  echo [ERRO] Room V18.6 falhou com codigo %errorlevel%.
+  echo [ERRO] V18.8 falhou com codigo %errorlevel%.
   pause
   goto MENU
 )
@@ -80,7 +78,7 @@ if errorlevel 1 goto MENU
 
 echo.
 echo [3/5] Gerando bundle da Room...
-node scripts\build_room_v18_6.cjs
+node scripts\build_room_v18_8.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Build da Room falhou com codigo %errorlevel%.
@@ -90,7 +88,7 @@ if errorlevel 1 (
 
 echo.
 echo [4/5] Diagnostico...
-node scripts\diagnostico_room_v18_6.cjs
+node scripts\diagnostico_room_v18_8.cjs
 if errorlevel 1 (
   echo.
   echo [AVISO] Diagnostico encontrou problemas. Veja acima.
@@ -108,11 +106,11 @@ goto MENU
 :APPLY_ONLY
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\harden_room_v18_6.cjs --apply
+node scripts\harden_room_v18_8.cjs --apply
 if errorlevel 1 (
-  echo [ERRO] Room V18.6 falhou com codigo %errorlevel%.
+  echo [ERRO] V18.8 falhou com codigo %errorlevel%.
 ) else (
-  echo [OK] Room V18.6 aplicada.
+  echo [OK] V18.8 aplicada.
 )
 pause
 goto MENU
@@ -120,7 +118,7 @@ goto MENU
 :DIAG
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\diagnostico_room_v18_6.cjs
+node scripts\diagnostico_room_v18_8.cjs
 pause
 goto MENU
 
@@ -129,30 +127,11 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 call :ENSURE_DEPS
 if errorlevel 1 goto MENU
-node scripts\build_room_v18_6.cjs
+node scripts\build_room_v18_8.cjs
 if errorlevel 1 (
   echo [ERRO] Build da Room falhou com codigo %errorlevel%.
 ) else (
   echo [OK] Bundle da Room gerado.
 )
-pause
-goto MENU
-
-:CLEAN_BATS
-set "STAMP=%DATE:/=-%_%TIME::=-%"
-set "STAMP=%STAMP: =0%"
-set "DEST=backups\bats_v18_6_room_%STAMP%"
-if not exist "backups" mkdir "backups" >nul 2>nul
-if not exist "%DEST%" mkdir "%DEST%" >nul 2>nul
-
-set "FOUND=0"
-for %%F in (*.bat) do (
-  if /I not "%%~nxF"=="INICIAR.bat" (
-    set "FOUND=1"
-    echo [INFO] Movendo %%~nxF para %DEST%
-    move /Y "%%~fF" "%DEST%\" >nul
-  )
-)
-if "%FOUND%"=="0" echo [OK] Nenhum outro .bat na raiz.
 pause
 goto MENU

@@ -47528,6 +47528,159 @@ void main() {
     return target.clone().add(dir.multiplyScalar(safeDistance));
   }
 
+  // src/renderer/room_player_avatar.js
+  var DEFAULT_AVATAR_URLS = [
+    "./assets/avatars/Yoru.vrm",
+    "./assets/avatars/yoru.vrm",
+    "./assets/Yoru.vrm",
+    "./assets/Noelle.vrm",
+    "./assets/avatars/Noelle.vrm",
+    "./assets/avatars/noelle.vrm"
+  ];
+  function disposeObject2(object) {
+    object?.traverse?.((child) => {
+      if (!child.isMesh) return;
+      child.geometry?.dispose?.();
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      for (const material of materials.filter(Boolean)) {
+        material.dispose?.();
+      }
+    });
+  }
+  function makeFallbackAvatar() {
+    const root = new Group();
+    root.name = "yoru-fallback-capsule";
+    const body = new Mesh(
+      CapsuleGeometry ? new CapsuleGeometry(0.22, 0.78, 6, 12) : new CylinderGeometry(0.22, 0.22, 1.25, 16),
+      new MeshStandardMaterial({ color: 16729982, roughness: 0.65 })
+    );
+    body.position.y = 0.78;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    const head = new Mesh(
+      new SphereGeometry(0.18, 16, 12),
+      new MeshStandardMaterial({ color: 16760272, roughness: 0.7 })
+    );
+    head.position.y = 1.48;
+    head.castShadow = true;
+    const marker = new Mesh(
+      new BoxGeometry(0.08, 0.08, 0.22),
+      new MeshStandardMaterial({ color: 16777215, roughness: 0.5 })
+    );
+    marker.position.set(0, 1.42, -0.23);
+    root.add(body, head, marker);
+    root.userData.noelleFallbackAvatar = true;
+    return root;
+  }
+  function normalizeVisual(visualRoot, targetHeight = 1.62) {
+    visualRoot.updateMatrixWorld(true);
+    const box = new Box3().setFromObject(visualRoot);
+    if (box.isEmpty()) return { height: targetHeight, eyeHeight: 1.52 };
+    const center = new Vector3();
+    const size = new Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+    visualRoot.position.x -= center.x;
+    visualRoot.position.z -= center.z;
+    visualRoot.position.y -= box.min.y;
+    const height = Math.max(0.01, size.y);
+    const scale = targetHeight / height;
+    visualRoot.scale.setScalar(Math.max(1e-3, Math.min(20, scale)));
+    return { height: targetHeight, eyeHeight: targetHeight * 0.92 };
+  }
+  function createRoomPlayerAvatar({ toast: toast2 } = {}) {
+    const root = new Group();
+    root.name = "yoru-player-avatar-root";
+    let visual = makeFallbackAvatar();
+    let loadedUrl = null;
+    let eyeHeight = 1.5;
+    let targetHeight = 1.62;
+    let bobTime = 0;
+    let disposed = false;
+    root.add(visual);
+    function replaceVisual(nextVisual, meta = {}) {
+      const old = visual;
+      old?.removeFromParent?.();
+      if (old && !old.userData?.noelleExternalScene) disposeObject2(old);
+      visual = nextVisual;
+      visual.name = meta.name || "yoru-player-visual";
+      root.add(visual);
+      targetHeight = meta.height || targetHeight;
+      eyeHeight = meta.eyeHeight || eyeHeight;
+    }
+    async function load(urls = DEFAULT_AVATAR_URLS) {
+      const loader = new GLTFLoader();
+      for (const url of urls) {
+        try {
+          const gltf = await loader.loadAsync(url);
+          if (disposed) return { ok: false, reason: "disposed" };
+          const scene = gltf.scene || gltf.scenes?.[0];
+          if (!scene) throw new Error("VRM/GLB sem cena carreg\xE1vel");
+          scene.userData.noelleExternalScene = true;
+          scene.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              child.frustumCulled = false;
+            }
+          });
+          const wrapper = new Group();
+          wrapper.name = "yoru-vrm-wrapper";
+          wrapper.add(scene);
+          const meta = normalizeVisual(wrapper, 1.62);
+          replaceVisual(wrapper, { name: "yoru-vrm-player", ...meta });
+          loadedUrl = url;
+          toast2?.("Yoru/Noelle carregada para POV");
+          return { ok: true, url, eyeHeight, targetHeight };
+        } catch (err) {
+          console.warn("[Noelle Room] Falha ao carregar avatar player:", url, err);
+        }
+      }
+      toast2?.("Avatar VRM n\xE3o encontrado; usando c\xE1psula fallback");
+      return { ok: false, reason: "not_found", eyeHeight, targetHeight };
+    }
+    function setMode(mode) {
+      root.visible = mode === "third_person";
+    }
+    function update(dt, moving, mode) {
+      if (!visual) return;
+      if (mode !== "third_person") {
+        visual.position.y = 0;
+        return;
+      }
+      if (moving) {
+        bobTime += dt * 8;
+        visual.position.y = Math.sin(bobTime) * 0.018;
+      } else {
+        visual.position.y *= 0.86;
+      }
+    }
+    function getEyeHeight() {
+      return eyeHeight || 1.5;
+    }
+    function getTargetHeight() {
+      return targetHeight || 1.62;
+    }
+    function dispose() {
+      disposed = true;
+      visual?.removeFromParent?.();
+      disposeObject2(visual);
+      root.removeFromParent();
+    }
+    return {
+      root,
+      load,
+      setMode,
+      update,
+      getEyeHeight,
+      getTargetHeight,
+      get loadedUrl() {
+        return loadedUrl;
+      },
+      dispose
+    };
+  }
+
   // src/renderer/room_player_controller.js
   function createRoomPlayerController({
     scene,
@@ -47540,25 +47693,15 @@ void main() {
     onPlayerChanged
   }) {
     const player = new Group();
-    player.name = "room-player";
+    player.name = "room-player-yuru-pov";
     player.position.set(0, 0, 2.6);
-    const geometry = CapsuleGeometry ? new CapsuleGeometry(0.22, 0.72, 6, 12) : new CylinderGeometry(0.22, 0.22, 1.1, 16);
-    const body = new Mesh(
-      geometry,
-      new MeshStandardMaterial({ color: 16729982, roughness: 0.65 })
-    );
-    body.position.y = 0.72;
-    body.castShadow = true;
-    body.receiveShadow = true;
-    player.add(body);
-    const forwardMarker = new Mesh(
-      new BoxGeometry(0.08, 0.08, 0.22),
-      new MeshStandardMaterial({ color: 16777215, roughness: 0.5 })
-    );
-    forwardMarker.position.set(0, 1.12, -0.22);
-    player.add(forwardMarker);
+    const avatar = createRoomPlayerAvatar({ toast: toast2 });
+    player.add(avatar.root);
     scene.add(player);
     player.visible = false;
+    avatar.load().catch((err) => {
+      console.warn("[Noelle Room] Player avatar load failed:", err);
+    });
     const keys = /* @__PURE__ */ new Set();
     const state = {
       mode: "build",
@@ -47566,10 +47709,9 @@ void main() {
       pitch: 0,
       speed: 2.2,
       runSpeed: 4.2,
-      eyeHeight: 1.56,
       radius: 0.28,
-      thirdDistance: 3.2,
-      thirdHeight: 1.55,
+      thirdDistance: 3.15,
+      thirdHeight: 1.3,
       locked: false,
       lastTime: performance.now()
     };
@@ -47597,17 +47739,34 @@ void main() {
       } catch {
       }
     }
+    function rememberKey(event, pressed) {
+      const key = String(event.key || "").toLowerCase();
+      const code = String(event.code || "").toLowerCase();
+      if (pressed) {
+        if (key) keys.add(key);
+        if (code) keys.add(code);
+      } else {
+        if (key) keys.delete(key);
+        if (code) keys.delete(code);
+      }
+    }
+    function hasMoveKey(letter) {
+      return keys.has(letter) || keys.has(`key${letter}`);
+    }
+    function hasShift() {
+      return keys.has("shift") || keys.has("shiftleft") || keys.has("shiftright");
+    }
     function onPointerLockChange() {
       state.locked = isLocked();
       if (active()) {
-        setStatus2?.(state.locked ? "Mouse travado \xB7 Esc libera" : "Clique na Room para travar o mouse");
+        setStatus2?.(state.locked ? "Yoru POV ativo \xB7 Esc libera o mouse" : "Clique na Room para entrar na vis\xE3o da Yoru");
       }
     }
     function onKeyDown2(event) {
-      keys.add(event.key.toLowerCase());
+      rememberKey(event, true);
     }
     function onKeyUp(event) {
-      keys.delete(event.key.toLowerCase());
+      rememberKey(event, false);
     }
     function onMouseMove2(event) {
       if (!active() || !state.locked) return;
@@ -47638,6 +47797,7 @@ void main() {
       }
       state.mode = clean;
       player.visible = clean === "third_person";
+      avatar.setMode(clean);
       if (clean === "build") {
         unlock();
         keys.clear();
@@ -47645,10 +47805,14 @@ void main() {
       } else {
         const safe = findSafeSpawn(entries(), player.position, state.radius);
         player.position.copy(safe);
-        if (clean === "first_person") setStatus2?.("First Person ativo \xB7 clique na tela para travar o mouse");
-        if (clean === "third_person") setStatus2?.("Third Person ativo \xB7 clique na tela para travar o mouse");
+        if (clean === "first_person") {
+          setStatus2?.("First Person/Yoru POV \xB7 clique na Room para entrar na vis\xE3o dela");
+        }
+        if (clean === "third_person") {
+          setStatus2?.("Third Person \xB7 Yoru vis\xEDvel com c\xE2mera atr\xE1s");
+        }
         updateCamera();
-        if (lock) setTimeout(requestLock, 80);
+        if (lock) requestLock();
       }
       onModeChange?.(clean);
     }
@@ -47658,7 +47822,7 @@ void main() {
       state.pitch = 0;
       updateCamera();
       onPlayerChanged?.("reset");
-      toast2?.("Player resetado");
+      toast2?.("Player/Yoru resetado");
     }
     function setPlayerFromLayout(playerData) {
       const pos = playerData?.position || [0, 0, 2.6];
@@ -47678,7 +47842,8 @@ void main() {
       const forward = getForward();
       player.rotation.y = state.yaw;
       if (state.mode === "first_person") {
-        camera.position.set(player.position.x, player.position.y + state.eyeHeight, player.position.z);
+        const eyeHeight = avatar.getEyeHeight();
+        camera.position.set(player.position.x, player.position.y + eyeHeight, player.position.z);
         camera.rotation.order = "YXZ";
         camera.rotation.y = state.yaw;
         camera.rotation.x = state.pitch;
@@ -47686,9 +47851,10 @@ void main() {
         return;
       }
       if (state.mode === "third_person") {
-        const target = player.position.clone().add(new Vector3(0, 1.15, 0));
+        const targetHeight = Math.max(1.05, avatar.getTargetHeight() * 0.72);
+        const target = player.position.clone().add(new Vector3(0, targetHeight, 0));
         const behind = forward.clone().multiplyScalar(-state.thirdDistance);
-        const height = state.thirdHeight + Math.max(-0.7, Math.min(0.8, state.pitch * 1.4));
+        const height = state.thirdHeight + Math.max(-0.65, Math.min(0.85, state.pitch * 1.35));
         const desired = target.clone().add(behind).add(new Vector3(0, height, 0));
         const safeCamera = resolveThirdPersonCamera({ THREERef: three_module_exports, target, desired, entries: entries() });
         camera.position.copy(safeCamera);
@@ -47701,15 +47867,16 @@ void main() {
       const dt = Math.min(0.05, (now - state.lastTime) / 1e3);
       state.lastTime = now;
       if (active()) {
-        const speed = keys.has("shift") ? state.runSpeed : state.speed;
+        const speed = hasShift() ? state.runSpeed : state.speed;
         const forward = getForward();
         const right = getRight();
         const dir = new Vector3();
-        if (keys.has("w")) dir.add(forward);
-        if (keys.has("s")) dir.sub(forward);
-        if (keys.has("d")) dir.add(right);
-        if (keys.has("a")) dir.sub(right);
-        if (dir.lengthSq() > 0) {
+        if (hasMoveKey("w")) dir.add(forward);
+        if (hasMoveKey("s")) dir.sub(forward);
+        if (hasMoveKey("d")) dir.add(right);
+        if (hasMoveKey("a")) dir.sub(right);
+        const moving = dir.lengthSq() > 0;
+        if (moving) {
           dir.normalize().multiplyScalar(speed * dt);
           const next = moveWithSliding({
             current: player.position,
@@ -47722,6 +47889,7 @@ void main() {
             onPlayerChanged?.("move");
           }
         }
+        avatar.update(dt, moving, state.mode);
         updateCamera();
       }
       frame = requestAnimationFrame(update);
@@ -47745,17 +47913,13 @@ void main() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       document.removeEventListener("pointerlockchange", onPointerLockChange);
       renderer.domElement.removeEventListener("click", onCanvasClick);
-      player.traverse((child) => {
-        if (child.isMesh) {
-          child.geometry?.dispose?.();
-          child.material?.dispose?.();
-        }
-      });
+      avatar.dispose();
       player.removeFromParent();
     }
     return {
       player,
       state,
+      avatar,
       setMode,
       resetPlayer,
       setPlayerFromLayout,
@@ -47807,11 +47971,11 @@ void main() {
       sceneApi2.setBuildControlsEnabled?.(false);
       player.setMode(clean, { lock: true });
       if (clean === "first_person") {
-        setModeBox2?.("First Person ativo. WASD anda, mouse olha, Shift corre, Esc libera mouse.", "warn");
-        toast2?.("First Person");
+        setModeBox2?.("Yoru POV ativo: voc\xEA anda pela vis\xE3o dela, estilo VRChat. WASD anda, mouse olha, Shift corre, Esc libera.", "warn");
+        toast2?.("Yoru POV");
       } else {
-        setModeBox2?.("Third Person ativo. Player vis\xEDvel com c\xE2mera atr\xE1s.", "warn");
-        toast2?.("Third Person");
+        setModeBox2?.("Third Person ativo: Yoru/Noelle vis\xEDvel com c\xE2mera atr\xE1s.", "warn");
+        toast2?.("Third Person Yoru");
       }
       updateInspector2?.();
     }

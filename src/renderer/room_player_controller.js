@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { findSafeSpawn, moveWithSliding, resolveThirdPersonCamera } from "./room_walk_collision.js";
+import { createRoomPlayerAvatar } from "./room_player_avatar.js";
 
 export function createRoomPlayerController({
   scene,
@@ -12,31 +13,18 @@ export function createRoomPlayerController({
   onPlayerChanged
 }) {
   const player = new THREE.Group();
-  player.name = "room-player";
+  player.name = "room-player-yuru-pov";
   player.position.set(0, 0, 2.6);
 
-  const geometry = THREE.CapsuleGeometry
-    ? new THREE.CapsuleGeometry(0.22, 0.72, 6, 12)
-    : new THREE.CylinderGeometry(0.22, 0.22, 1.1, 16);
-
-  const body = new THREE.Mesh(
-    geometry,
-    new THREE.MeshStandardMaterial({ color: 0xff477e, roughness: 0.65 })
-  );
-  body.position.y = 0.72;
-  body.castShadow = true;
-  body.receiveShadow = true;
-  player.add(body);
-
-  const forwardMarker = new THREE.Mesh(
-    new THREE.BoxGeometry(0.08, 0.08, 0.22),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 })
-  );
-  forwardMarker.position.set(0, 1.12, -0.22);
-  player.add(forwardMarker);
+  const avatar = createRoomPlayerAvatar({ toast });
+  player.add(avatar.root);
 
   scene.add(player);
   player.visible = false;
+
+  avatar.load().catch((err) => {
+    console.warn("[Noelle Room] Player avatar load failed:", err);
+  });
 
   const keys = new Set();
   const state = {
@@ -45,10 +33,9 @@ export function createRoomPlayerController({
     pitch: 0,
     speed: 2.2,
     runSpeed: 4.2,
-    eyeHeight: 1.56,
     radius: 0.28,
-    thirdDistance: 3.2,
-    thirdHeight: 1.55,
+    thirdDistance: 3.15,
+    thirdHeight: 1.30,
     locked: false,
     lastTime: performance.now()
   };
@@ -79,19 +66,39 @@ export function createRoomPlayerController({
     } catch {}
   }
 
+  function rememberKey(event, pressed) {
+    const key = String(event.key || "").toLowerCase();
+    const code = String(event.code || "").toLowerCase();
+    if (pressed) {
+      if (key) keys.add(key);
+      if (code) keys.add(code);
+    } else {
+      if (key) keys.delete(key);
+      if (code) keys.delete(code);
+    }
+  }
+
+  function hasMoveKey(letter) {
+    return keys.has(letter) || keys.has(`key${letter}`);
+  }
+
+  function hasShift() {
+    return keys.has("shift") || keys.has("shiftleft") || keys.has("shiftright");
+  }
+
   function onPointerLockChange() {
     state.locked = isLocked();
     if (active()) {
-      setStatus?.(state.locked ? "Mouse travado · Esc libera" : "Clique na Room para travar o mouse");
+      setStatus?.(state.locked ? "Yoru POV ativo · Esc libera o mouse" : "Clique na Room para entrar na visão da Yoru");
     }
   }
 
   function onKeyDown(event) {
-    keys.add(event.key.toLowerCase());
+    rememberKey(event, true);
   }
 
   function onKeyUp(event) {
-    keys.delete(event.key.toLowerCase());
+    rememberKey(event, false);
   }
 
   function onMouseMove(event) {
@@ -128,6 +135,7 @@ export function createRoomPlayerController({
 
     state.mode = clean;
     player.visible = clean === "third_person";
+    avatar.setMode(clean);
 
     if (clean === "build") {
       unlock();
@@ -136,10 +144,16 @@ export function createRoomPlayerController({
     } else {
       const safe = findSafeSpawn(entries(), player.position, state.radius);
       player.position.copy(safe);
-      if (clean === "first_person") setStatus?.("First Person ativo · clique na tela para travar o mouse");
-      if (clean === "third_person") setStatus?.("Third Person ativo · clique na tela para travar o mouse");
+
+      if (clean === "first_person") {
+        setStatus?.("First Person/Yoru POV · clique na Room para entrar na visão dela");
+      }
+      if (clean === "third_person") {
+        setStatus?.("Third Person · Yoru visível com câmera atrás");
+      }
+
       updateCamera();
-      if (lock) setTimeout(requestLock, 80);
+      if (lock) requestLock();
     }
 
     onModeChange?.(clean);
@@ -151,7 +165,7 @@ export function createRoomPlayerController({
     state.pitch = 0;
     updateCamera();
     onPlayerChanged?.("reset");
-    toast?.("Player resetado");
+    toast?.("Player/Yoru resetado");
   }
 
   function setPlayerFromLayout(playerData) {
@@ -176,7 +190,8 @@ export function createRoomPlayerController({
     player.rotation.y = state.yaw;
 
     if (state.mode === "first_person") {
-      camera.position.set(player.position.x, player.position.y + state.eyeHeight, player.position.z);
+      const eyeHeight = avatar.getEyeHeight();
+      camera.position.set(player.position.x, player.position.y + eyeHeight, player.position.z);
       camera.rotation.order = "YXZ";
       camera.rotation.y = state.yaw;
       camera.rotation.x = state.pitch;
@@ -185,9 +200,10 @@ export function createRoomPlayerController({
     }
 
     if (state.mode === "third_person") {
-      const target = player.position.clone().add(new THREE.Vector3(0, 1.15, 0));
+      const targetHeight = Math.max(1.05, avatar.getTargetHeight() * 0.72);
+      const target = player.position.clone().add(new THREE.Vector3(0, targetHeight, 0));
       const behind = forward.clone().multiplyScalar(-state.thirdDistance);
-      const height = state.thirdHeight + Math.max(-0.7, Math.min(0.8, state.pitch * 1.4));
+      const height = state.thirdHeight + Math.max(-0.65, Math.min(0.85, state.pitch * 1.35));
       const desired = target.clone().add(behind).add(new THREE.Vector3(0, height, 0));
       const safeCamera = resolveThirdPersonCamera({ THREERef: THREE, target, desired, entries: entries() });
       camera.position.copy(safeCamera);
@@ -202,17 +218,18 @@ export function createRoomPlayerController({
     state.lastTime = now;
 
     if (active()) {
-      const speed = keys.has("shift") ? state.runSpeed : state.speed;
+      const speed = hasShift() ? state.runSpeed : state.speed;
       const forward = getForward();
       const right = getRight();
       const dir = new THREE.Vector3();
 
-      if (keys.has("w")) dir.add(forward);
-      if (keys.has("s")) dir.sub(forward);
-      if (keys.has("d")) dir.add(right);
-      if (keys.has("a")) dir.sub(right);
+      if (hasMoveKey("w")) dir.add(forward);
+      if (hasMoveKey("s")) dir.sub(forward);
+      if (hasMoveKey("d")) dir.add(right);
+      if (hasMoveKey("a")) dir.sub(right);
 
-      if (dir.lengthSq() > 0) {
+      const moving = dir.lengthSq() > 0;
+      if (moving) {
         dir.normalize().multiplyScalar(speed * dt);
         const next = moveWithSliding({
           current: player.position,
@@ -226,6 +243,7 @@ export function createRoomPlayerController({
         }
       }
 
+      avatar.update(dt, moving, state.mode);
       updateCamera();
     }
 
@@ -252,18 +270,14 @@ export function createRoomPlayerController({
     document.removeEventListener("visibilitychange", onVisibilityChange);
     document.removeEventListener("pointerlockchange", onPointerLockChange);
     renderer.domElement.removeEventListener("click", onCanvasClick);
-    player.traverse((child) => {
-      if (child.isMesh) {
-        child.geometry?.dispose?.();
-        child.material?.dispose?.();
-      }
-    });
+    avatar.dispose();
     player.removeFromParent();
   }
 
   return {
     player,
     state,
+    avatar,
     setMode,
     resetPlayer,
     setPlayerFromLayout,

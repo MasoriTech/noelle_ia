@@ -44,11 +44,11 @@ export function createRoomModeManager({
     sceneApi.setBuildControlsEnabled?.(false);
     player.setMode(clean, { lock: true });
     if (clean === "first_person") {
-      setModeBox?.("First Person ativo. WASD anda, mouse olha, Shift corre, Esc libera mouse.", "warn");
-      toast?.("First Person");
+      setModeBox?.("Yoru POV ativo: você anda pela visão dela, estilo VRChat. WASD anda, mouse olha, Shift corre, Esc libera.", "warn");
+      toast?.("Yoru POV");
     } else {
-      setModeBox?.("Third Person ativo. Player visível com câmera atrás.", "warn");
-      toast?.("Third Person");
+      setModeBox?.("Third Person ativo: Yoru/Noelle visível com câmera atrás.", "warn");
+      toast?.("Third Person Yoru");
     }
     updateInspector?.();
   }

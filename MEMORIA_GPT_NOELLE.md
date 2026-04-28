@@ -1033,3 +1033,18 @@ Reforços do modo andar:
 - Spawn do player procura posição segura se nascer dentro de móvel.
 - Layout salva player.position, player.yaw e player.pitch.
 - Build controls desligam fora do Build Mode.
+
+
+## V18.7 Yoru POV Walk
+
+O First Person virou Yoru POV:
+- Câmera posicionada na altura dos olhos da Yoru/Noelle.
+- room_player_avatar.js tenta carregar:
+  - src/assets/avatars/Yoru.vrm
+  - src/assets/Yoru.vrm
+  - src/assets/Noelle.vrm
+  - src/assets/avatars/Noelle.vrm
+- Third Person usa a Yoru/Noelle como player visual.
+- First Person oculta o corpo/avatar para evitar ver por dentro da cabeça.
+- Se VRM não carregar, usa cápsula fallback.
+- Isso ainda não anima braços/mãos em primeira pessoa; isso fica para uma versão futura.
