@@ -81,6 +81,14 @@ export function createRoomScene(canvas) {
     controls.target.set(0, 0.75, 0);
   }
 
+  function setBuildControlsEnabled(enabled) {
+    const value = !!enabled;
+    controls.enabled = value;
+    transformControls.enabled = value;
+    if (transformHelper) transformHelper.visible = value;
+    if (!value) transformControls.detach();
+  }
+
   function resize() {
     const rect = canvas.getBoundingClientRect();
     const width = Math.max(1, Math.floor(rect.width));
@@ -110,5 +118,5 @@ export function createRoomScene(canvas) {
     renderer.dispose();
   }
 
-  return { THREE, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, focusOnObject, resetCamera, dispose };
+  return { THREE, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, focusOnObject, resetCamera, setBuildControlsEnabled, dispose };
 }

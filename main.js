@@ -470,7 +470,7 @@ function createMainWindow() {
   mainWin.loadFile(path.join(SRC_DIR, "controls.html"));
 }
 
-// NOELLE_ROOM_V18_4_BEGIN
+// NOELLE_ROOM_V18_6_BEGIN
 function roomCatalogPath() {
   return path.join(ASSETS_DIR, "room_manifest.json");
 }
@@ -489,28 +489,6 @@ function readRoomJson(file, fallback) {
     return fallback;
   }
 }
-function inferRoomManifestFromItems() {
-  const itemManifest = readRoomJson(path.join(ASSETS_DIR, "item_manifest.json"), []);
-  const list = Array.isArray(itemManifest) ? itemManifest : Array.isArray(itemManifest.items) ? itemManifest.items : [];
-  const roomIds = /desk|piano|chair|cadeira|mesa|table|bed|sofa|monitor|lamp|shelf|estante|room|floor|dado|dice|tablet/i;
-  return list.filter((item) => {
-    const hay = [item.id, item.label, item.file, item.category, item.kind].join(" ");
-    return item.kind === "room_item" || item.category === "scene_prop" || item.category === "furniture" || roomIds.test(hay);
-  }).map((item) => ({
-    id: item.id,
-    label: item.label || item.id,
-    file: item.file,
-    kind: "room_item",
-    category: item.category || "furniture",
-    allowInRoom: true,
-    placement: { surface: "floor", snap: true, rotateStepDeg: 15, canCollide: true, targetSize: item.id === "grand_piano" ? 1.35 : 1.0 }
-  }));
-}
-function scanRoomCatalog() {
-  const raw = readRoomJson(roomCatalogPath(), null);
-  const list = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : inferRoomManifestFromItems();
-  return list.filter(Boolean);
-}
 function finiteRoomNumber(value, fallback = 0) {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
@@ -524,6 +502,11 @@ function sanitizeRoomLayout(layout) {
     version: 1,
     roomId: String(layout?.roomId || "default_room").replace(/[^a-zA-Z0-9_-]/g, "_"),
     grid: layout?.grid || { size: 0.25, enabled: true },
+    player: {
+      position: safeRoomVec3(layout?.player?.position, [0, 0, 2.6]),
+      yaw: finiteRoomNumber(layout?.player?.yaw, 0),
+      pitch: finiteRoomNumber(layout?.player?.pitch, 0)
+    },
     items: Array.isArray(layout?.items) ? layout.items.map((item) => ({
       uid: String(item.uid || "").slice(0, 100),
       itemId: String(item.itemId || "").slice(0, 100),
@@ -537,7 +520,7 @@ function sanitizeRoomLayout(layout) {
 function loadRoomLayoutFile() {
   const user = roomLayoutUserPath();
   const dev = roomLayoutDevPath();
-  return sanitizeRoomLayout(readRoomJson(user, readRoomJson(dev, { version: 1, roomId: "default_room", grid: { size: 0.25, enabled: true }, items: [] })));
+  return sanitizeRoomLayout(readRoomJson(user, readRoomJson(dev, { version: 1, roomId: "default_room", grid: { size: 0.25, enabled: true }, player: { position: [0, 0, 2.6], yaw: 0, pitch: 0 }, items: [] })));
 }
 function saveRoomLayoutFile(layout) {
   const safe = sanitizeRoomLayout(layout || {});
@@ -562,9 +545,9 @@ function createRoomWindow({ show = true } = {}) {
     return roomWin;
   }
   roomWin = new BrowserWindow({
-    width: 1280,
-    height: 820,
-    minWidth: 960,
+    width: 1360,
+    height: 860,
+    minWidth: 980,
     minHeight: 650,
     title: "Noelle Room",
     icon: typeof getAppIconPath === "function" ? getAppIconPath() : undefined,
@@ -583,7 +566,8 @@ function createRoomWindow({ show = true } = {}) {
   roomWin.loadFile(path.join(SRC_DIR, "room.html"));
   return roomWin;
 }
-// NOELLE_ROOM_V18_4_END
+// NOELLE_ROOM_V18_6_END
+
 
 function createAvatarWindow({ show = true } = {}) {
   if (avatarWin && !avatarWin.isDestroyed()) {
@@ -822,10 +806,16 @@ ipcMain.handle("noelle-core-status", async () => getStatus());
 
 
 
-// NOELLE_ROOM_IPC_V18_4_BEGIN
+
+
+// NOELLE_ROOM_IPC_V18_6_BEGIN
 ipcMain.handle("room:open", async () => { createRoomWindow({ show: true }); return { ok: true }; });
 ipcMain.handle("room:close", async () => { if (roomWin && !roomWin.isDestroyed()) roomWin.hide(); return { ok: true }; });
-ipcMain.handle("room:catalog", async () => ({ ok: true, items: scanRoomCatalog() }));
+ipcMain.handle("room:catalog", async () => {
+  const raw = readRoomJson(roomCatalogPath(), null);
+  const list = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
+  return { ok: true, items: list };
+});
 ipcMain.handle("room:load-layout", async () => ({ ok: true, layout: loadRoomLayoutFile() }));
 ipcMain.handle("room:save-layout", async (_event, layout) => ({ ok: true, layout: saveRoomLayoutFile(layout || {}) }));
-// NOELLE_ROOM_IPC_V18_4_END
+// NOELLE_ROOM_IPC_V18_6_END

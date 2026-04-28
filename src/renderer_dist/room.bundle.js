@@ -33155,7 +33155,7 @@
   }
   function WebGLBufferRenderer(gl, extensions, info) {
     let mode;
-    function setMode2(value) {
+    function setMode(value) {
       mode = value;
     }
     function render(start, count) {
@@ -33193,7 +33193,7 @@
         info.update(elementCount, mode, 1);
       }
     }
-    this.setMode = setMode2;
+    this.setMode = setMode;
     this.render = render;
     this.renderInstances = renderInstances;
     this.renderMultiDraw = renderMultiDraw;
@@ -34294,7 +34294,7 @@
   }
   function WebGLIndexedBufferRenderer(gl, extensions, info) {
     let mode;
-    function setMode2(value) {
+    function setMode(value) {
       mode = value;
     }
     let type, bytesPerElement;
@@ -34337,7 +34337,7 @@
         info.update(elementCount, mode, 1);
       }
     }
-    this.setMode = setMode2;
+    this.setMode = setMode;
     this.setIndex = setIndex;
     this.render = render;
     this.renderInstances = renderInstances;
@@ -43882,6 +43882,13 @@ void main() {
       camera.position.set(4.2, 3, 5);
       controls.target.set(0, 0.75, 0);
     }
+    function setBuildControlsEnabled(enabled) {
+      const value = !!enabled;
+      controls.enabled = value;
+      transformControls.enabled = value;
+      if (transformHelper) transformHelper.visible = value;
+      if (!value) transformControls.detach();
+    }
     function resize() {
       const rect = canvas.getBoundingClientRect();
       const width = Math.max(1, Math.floor(rect.width));
@@ -43907,7 +43914,7 @@ void main() {
       controls.dispose();
       renderer.dispose();
     }
-    return { THREE: three_module_exports, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, focusOnObject, resetCamera, dispose };
+    return { THREE: three_module_exports, renderer, scene, camera, controls, transformControls, transformHelper, floor, grid, roomRoot, resize, focusOnObject, resetCamera, setBuildControlsEnabled, dispose };
   }
 
   // src/renderer/room_catalog.js
@@ -47046,7 +47053,7 @@ void main() {
     function rotateSelected90() {
       rotateSelected(90, false);
     }
-    function setMode2(mode) {
+    function setMode(mode) {
       const clean = ["translate", "rotate", "scale"].includes(mode) ? mode : "translate";
       transformControls?.setMode(clean);
     }
@@ -47138,7 +47145,7 @@ void main() {
       setSelectedTransform,
       centerSelected,
       groundSelected,
-      setMode: setMode2,
+      setMode,
       toggleLock,
       setCollisionEnabled,
       serialize,
@@ -47153,13 +47160,14 @@ void main() {
     version: 1,
     roomId: "default_room",
     grid: { size: 0.25, enabled: true },
+    player: { position: [0, 0, 2.6], yaw: 0, pitch: 0 },
     items: []
   };
   var DEFAULT_ROOM_PRESETS = [
     {
       id: "clean_office",
       label: "Escrit\xF3rio limpo",
-      description: "Mesa central com espa\xE7o para adicionar props.",
+      description: "Mesa central com espa\xE7o para andar em volta.",
       items: [
         { uid: "office_desk_preset_001", itemId: "office_desk", position: [0, 0, 0], rotationDeg: [0, 0, 0], scale: [1, 1, 1], locked: false }
       ]
@@ -47167,7 +47175,7 @@ void main() {
     {
       id: "music_corner",
       label: "Canto musical",
-      description: "Piano levemente \xE0 direita e mesa separada.",
+      description: "Piano \xE0 direita e mesa separada para testar third person.",
       items: [
         { uid: "grand_piano_preset_001", itemId: "grand_piano", position: [1.25, 0, -0.75], rotationDeg: [0, -25, 0], scale: [1, 1, 1], locked: false },
         { uid: "office_desk_preset_002", itemId: "office_desk", position: [-1.1, 0, 0.25], rotationDeg: [0, 10, 0], scale: [1, 1, 1], locked: false }
@@ -47187,6 +47195,11 @@ void main() {
       version: 1,
       roomId: String(layout2?.roomId || "default_room").replace(/[^a-zA-Z0-9_-]/g, "_"),
       grid: layout2?.grid || DEFAULT_ROOM_LAYOUT.grid,
+      player: {
+        position: safeVec3(layout2?.player?.position, DEFAULT_ROOM_LAYOUT.player.position),
+        yaw: finite(layout2?.player?.yaw, 0),
+        pitch: finite(layout2?.player?.pitch, 0)
+      },
       items: Array.isArray(layout2?.items) ? layout2.items.map((item) => ({
         uid: String(item.uid || "").slice(0, 100),
         itemId: String(item.itemId || "").slice(0, 100),
@@ -47223,12 +47236,13 @@ void main() {
       version: 1,
       roomId: preset?.id || "preset_room",
       grid: DEFAULT_ROOM_LAYOUT.grid,
+      player: DEFAULT_ROOM_LAYOUT.player,
       items: Array.isArray(preset?.items) ? preset.items : []
     });
   }
 
   // src/renderer/room_controls.js
-  function createRoomControls({ manager: manager2, renderLayoutList: renderLayoutList2, updateInspector: updateInspector2, saveLayout, undo, redo, toast: toast2, grid }) {
+  function createRoomControls({ manager: manager2, renderLayoutList: renderLayoutList2, updateInspector: updateInspector2, saveLayout, undo, redo, toast: toast2, grid, getRoomMode }) {
     let gridEnabled = true;
     let collisionEnabled = true;
     async function handleKey(event) {
@@ -47236,6 +47250,7 @@ void main() {
       if (tag === "input" || tag === "textarea" || tag === "select") return;
       const key = event.key.toLowerCase();
       const fine = event.shiftKey;
+      const buildMode = !getRoomMode || getRoomMode() === "build";
       if (event.ctrlKey && key === "s") {
         event.preventDefault();
         await saveLayout();
@@ -47251,6 +47266,7 @@ void main() {
         await redo();
         return;
       }
+      if (!buildMode) return;
       if (event.key === "Delete" || event.key === "Backspace") {
         manager2.remove();
         renderLayoutList2();
@@ -47274,6 +47290,7 @@ void main() {
       }
       const map = { w: [0, 0, -1], s: [0, 0, 1], a: [-1, 0, 0], d: [1, 0, 0], q: [0, 1, 0], e: [0, -1, 0] };
       if (map[key]) {
+        event.preventDefault();
         const [x, y, z] = map[key];
         manager2.moveSelected(x, y, z, fine);
         updateInspector2();
@@ -47436,6 +47453,376 @@ void main() {
     return { schedule, flush, destroy };
   }
 
+  // src/renderer/room_walk_collision.js
+  function isWalkBlockingEntry(entry) {
+    if (!entry?.object || !entry?.item) return false;
+    const category = String(entry.item.category || "").toLowerCase();
+    const canCollide = entry.item.placement?.canCollide !== false;
+    return canCollide && (category === "furniture" || category === "scene_prop" || category === "floor_prop");
+  }
+  function circleIntersectsBoxXZ(center, radius, box) {
+    const nearestX = Math.max(box.min.x, Math.min(center.x, box.max.x));
+    const nearestZ = Math.max(box.min.z, Math.min(center.z, box.max.z));
+    const dx = center.x - nearestX;
+    const dz = center.z - nearestZ;
+    return dx * dx + dz * dz < radius * radius;
+  }
+  function canPlayerStandAt(position, entries, radius = 0.28) {
+    if (!Number.isFinite(position.x) || !Number.isFinite(position.z)) return false;
+    if (position.x < ROOM_LIMITS.minX + radius || position.x > ROOM_LIMITS.maxX - radius) return false;
+    if (position.z < ROOM_LIMITS.minZ + radius || position.z > ROOM_LIMITS.maxZ - radius) return false;
+    for (const entry of entries || []) {
+      if (!isWalkBlockingEntry(entry)) continue;
+      const box = getWorldBox(entry.object);
+      if (!box) continue;
+      if (box.min.y > 1.65 || box.max.y < 0.05) continue;
+      if (circleIntersectsBoxXZ(position, radius, box)) return false;
+    }
+    return true;
+  }
+  function moveWithSliding({ current, delta, entries, radius = 0.28 }) {
+    const next = current.clone();
+    const tryX = next.clone();
+    tryX.x += delta.x;
+    if (canPlayerStandAt(tryX, entries, radius)) next.x = tryX.x;
+    const tryZ = next.clone();
+    tryZ.z += delta.z;
+    if (canPlayerStandAt(tryZ, entries, radius)) next.z = tryZ.z;
+    next.y = Math.max(0, Math.min(ROOM_LIMITS.maxY, next.y + (delta.y || 0)));
+    return next;
+  }
+  function findSafeSpawn(entries, preferred = new Vector3(0, 0, 2.6), radius = 0.28) {
+    const candidates = [
+      preferred,
+      new Vector3(0, 0, 3.2),
+      new Vector3(-2.6, 0, 2.6),
+      new Vector3(2.6, 0, 2.6),
+      new Vector3(0, 0, -3.2),
+      new Vector3(-3.2, 0, -2.2),
+      new Vector3(3.2, 0, -2.2),
+      new Vector3(0, 0, 0)
+    ];
+    for (const candidate of candidates) {
+      if (canPlayerStandAt(candidate, entries, radius)) return candidate.clone();
+    }
+    return new Vector3(0, 0, 2.6);
+  }
+  function getBlockingObjects(entries) {
+    const objects = [];
+    for (const entry of entries || []) {
+      if (isWalkBlockingEntry(entry) && entry.object) objects.push(entry.object);
+    }
+    return objects;
+  }
+  function resolveThirdPersonCamera({ THREERef = three_module_exports, target, desired, entries, padding = 0.24 }) {
+    const objects = getBlockingObjects(entries);
+    if (!objects.length) return desired.clone();
+    const dir = desired.clone().sub(target);
+    const distance = dir.length();
+    if (distance < 1e-3) return desired.clone();
+    dir.normalize();
+    const raycaster = new THREERef.Raycaster(target, dir, 0.05, distance);
+    const hits = raycaster.intersectObjects(objects, true).filter((hit) => hit.distance > 0.05);
+    if (!hits.length) return desired.clone();
+    const safeDistance = Math.max(0.7, hits[0].distance - padding);
+    return target.clone().add(dir.multiplyScalar(safeDistance));
+  }
+
+  // src/renderer/room_player_controller.js
+  function createRoomPlayerController({
+    scene,
+    camera,
+    renderer,
+    getEntries,
+    toast: toast2,
+    setStatus: setStatus2,
+    onModeChange,
+    onPlayerChanged
+  }) {
+    const player = new Group();
+    player.name = "room-player";
+    player.position.set(0, 0, 2.6);
+    const geometry = CapsuleGeometry ? new CapsuleGeometry(0.22, 0.72, 6, 12) : new CylinderGeometry(0.22, 0.22, 1.1, 16);
+    const body = new Mesh(
+      geometry,
+      new MeshStandardMaterial({ color: 16729982, roughness: 0.65 })
+    );
+    body.position.y = 0.72;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    player.add(body);
+    const forwardMarker = new Mesh(
+      new BoxGeometry(0.08, 0.08, 0.22),
+      new MeshStandardMaterial({ color: 16777215, roughness: 0.5 })
+    );
+    forwardMarker.position.set(0, 1.12, -0.22);
+    player.add(forwardMarker);
+    scene.add(player);
+    player.visible = false;
+    const keys = /* @__PURE__ */ new Set();
+    const state = {
+      mode: "build",
+      yaw: 0,
+      pitch: 0,
+      speed: 2.2,
+      runSpeed: 4.2,
+      eyeHeight: 1.56,
+      radius: 0.28,
+      thirdDistance: 3.2,
+      thirdHeight: 1.55,
+      locked: false,
+      lastTime: performance.now()
+    };
+    let frame = 0;
+    let disposed = false;
+    function entries() {
+      return getEntries?.() || [];
+    }
+    function active() {
+      return state.mode === "first_person" || state.mode === "third_person";
+    }
+    function isLocked() {
+      return document.pointerLockElement === renderer.domElement;
+    }
+    function requestLock() {
+      if (!active()) return;
+      try {
+        renderer.domElement.requestPointerLock?.();
+      } catch {
+      }
+    }
+    function unlock() {
+      try {
+        if (document.pointerLockElement === renderer.domElement) document.exitPointerLock?.();
+      } catch {
+      }
+    }
+    function onPointerLockChange() {
+      state.locked = isLocked();
+      if (active()) {
+        setStatus2?.(state.locked ? "Mouse travado \xB7 Esc libera" : "Clique na Room para travar o mouse");
+      }
+    }
+    function onKeyDown2(event) {
+      keys.add(event.key.toLowerCase());
+    }
+    function onKeyUp(event) {
+      keys.delete(event.key.toLowerCase());
+    }
+    function onMouseMove2(event) {
+      if (!active() || !state.locked) return;
+      const sensitivity = 22e-4;
+      state.yaw -= event.movementX * sensitivity;
+      state.pitch -= event.movementY * sensitivity;
+      state.pitch = Math.max(-1.18, Math.min(1.18, state.pitch));
+      onPlayerChanged?.("look");
+    }
+    function onCanvasClick() {
+      if (active() && !state.locked) requestLock();
+    }
+    function onWindowBlur() {
+      keys.clear();
+      unlock();
+    }
+    function onVisibilityChange() {
+      if (document.hidden) {
+        keys.clear();
+        unlock();
+      }
+    }
+    function setMode(mode, { lock = false } = {}) {
+      const clean = ["build", "first_person", "third_person"].includes(mode) ? mode : "build";
+      if (clean === state.mode && clean !== "build") {
+        if (lock) requestLock();
+        return;
+      }
+      state.mode = clean;
+      player.visible = clean === "third_person";
+      if (clean === "build") {
+        unlock();
+        keys.clear();
+        setStatus2?.("Build Mode ativo");
+      } else {
+        const safe = findSafeSpawn(entries(), player.position, state.radius);
+        player.position.copy(safe);
+        if (clean === "first_person") setStatus2?.("First Person ativo \xB7 clique na tela para travar o mouse");
+        if (clean === "third_person") setStatus2?.("Third Person ativo \xB7 clique na tela para travar o mouse");
+        updateCamera();
+        if (lock) setTimeout(requestLock, 80);
+      }
+      onModeChange?.(clean);
+    }
+    function resetPlayer() {
+      player.position.copy(findSafeSpawn(entries(), new Vector3(0, 0, 2.6), state.radius));
+      state.yaw = 0;
+      state.pitch = 0;
+      updateCamera();
+      onPlayerChanged?.("reset");
+      toast2?.("Player resetado");
+    }
+    function setPlayerFromLayout(playerData) {
+      const pos = playerData?.position || [0, 0, 2.6];
+      player.position.set(Number(pos[0] || 0), Number(pos[1] || 0), Number(pos[2] || 2.6));
+      player.position.copy(findSafeSpawn(entries(), player.position, state.radius));
+      state.yaw = Number(playerData?.yaw || 0);
+      state.pitch = Number(playerData?.pitch || 0);
+      updateCamera();
+    }
+    function getForward() {
+      return new Vector3(Math.sin(state.yaw), 0, -Math.cos(state.yaw)).normalize();
+    }
+    function getRight() {
+      return new Vector3(Math.cos(state.yaw), 0, Math.sin(state.yaw)).normalize();
+    }
+    function updateCamera() {
+      const forward = getForward();
+      player.rotation.y = state.yaw;
+      if (state.mode === "first_person") {
+        camera.position.set(player.position.x, player.position.y + state.eyeHeight, player.position.z);
+        camera.rotation.order = "YXZ";
+        camera.rotation.y = state.yaw;
+        camera.rotation.x = state.pitch;
+        camera.rotation.z = 0;
+        return;
+      }
+      if (state.mode === "third_person") {
+        const target = player.position.clone().add(new Vector3(0, 1.15, 0));
+        const behind = forward.clone().multiplyScalar(-state.thirdDistance);
+        const height = state.thirdHeight + Math.max(-0.7, Math.min(0.8, state.pitch * 1.4));
+        const desired = target.clone().add(behind).add(new Vector3(0, height, 0));
+        const safeCamera = resolveThirdPersonCamera({ THREERef: three_module_exports, target, desired, entries: entries() });
+        camera.position.copy(safeCamera);
+        camera.lookAt(target);
+      }
+    }
+    function update() {
+      if (disposed) return;
+      const now = performance.now();
+      const dt = Math.min(0.05, (now - state.lastTime) / 1e3);
+      state.lastTime = now;
+      if (active()) {
+        const speed = keys.has("shift") ? state.runSpeed : state.speed;
+        const forward = getForward();
+        const right = getRight();
+        const dir = new Vector3();
+        if (keys.has("w")) dir.add(forward);
+        if (keys.has("s")) dir.sub(forward);
+        if (keys.has("d")) dir.add(right);
+        if (keys.has("a")) dir.sub(right);
+        if (dir.lengthSq() > 0) {
+          dir.normalize().multiplyScalar(speed * dt);
+          const next = moveWithSliding({
+            current: player.position,
+            delta: dir,
+            entries: entries(),
+            radius: state.radius
+          });
+          if (!next.equals(player.position)) {
+            player.position.copy(next);
+            onPlayerChanged?.("move");
+          }
+        }
+        updateCamera();
+      }
+      frame = requestAnimationFrame(update);
+    }
+    window.addEventListener("keydown", onKeyDown2);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("mousemove", onMouseMove2);
+    window.addEventListener("blur", onWindowBlur);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    document.addEventListener("pointerlockchange", onPointerLockChange);
+    renderer.domElement.addEventListener("click", onCanvasClick);
+    frame = requestAnimationFrame(update);
+    function dispose() {
+      disposed = true;
+      cancelAnimationFrame(frame);
+      unlock();
+      window.removeEventListener("keydown", onKeyDown2);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("mousemove", onMouseMove2);
+      window.removeEventListener("blur", onWindowBlur);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("pointerlockchange", onPointerLockChange);
+      renderer.domElement.removeEventListener("click", onCanvasClick);
+      player.traverse((child) => {
+        if (child.isMesh) {
+          child.geometry?.dispose?.();
+          child.material?.dispose?.();
+        }
+      });
+      player.removeFromParent();
+    }
+    return {
+      player,
+      state,
+      setMode,
+      resetPlayer,
+      setPlayerFromLayout,
+      requestLock,
+      unlock,
+      dispose
+    };
+  }
+
+  // src/renderer/room_modes.js
+  function createRoomModeManager({
+    sceneApi: sceneApi2,
+    manager: manager2,
+    player,
+    setModeBox: setModeBox2,
+    toast: toast2,
+    updateInspector: updateInspector2
+  }) {
+    let currentMode = "build";
+    function setActiveButton(mode) {
+      const ids = {
+        build: "btnModeBuild",
+        first_person: "btnModeFirst",
+        third_person: "btnModeThird"
+      };
+      for (const id of Object.values(ids)) document.getElementById(id)?.classList.remove("active", "primary");
+      const btn = document.getElementById(ids[mode]);
+      btn?.classList.add("active", "primary");
+    }
+    function setWalkHint(mode) {
+      const hint = document.getElementById("walkHint");
+      if (hint) hint.classList.toggle("show", mode !== "build");
+    }
+    function setMode(mode) {
+      const clean = ["build", "first_person", "third_person"].includes(mode) ? mode : "build";
+      currentMode = clean;
+      setActiveButton(clean);
+      setWalkHint(clean);
+      if (clean === "build") {
+        sceneApi2.setBuildControlsEnabled?.(true);
+        const selected = manager2.getSelected?.();
+        if (selected) manager2.select(selected.uid);
+        player.setMode("build");
+        setModeBox2?.("Build Mode ativo. Edi\xE7\xE3o de m\xF3veis ligada.", "ok");
+        toast2?.("Build Mode");
+        updateInspector2?.();
+        return;
+      }
+      sceneApi2.setBuildControlsEnabled?.(false);
+      player.setMode(clean, { lock: true });
+      if (clean === "first_person") {
+        setModeBox2?.("First Person ativo. WASD anda, mouse olha, Shift corre, Esc libera mouse.", "warn");
+        toast2?.("First Person");
+      } else {
+        setModeBox2?.("Third Person ativo. Player vis\xEDvel com c\xE2mera atr\xE1s.", "warn");
+        toast2?.("Third Person");
+      }
+      updateInspector2?.();
+    }
+    return {
+      get mode() {
+        return currentMode;
+      },
+      setMode
+    };
+  }
+
   // src/renderer/room_window_app.js
   var $ = (id) => document.getElementById(id);
   var catalog = [];
@@ -47445,6 +47832,8 @@ void main() {
   var controlsApi = null;
   var historyApi = null;
   var autosaveApi = null;
+  var playerApi = null;
+  var modeApi = null;
   var suppressHistory = false;
   function toast(message) {
     const el = $("toast");
@@ -47464,13 +47853,28 @@ void main() {
     el.className = `validation-box ${type}`;
     el.textContent = message;
   }
+  function setModeBox(message, type = "ok") {
+    const el = $("modeBox");
+    if (!el) return;
+    el.className = `validation-box ${type}`;
+    el.textContent = message;
+  }
   function currentLayout() {
     return safeLayout({
       version: 1,
       roomId: "default_room",
       grid: layout?.grid || { size: 0.25, enabled: true },
+      player: {
+        position: playerApi ? [playerApi.player.position.x, playerApi.player.position.y, playerApi.player.position.z] : [0, 0, 2.6],
+        yaw: playerApi?.state?.yaw || 0,
+        pitch: playerApi?.state?.pitch || 0
+      },
       items: manager?.serialize?.() || []
     });
+  }
+  function applyPlayerFromLayout(nextLayout) {
+    if (!playerApi || !nextLayout?.player) return;
+    playerApi.setPlayerFromLayout(nextLayout.player);
   }
   function renderCatalog() {
     const list = $("catalogList");
@@ -47495,6 +47899,7 @@ void main() {
     `;
       card.querySelector("button").addEventListener("click", async () => {
         try {
+          modeApi?.setMode("build");
           await manager.addItem(item, item.placement || {});
           commitRoomChange("add");
         } catch (err) {
@@ -47518,8 +47923,10 @@ void main() {
       <button class="primary">Aplicar preset</button>
     `;
       card.querySelector("button").addEventListener("click", async () => {
+        modeApi?.setMode("build");
         const presetLayout = presetToLayout(preset);
         await manager.loadLayout(presetLayout, catalog);
+        applyPlayerFromLayout(presetLayout);
         commitRoomChange(`preset:${preset.id}`);
         toast(`Preset aplicado: ${preset.label}`);
       });
@@ -47553,6 +47960,7 @@ void main() {
       <button data-select="${entry.uid}">Selecionar</button>
     `;
       card.querySelector("button").addEventListener("click", () => {
+        modeApi?.setMode("build");
         manager.select(entry.uid);
         updateInspector(true);
       });
@@ -47630,9 +48038,11 @@ void main() {
     }
   }
   async function loadCurrentLayout() {
+    modeApi?.setMode("build");
     layout = await loadRoomLayout();
     suppressHistory = true;
     await manager.loadLayout(layout, catalog);
+    applyPlayerFromLayout(layout);
     suppressHistory = false;
     historyApi?.reset(currentLayout());
     renderLayoutList();
@@ -47647,14 +48057,17 @@ void main() {
       setSafety("Nenhum autosave encontrado.", "warn");
       return;
     }
+    modeApi?.setMode("build");
     suppressHistory = true;
     await manager.loadLayout(result.layout, catalog);
+    applyPlayerFromLayout(result.layout);
     suppressHistory = false;
     historyApi?.reset(result.layout);
     commitRoomChange("recover-autosave");
     setSafety(`Autosave recuperado: ${new Date(result.savedAt).toLocaleString()}`, "ok");
   }
   async function undoRoom() {
+    modeApi?.setMode("build");
     const ok = await historyApi?.undo?.();
     if (ok) {
       renderLayoutList();
@@ -47664,6 +48077,7 @@ void main() {
     }
   }
   async function redoRoom() {
+    modeApi?.setMode("build");
     const ok = await historyApi?.redo?.();
     if (ok) {
       renderLayoutList();
@@ -47672,7 +48086,7 @@ void main() {
       toast("Redo");
     }
   }
-  function setMode(mode) {
+  function setTransformMode(mode) {
     manager.setMode(mode);
     for (const id of ["btnModeMove", "btnModeRotate", "btnModeScale"]) $(id)?.classList.remove("active");
     if (mode === "translate") $("btnModeMove")?.classList.add("active");
@@ -47690,46 +48104,63 @@ void main() {
     $("btnGrid")?.addEventListener("click", () => controlsApi?.toggleGrid());
     $("btnCollision")?.addEventListener("click", () => controlsApi?.toggleCollision());
     $("btnFocus")?.addEventListener("click", () => updateInspector(true));
+    $("btnModeBuild")?.addEventListener("click", () => modeApi?.setMode("build"));
+    $("btnModeFirst")?.addEventListener("click", () => modeApi?.setMode("first_person"));
+    $("btnModeThird")?.addEventListener("click", () => modeApi?.setMode("third_person"));
+    $("btnResetPlayer")?.addEventListener("click", () => {
+      playerApi?.resetPlayer();
+      autosaveApi?.schedule();
+    });
     $("btnRemove")?.addEventListener("click", () => {
+      modeApi?.setMode("build");
       manager.remove();
       commitRoomChange("remove");
     });
     $("btnDuplicate")?.addEventListener("click", async () => {
+      modeApi?.setMode("build");
       await manager.duplicate();
       commitRoomChange("duplicate");
     });
     $("btnDuplicateX")?.addEventListener("click", async () => {
+      modeApi?.setMode("build");
       await manager.duplicate(void 0, [0.5, 0, 0]);
       commitRoomChange("duplicate-x");
     });
     $("btnDuplicateZ")?.addEventListener("click", async () => {
+      modeApi?.setMode("build");
       await manager.duplicate(void 0, [0, 0, 0.5]);
       commitRoomChange("duplicate-z");
     });
     $("btnReset")?.addEventListener("click", async () => {
+      modeApi?.setMode("build");
       await manager.resetSelected();
       commitRoomChange("reset");
     });
     $("btnLock")?.addEventListener("click", () => {
+      modeApi?.setMode("build");
       manager.toggleLock();
       commitRoomChange("lock");
     });
     $("btnCenterItem")?.addEventListener("click", () => {
+      modeApi?.setMode("build");
       manager.centerSelected();
       commitRoomChange("center");
     });
     $("btnGroundItem")?.addEventListener("click", () => {
+      modeApi?.setMode("build");
       manager.groundSelected();
       commitRoomChange("ground");
     });
     $("btnRotate90")?.addEventListener("click", () => {
+      modeApi?.setMode("build");
       manager.rotateSelected90();
       commitRoomChange("rot90");
     });
-    $("btnModeMove")?.addEventListener("click", () => setMode("translate"));
-    $("btnModeRotate")?.addEventListener("click", () => setMode("rotate"));
-    $("btnModeScale")?.addEventListener("click", () => setMode("scale"));
+    $("btnModeMove")?.addEventListener("click", () => setTransformMode("translate"));
+    $("btnModeRotate")?.addEventListener("click", () => setTransformMode("rotate"));
+    $("btnModeScale")?.addEventListener("click", () => setTransformMode("scale"));
     $("btnApplyTransform")?.addEventListener("click", () => {
+      modeApi?.setMode("build");
       const x = Number($("posX").value || 0);
       const y = Number($("posY").value || 0);
       const z = Number($("posZ").value || 0);
@@ -47762,10 +48193,30 @@ void main() {
           }
         }
       });
+      playerApi = createRoomPlayerController({
+        scene: sceneApi.scene,
+        camera: sceneApi.camera,
+        renderer: sceneApi.renderer,
+        getEntries: () => [...manager.placed.values()],
+        toast,
+        setStatus,
+        onModeChange: () => {
+        },
+        onPlayerChanged: () => autosaveApi?.schedule()
+      });
+      modeApi = createRoomModeManager({
+        sceneApi,
+        manager,
+        player: playerApi,
+        setModeBox,
+        toast,
+        updateInspector
+      });
       setStatus("Carregando layout...");
       layout = await loadRoomLayout();
       suppressHistory = true;
       await manager.loadLayout(layout, catalog);
+      applyPlayerFromLayout(layout);
       suppressHistory = false;
       autosaveApi = createAutosaveScheduler({
         getLayout: currentLayout,
@@ -47776,6 +48227,7 @@ void main() {
         applyLayout: async (nextLayout) => {
           suppressHistory = true;
           await manager.loadLayout(nextLayout, catalog);
+          applyPlayerFromLayout(nextLayout);
           suppressHistory = false;
         },
         onChange: updateHistoryButtons
@@ -47789,10 +48241,12 @@ void main() {
         undo: undoRoom,
         redo: redoRoom,
         toast,
-        grid: sceneApi.grid
+        grid: sceneApi.grid,
+        getRoomMode: () => modeApi?.mode || "build"
       });
       bindUi();
-      setMode("translate");
+      setTransformMode("translate");
+      modeApi.setMode("build");
       updateCategoryLabels();
       renderCatalog();
       renderPresetList();
@@ -47819,6 +48273,7 @@ void main() {
       autosaveApi?.flush?.();
       controlsApi?.destroy?.();
       historyApi = null;
+      playerApi?.dispose?.();
       manager?.dispose?.();
       sceneApi?.dispose?.();
     } catch {

@@ -5,6 +5,8 @@ import { loadRoomLayout, saveRoomLayout, DEFAULT_ROOM_PRESETS, presetToLayout, s
 import { createRoomControls } from "./room_controls.js";
 import { createRoomHistory } from "./room_history.js";
 import { createAutosaveScheduler, loadRoomAutosave, clearRoomAutosave } from "./room_autosave.js";
+import { createRoomPlayerController } from "./room_player_controller.js";
+import { createRoomModeManager } from "./room_modes.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -15,6 +17,8 @@ let sceneApi = null;
 let controlsApi = null;
 let historyApi = null;
 let autosaveApi = null;
+let playerApi = null;
+let modeApi = null;
 let suppressHistory = false;
 
 function toast(message) {
@@ -38,13 +42,30 @@ function setSafety(message, type = "ok") {
   el.textContent = message;
 }
 
+function setModeBox(message, type = "ok") {
+  const el = $("modeBox");
+  if (!el) return;
+  el.className = `validation-box ${type}`;
+  el.textContent = message;
+}
+
 function currentLayout() {
   return safeLayout({
     version: 1,
     roomId: "default_room",
     grid: layout?.grid || { size: 0.25, enabled: true },
+    player: {
+      position: playerApi ? [playerApi.player.position.x, playerApi.player.position.y, playerApi.player.position.z] : [0, 0, 2.6],
+      yaw: playerApi?.state?.yaw || 0,
+      pitch: playerApi?.state?.pitch || 0
+    },
     items: manager?.serialize?.() || []
   });
+}
+
+function applyPlayerFromLayout(nextLayout) {
+  if (!playerApi || !nextLayout?.player) return;
+  playerApi.setPlayerFromLayout(nextLayout.player);
 }
 
 function renderCatalog() {
@@ -72,6 +93,7 @@ function renderCatalog() {
     `;
     card.querySelector("button").addEventListener("click", async () => {
       try {
+        modeApi?.setMode("build");
         await manager.addItem(item, item.placement || {});
         commitRoomChange("add");
       } catch (err) {
@@ -96,8 +118,10 @@ function renderPresetList() {
       <button class="primary">Aplicar preset</button>
     `;
     card.querySelector("button").addEventListener("click", async () => {
+      modeApi?.setMode("build");
       const presetLayout = presetToLayout(preset);
       await manager.loadLayout(presetLayout, catalog);
+      applyPlayerFromLayout(presetLayout);
       commitRoomChange(`preset:${preset.id}`);
       toast(`Preset aplicado: ${preset.label}`);
     });
@@ -134,6 +158,7 @@ function renderLayoutList() {
       <button data-select="${entry.uid}">Selecionar</button>
     `;
     card.querySelector("button").addEventListener("click", () => {
+      modeApi?.setMode("build");
       manager.select(entry.uid);
       updateInspector(true);
     });
@@ -223,9 +248,11 @@ async function saveCurrentLayout() {
 }
 
 async function loadCurrentLayout() {
+  modeApi?.setMode("build");
   layout = await loadRoomLayout();
   suppressHistory = true;
   await manager.loadLayout(layout, catalog);
+  applyPlayerFromLayout(layout);
   suppressHistory = false;
   historyApi?.reset(currentLayout());
   renderLayoutList();
@@ -241,8 +268,10 @@ async function recoverAutosave() {
     setSafety("Nenhum autosave encontrado.", "warn");
     return;
   }
+  modeApi?.setMode("build");
   suppressHistory = true;
   await manager.loadLayout(result.layout, catalog);
+  applyPlayerFromLayout(result.layout);
   suppressHistory = false;
   historyApi?.reset(result.layout);
   commitRoomChange("recover-autosave");
@@ -250,6 +279,7 @@ async function recoverAutosave() {
 }
 
 async function undoRoom() {
+  modeApi?.setMode("build");
   const ok = await historyApi?.undo?.();
   if (ok) {
     renderLayoutList();
@@ -260,6 +290,7 @@ async function undoRoom() {
 }
 
 async function redoRoom() {
+  modeApi?.setMode("build");
   const ok = await historyApi?.redo?.();
   if (ok) {
     renderLayoutList();
@@ -269,7 +300,7 @@ async function redoRoom() {
   }
 }
 
-function setMode(mode) {
+function setTransformMode(mode) {
   manager.setMode(mode);
   for (const id of ["btnModeMove", "btnModeRotate", "btnModeScale"]) $(id)?.classList.remove("active");
   if (mode === "translate") $("btnModeMove")?.classList.add("active");
@@ -288,20 +319,25 @@ function bindUi() {
   $("btnGrid")?.addEventListener("click", () => controlsApi?.toggleGrid());
   $("btnCollision")?.addEventListener("click", () => controlsApi?.toggleCollision());
   $("btnFocus")?.addEventListener("click", () => updateInspector(true));
-  $("btnRemove")?.addEventListener("click", () => { manager.remove(); commitRoomChange("remove"); });
-  $("btnDuplicate")?.addEventListener("click", async () => { await manager.duplicate(); commitRoomChange("duplicate"); });
-  $("btnDuplicateX")?.addEventListener("click", async () => { await manager.duplicate(undefined, [0.5, 0, 0]); commitRoomChange("duplicate-x"); });
-  $("btnDuplicateZ")?.addEventListener("click", async () => { await manager.duplicate(undefined, [0, 0, 0.5]); commitRoomChange("duplicate-z"); });
-  $("btnReset")?.addEventListener("click", async () => { await manager.resetSelected(); commitRoomChange("reset"); });
-  $("btnLock")?.addEventListener("click", () => { manager.toggleLock(); commitRoomChange("lock"); });
-  $("btnCenterItem")?.addEventListener("click", () => { manager.centerSelected(); commitRoomChange("center"); });
-  $("btnGroundItem")?.addEventListener("click", () => { manager.groundSelected(); commitRoomChange("ground"); });
-  $("btnRotate90")?.addEventListener("click", () => { manager.rotateSelected90(); commitRoomChange("rot90"); });
-  $("btnModeMove")?.addEventListener("click", () => setMode("translate"));
-  $("btnModeRotate")?.addEventListener("click", () => setMode("rotate"));
-  $("btnModeScale")?.addEventListener("click", () => setMode("scale"));
+  $("btnModeBuild")?.addEventListener("click", () => modeApi?.setMode("build"));
+  $("btnModeFirst")?.addEventListener("click", () => modeApi?.setMode("first_person"));
+  $("btnModeThird")?.addEventListener("click", () => modeApi?.setMode("third_person"));
+  $("btnResetPlayer")?.addEventListener("click", () => { playerApi?.resetPlayer(); autosaveApi?.schedule(); });
+  $("btnRemove")?.addEventListener("click", () => { modeApi?.setMode("build"); manager.remove(); commitRoomChange("remove"); });
+  $("btnDuplicate")?.addEventListener("click", async () => { modeApi?.setMode("build"); await manager.duplicate(); commitRoomChange("duplicate"); });
+  $("btnDuplicateX")?.addEventListener("click", async () => { modeApi?.setMode("build"); await manager.duplicate(undefined, [0.5, 0, 0]); commitRoomChange("duplicate-x"); });
+  $("btnDuplicateZ")?.addEventListener("click", async () => { modeApi?.setMode("build"); await manager.duplicate(undefined, [0, 0, 0.5]); commitRoomChange("duplicate-z"); });
+  $("btnReset")?.addEventListener("click", async () => { modeApi?.setMode("build"); await manager.resetSelected(); commitRoomChange("reset"); });
+  $("btnLock")?.addEventListener("click", () => { modeApi?.setMode("build"); manager.toggleLock(); commitRoomChange("lock"); });
+  $("btnCenterItem")?.addEventListener("click", () => { modeApi?.setMode("build"); manager.centerSelected(); commitRoomChange("center"); });
+  $("btnGroundItem")?.addEventListener("click", () => { modeApi?.setMode("build"); manager.groundSelected(); commitRoomChange("ground"); });
+  $("btnRotate90")?.addEventListener("click", () => { modeApi?.setMode("build"); manager.rotateSelected90(); commitRoomChange("rot90"); });
+  $("btnModeMove")?.addEventListener("click", () => setTransformMode("translate"));
+  $("btnModeRotate")?.addEventListener("click", () => setTransformMode("rotate"));
+  $("btnModeScale")?.addEventListener("click", () => setTransformMode("scale"));
 
   $("btnApplyTransform")?.addEventListener("click", () => {
+    modeApi?.setMode("build");
     const x = Number($("posX").value || 0);
     const y = Number($("posY").value || 0);
     const z = Number($("posZ").value || 0);
@@ -338,10 +374,31 @@ async function init() {
       }
     });
 
+    playerApi = createRoomPlayerController({
+      scene: sceneApi.scene,
+      camera: sceneApi.camera,
+      renderer: sceneApi.renderer,
+      getEntries: () => [...manager.placed.values()],
+      toast,
+      setStatus,
+      onModeChange: () => {},
+      onPlayerChanged: () => autosaveApi?.schedule()
+    });
+
+    modeApi = createRoomModeManager({
+      sceneApi,
+      manager,
+      player: playerApi,
+      setModeBox,
+      toast,
+      updateInspector
+    });
+
     setStatus("Carregando layout...");
     layout = await loadRoomLayout();
     suppressHistory = true;
     await manager.loadLayout(layout, catalog);
+    applyPlayerFromLayout(layout);
     suppressHistory = false;
 
     autosaveApi = createAutosaveScheduler({
@@ -354,6 +411,7 @@ async function init() {
       applyLayout: async (nextLayout) => {
         suppressHistory = true;
         await manager.loadLayout(nextLayout, catalog);
+        applyPlayerFromLayout(nextLayout);
         suppressHistory = false;
       },
       onChange: updateHistoryButtons
@@ -368,11 +426,13 @@ async function init() {
       undo: undoRoom,
       redo: redoRoom,
       toast,
-      grid: sceneApi.grid
+      grid: sceneApi.grid,
+      getRoomMode: () => modeApi?.mode || "build"
     });
 
     bindUi();
-    setMode("translate");
+    setTransformMode("translate");
+    modeApi.setMode("build");
     updateCategoryLabels();
     renderCatalog();
     renderPresetList();
@@ -402,6 +462,7 @@ window.addEventListener("beforeunload", () => {
     autosaveApi?.flush?.();
     controlsApi?.destroy?.();
     historyApi = null;
+    playerApi?.dispose?.();
     manager?.dispose?.();
     sceneApi?.dispose?.();
   } catch {}

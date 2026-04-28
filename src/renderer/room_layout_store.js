@@ -2,6 +2,7 @@ export const DEFAULT_ROOM_LAYOUT = {
   version: 1,
   roomId: "default_room",
   grid: { size: 0.25, enabled: true },
+  player: { position: [0, 0, 2.6], yaw: 0, pitch: 0 },
   items: []
 };
 
@@ -9,7 +10,7 @@ export const DEFAULT_ROOM_PRESETS = [
   {
     id: "clean_office",
     label: "Escritório limpo",
-    description: "Mesa central com espaço para adicionar props.",
+    description: "Mesa central com espaço para andar em volta.",
     items: [
       { uid: "office_desk_preset_001", itemId: "office_desk", position: [0, 0, 0], rotationDeg: [0, 0, 0], scale: [1, 1, 1], locked: false }
     ]
@@ -17,7 +18,7 @@ export const DEFAULT_ROOM_PRESETS = [
   {
     id: "music_corner",
     label: "Canto musical",
-    description: "Piano levemente à direita e mesa separada.",
+    description: "Piano à direita e mesa separada para testar third person.",
     items: [
       { uid: "grand_piano_preset_001", itemId: "grand_piano", position: [1.25, 0, -0.75], rotationDeg: [0, -25, 0], scale: [1, 1, 1], locked: false },
       { uid: "office_desk_preset_002", itemId: "office_desk", position: [-1.1, 0, 0.25], rotationDeg: [0, 10, 0], scale: [1, 1, 1], locked: false }
@@ -40,6 +41,11 @@ export function safeLayout(layout) {
     version: 1,
     roomId: String(layout?.roomId || "default_room").replace(/[^a-zA-Z0-9_-]/g, "_"),
     grid: layout?.grid || DEFAULT_ROOM_LAYOUT.grid,
+    player: {
+      position: safeVec3(layout?.player?.position, DEFAULT_ROOM_LAYOUT.player.position),
+      yaw: finite(layout?.player?.yaw, 0),
+      pitch: finite(layout?.player?.pitch, 0)
+    },
     items: Array.isArray(layout?.items) ? layout.items.map((item) => ({
       uid: String(item.uid || "").slice(0, 100),
       itemId: String(item.itemId || "").slice(0, 100),
@@ -82,6 +88,7 @@ export function presetToLayout(preset) {
     version: 1,
     roomId: preset?.id || "preset_room",
     grid: DEFAULT_ROOM_LAYOUT.grid,
+    player: DEFAULT_ROOM_LAYOUT.player,
     items: Array.isArray(preset?.items) ? preset.items : []
   });
 }

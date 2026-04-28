@@ -18,20 +18,20 @@ body {
   background: radial-gradient(circle at 20% 10%, rgba(168,85,247,0.22), transparent 32%), var(--bg);
   color: var(--text);
 }
-.room-app { display: grid; grid-template-rows: 64px 1fr; height: 100%; }
+.room-app { display: grid; grid-template-rows: 74px 1fr; height: 100%; }
 .room-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border);
   background: rgba(12, 9, 20, 0.94);
 }
-.brand { display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 250px; }
 .brand-dot {
   width: 36px; height: 36px; display: grid; place-items: center;
   border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2));
   box-shadow: 0 0 24px rgba(255, 71, 126, 0.25);
 }
 .brand small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
-.toolbar, .actions-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.toolbar, .actions-grid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .room-main { display: grid; grid-template-columns: 312px 1fr 280px; min-height: 0; }
 .room-sidebar, .room-inspector { padding: 12px; overflow: auto; background: rgba(6, 5, 12, 0.42); }
 .panel {
@@ -43,10 +43,11 @@ body {
 button, .input, input, select {
   color: var(--text); background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.13); border-radius: 13px;
-  padding: 10px 12px; outline: none;
+  padding: 9px 11px; outline: none;
 }
 button { cursor: pointer; font-weight: 700; }
 button:hover { border-color: rgba(255, 71, 126, 0.55); }
+button:disabled { opacity: .45; cursor: not-allowed; }
 button.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); border-color: rgba(255,255,255,0.16); }
 button.active { outline: 2px solid rgba(46,245,168,.55); }
 button.danger { border-color: rgba(255, 91, 110, 0.4); color: #ffdbe0; }
@@ -61,14 +62,16 @@ button.danger { border-color: rgba(255, 91, 110, 0.4); color: #ffdbe0; }
 .catalog-item small, .layout-item small, .preset-item small { display: block; color: var(--muted); word-break: break-word; margin: 4px 0 8px; }
 .viewport-wrap { position: relative; min-width: 0; min-height: 0; background: #080912; }
 #roomCanvas { width: 100%; height: 100%; display: block; }
-.room-help, .status-pill {
+.room-help, .status-pill, .walk-hint {
   position: absolute; padding: 10px 12px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(8,7,17,0.76); backdrop-filter: blur(10px);
   border-radius: 14px; color: var(--muted); font-size: 12px;
 }
-.room-help { left: 14px; bottom: 14px; max-width: 820px; }
+.room-help { left: 14px; bottom: 14px; max-width: 860px; }
 .status-pill { left: 14px; top: 14px; color: var(--ok); }
+.walk-hint { right: 14px; top: 14px; max-width: 420px; display: none; color: var(--warn); }
+.walk-hint.show { display: block; }
 .toast {
   position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
   padding: 10px 14px; border-radius: 999px;

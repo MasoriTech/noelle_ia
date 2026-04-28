@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "18.4.0-room-safety",
+  "version": "18.6.0-room-walk-robust",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -12,8 +12,8 @@
     "doctor": "node scripts/diagnostico_v17_4_tray.cjs",
     "check": "node --check main.js && node --check preload.js && node --check src/renderer/controls_window_app.js && node --check src/renderer/avatar_window_app.js",
     "dist:win": "electron-builder --win nsis portable",
-    "build-room": "node scripts/build_room_v18_4.cjs",
-    "diagnostico-room": "node scripts/diagnostico_room_v18_4.cjs"
+    "build-room": "node scripts/build_room_v18_6.cjs",
+    "diagnostico-room": "node scripts/diagnostico_room_v18_6.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

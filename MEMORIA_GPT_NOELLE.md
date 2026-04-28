@@ -1020,3 +1020,16 @@ Regra:
 - Se um asset quebrar, a Room não deve crashar. Deve mostrar placeholder.
 - Se salvar falhar, autosave deve ficar disponível.
 - Undo/Redo não deve mexer no Avatar, Chat, motions ou expressions.
+
+
+## V18.6 Room Walk Robust
+
+Reforços do modo andar:
+- Pointer lock agora é nativo para evitar conflito/dobro com PointerLockControls.
+- Corrigido risco de bug no CapsuleGeometry.
+- Loop do player agora cancela no dispose.
+- Mouse/teclas limpam em blur/visibilitychange.
+- Third person tem colisão simples de câmera para reduzir atravessar móveis.
+- Spawn do player procura posição segura se nascer dentro de móvel.
+- Layout salva player.position, player.yaw e player.pitch.
+- Build controls desligam fora do Build Mode.

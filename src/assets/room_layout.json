@@ -5,6 +5,15 @@
     "size": 0.25,
     "enabled": true
   },
+  "player": {
+    "position": [
+      0,
+      0,
+      2.6
+    ],
+    "yaw": 0,
+    "pitch": 0
+  },
   "items": [
     {
       "uid": "office_desk_mohtstom_xpddt",

@@ -14,10 +14,14 @@
         <span class="brand-dot">✦</span>
         <div>
           <strong>Noelle Room</strong>
-          <small>Build Mode · undo/redo · autosave · placeholders seguros</small>
+          <small>Build · First Person · Third Person · Robust</small>
         </div>
       </div>
       <div class="toolbar">
+        <button id="btnModeBuild" class="primary">Build</button>
+        <button id="btnModeFirst">First Person</button>
+        <button id="btnModeThird">Third Person</button>
+        <button id="btnResetPlayer">Reset Player</button>
         <button id="btnModeMove" class="primary">Mover</button>
         <button id="btnModeRotate">Girar</button>
         <button id="btnModeScale">Escalar</button>
@@ -73,14 +77,21 @@
       <section class="viewport-wrap">
         <canvas id="roomCanvas"></canvas>
         <div id="statusPill" class="status-pill">Room inicializando...</div>
+        <div id="walkHint" class="walk-hint">
+          <b>Walk Mode:</b> clique na tela para travar o mouse · WASD = andar · Shift = correr · mouse = olhar · Esc = liberar mouse · Build volta para edição
+        </div>
         <div class="room-help">
-          <b>Controles:</b>
-          Gizmo = mover/girar/escalar · Ctrl+Z/Y = undo/redo · W/A/S/D = mover · Q/E = altura · Ctrl+S = salvar · Delete = remover · 1/2/3 = modo
+          <b>Build:</b> Gizmo = mover/girar/escalar · Ctrl+Z/Y = undo/redo · Ctrl+S = salvar · Delete = remover · 1/2/3 = modo transform
         </div>
         <div id="toast" class="toast"></div>
       </section>
 
       <aside class="room-inspector">
+        <section class="panel">
+          <h2>Modo</h2>
+          <div id="modeBox" class="validation-box">Build Mode ativo.</div>
+        </section>
+
         <section class="panel">
           <h2>Transform</h2>
           <label>X <input id="posX" type="number" step="0.05"></label>

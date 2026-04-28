@@ -1,4 +1,4 @@
-export function createRoomControls({ manager, renderLayoutList, updateInspector, saveLayout, undo, redo, toast, grid }) {
+export function createRoomControls({ manager, renderLayoutList, updateInspector, saveLayout, undo, redo, toast, grid, getRoomMode }) {
   let gridEnabled = true;
   let collisionEnabled = true;
 
@@ -8,6 +8,7 @@ export function createRoomControls({ manager, renderLayoutList, updateInspector,
 
     const key = event.key.toLowerCase();
     const fine = event.shiftKey;
+    const buildMode = !getRoomMode || getRoomMode() === "build";
 
     if (event.ctrlKey && key === "s") {
       event.preventDefault();
@@ -25,6 +26,8 @@ export function createRoomControls({ manager, renderLayoutList, updateInspector,
       return;
     }
 
+    if (!buildMode) return;
+
     if (event.key === "Delete" || event.key === "Backspace") {
       manager.remove();
       renderLayoutList();
@@ -38,6 +41,7 @@ export function createRoomControls({ manager, renderLayoutList, updateInspector,
 
     const map = { w: [0, 0, -1], s: [0, 0, 1], a: [-1, 0, 0], d: [1, 0, 0], q: [0, 1, 0], e: [0, -1, 0] };
     if (map[key]) {
+      event.preventDefault();
       const [x, y, z] = map[key];
       manager.moveSelected(x, y, z, fine);
       updateInspector();
