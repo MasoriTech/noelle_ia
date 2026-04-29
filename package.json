@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.5.0-avatar-real-vrm-sync-anim-2026",
+  "version": "19.6.0-avatar-lab-isolated-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -23,7 +23,10 @@
     "diagnostico:v19.3": "node scripts/diagnostico_v19_3_complete_ui_md_2026.cjs",
     "build:avatar-v19.5": "node scripts/build_avatar_v19_5_2026.cjs",
     "apply:v19.5-avatar": "node scripts/apply_v19_5_avatar_real_vrm_sync_anim_2026.cjs --apply",
-    "diagnostico:v19.5-avatar": "node scripts/diagnostico_v19_5_avatar_real_vrm_sync_anim_2026.cjs"
+    "diagnostico:v19.5-avatar": "node scripts/diagnostico_v19_5_avatar_real_vrm_sync_anim_2026.cjs",
+    "build:avatar-lab-v19.6": "node scripts/build_avatar_lab_v19_6_2026.cjs",
+    "apply:v19.6-avatar-lab": "node scripts/apply_v19_6_avatar_lab_isolated_2026.cjs --apply",
+    "diagnostico:v19.6-avatar-lab": "node scripts/diagnostico_v19_6_avatar_lab_isolated_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

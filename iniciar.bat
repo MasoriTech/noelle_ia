@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle V19.5 - Avatar Real VRM Sync Anim
+title Noelle V19.6 - Avatar Lab Isolated
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,13 +9,13 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE V19.5 - AVATAR REAL VRM / SYNC / ANIM
+echo  NOELLE V19.6 - AVATAR LAB ISOLATED
 echo ============================================================
 echo.
-echo [1] Aplicar V19.5 Avatar completo e iniciar Noelle
-echo [2] Aplicar V19.5 Avatar completo sem iniciar
-echo [3] Build Avatar V19.5
-echo [4] Diagnostico V19.5
+echo [1] Aplicar V19.6 Avatar Lab e iniciar Noelle
+echo [2] Aplicar V19.6 Avatar Lab sem iniciar
+echo [3] Build Avatar Lab V19.6
+echo [4] Diagnostico V19.6
 echo [0] Sair
 echo.
 set /p "OP=Escolha: "
@@ -47,7 +47,7 @@ if errorlevel 1 (
   echo [ERRO] npm nao encontrado. Aplique o patch, depois rode npm install manualmente.
   exit /b 1
 )
-echo [INFO] Instalando dependencias npm para VRM/VRMA...
+echo [INFO] Instalando dependencias npm para Avatar Lab...
 call npm install
 if errorlevel 1 (
   echo [ERRO] npm install falhou.
@@ -58,7 +58,7 @@ exit /b 0
 :APPLY_START
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\apply_v19_5_avatar_real_vrm_sync_anim_2026.cjs --apply
+node scripts\apply_v19_6_avatar_lab_isolated_2026.cjs --apply
 if errorlevel 1 (
   echo [ERRO] Patch falhou.
   pause
@@ -66,17 +66,17 @@ if errorlevel 1 (
 )
 call :ENSURE_NPM
 if errorlevel 1 (
-  echo [AVISO] Dependencias nao prontas. Patch aplicado, mas preview precisa de npm install/build.
+  echo [AVISO] Dependencias nao prontas. Patch aplicado, mas Avatar Lab precisa de npm install/build.
   pause
   goto MENU
 )
-node scripts\build_avatar_v19_5_2026.cjs
+node scripts\build_avatar_lab_v19_6_2026.cjs
 if errorlevel 1 (
   echo [ERRO] Build falhou.
   pause
   goto MENU
 )
-node scripts\diagnostico_v19_5_avatar_real_vrm_sync_anim_2026.cjs
+node scripts\diagnostico_v19_6_avatar_lab_isolated_2026.cjs
 if exist "node_modules\.bin\electron.cmd" (
   echo [START] Iniciando Noelle...
   call "node_modules\.bin\electron.cmd" .
@@ -89,7 +89,7 @@ goto MENU
 :APPLY_ONLY
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\apply_v19_5_avatar_real_vrm_sync_anim_2026.cjs --apply
+node scripts\apply_v19_6_avatar_lab_isolated_2026.cjs --apply
 pause
 goto MENU
 
@@ -98,13 +98,13 @@ call :CHECK_NODE
 if errorlevel 1 goto MENU
 call :ENSURE_NPM
 if errorlevel 1 goto MENU
-node scripts\build_avatar_v19_5_2026.cjs
+node scripts\build_avatar_lab_v19_6_2026.cjs
 pause
 goto MENU
 
 :DIAG
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\diagnostico_v19_5_avatar_real_vrm_sync_anim_2026.cjs
+node scripts\diagnostico_v19_6_avatar_lab_isolated_2026.cjs
 pause
 goto MENU

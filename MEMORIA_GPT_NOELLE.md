@@ -1122,3 +1122,26 @@ Este pack implementa os itens que ficaram fora do V19.4.1:
 Limite conhecido:
 - A sincronização profunda depende da Room expor APIs como `window.noelleRoomPlayer`, `window.roomPlayerApi` ou escutar `noelle:room-avatar-sync`.
 - O pack já dispara eventos e salva estado; se a Room ainda não consumir, o próximo passo é conectar esses eventos ao player real da Room.
+
+## V19.6 Avatar Lab Isolated — 2026
+
+Correção da estratégia V19.5:
+- O V19.5 injetado no app principal quebrou troca de abas.
+- A solução correta é isolar o preview real do VRM em uma janela separada: `src/avatar_lab_v19_6.html`.
+
+Este pack adiciona os quatro itens solicitados sem mexer diretamente na navegação de abas:
+1. Preview real do VRM em janela isolada.
+2. Loader novo com Three.js + @pixiv/three-vrm.
+3. Sincronização com Room via BroadcastChannel/localStorage/CustomEvent.
+4. Animações VRMA via @pixiv/three-vrm-animation.
+
+Arquivos principais:
+- `src/avatar_lab_v19_6.html`
+- `src/renderer/avatar_lab_v19_6_app.js`
+- `src/renderer/avatar_lab_launcher_v19_6.js`
+- `src/renderer/room_sync_bridge_v19_6.js`
+- `scripts/build_avatar_lab_v19_6_2026.cjs`
+
+Importante:
+- A aba principal não recebe MutationObserver global.
+- Se caminho `./assets/Noelle.vrm` falhar, o Avatar Lab permite escolher VRM/GLB local por input de arquivo.
