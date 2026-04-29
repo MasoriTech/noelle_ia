@@ -1057,3 +1057,52 @@ O First Person virou Yoru POV:
 - O botão Room V19 é adicionado sem remover a janela principal antiga.
 - Avatar/widget, Chat IA, Emotes, Expressions e Inventário continuam preservados.
 - V19 cria uma Room separada em src/room.html e renderer próprio src/renderer/room_v19_app.js.
+
+
+## V19.2 Settings/About Cleanup
+
+- Chat IA foi preservado com alterações mínimas.
+- Corrigido botão Room V19 duplicado: existe apenas um launcher canônico.
+- Aba Configurações recebe 30 opções úteis organizadas por Interface, Avatar/Room, Chat/Áudio/Manutenção.
+- Aba Sobre recebe informações do projeto, links úteis, formatos de assets, regras de licença e status esperado.
+- O patch roda por src/renderer/noelle_v19_2_settings_about_cleanup.js e não substitui controls.html inteiro.
+- preload.js usa bloco seguro noelleRoomV19 sem redeclarar contextBridge/ipcRenderer.
+
+
+## V19.2.1 Settings/About/Room Fix
+
+- Corrige falha do V19.2 onde Configurações/Sobre podiam não aparecer.
+- Runtime agora também é injetado via preload, não depende só do script em controls.html.
+- Remove botões flutuantes antigos "Room" e "Room V19" e cria um botão canônico.
+- Mantém Chat IA sem mexer no layout.
+- Adiciona painéis reais nas abas Configurações e Sobre quando essas abas ficam visíveis.
+
+## V19.3 Complete UI/MD Pack — 2026
+
+Pacote consolidado para limpar os hotfixes V19.2, V19.2.1 e V19.2.2.
+
+Inclui:
+- Correção global dos dropdowns/selects com fundo branco no Windows/Electron.
+- Um único botão canônico `Room V19`: `#noelle-room-v19-canonical-button`.
+- Remoção de launchers antigos `Room` e `Room V19` duplicados.
+- Painel real de Configurações avançadas com 30 opções úteis.
+- Painel real de Sobre com:
+  - descrição do projeto;
+  - formatos VRM/VRMA/PNG/GLB/JSON;
+  - links úteis de assets;
+  - tecnologias usadas;
+  - regras de licença;
+  - status esperado do projeto.
+- Injeção via `preload.js` e também via `src/controls.html` para ser mais robusto.
+- Chat IA deve ser preservado com alterações mínimas.
+
+Arquivos principais:
+- `src/renderer/noelle_v19_3_complete_ui_md.js`
+- `scripts/apply_v19_3_complete_ui_md_2026.cjs`
+- `scripts/diagnostico_v19_3_complete_ui_md_2026.cjs`
+
+Não inclui:
+- Nova mecânica de Room.
+- Correção de animações VRM.
+- Correção completa do player Yoru/Third Person.
+- Mega refactor V20.

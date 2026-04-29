@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.0.0-megalayout-2026",
+  "version": "19.3.0-complete-ui-md-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -14,7 +14,13 @@
     "dist:win": "electron-builder --win nsis portable",
     "build-room": "node scripts/build_room_v19_2026.cjs",
     "diagnostico-room": "node scripts/diagnostico_room_v19_2026.cjs",
-    "diagnostico:v19": "node scripts/diagnostico_room_v19_2026.cjs"
+    "diagnostico:v19": "node scripts/diagnostico_room_v19_2026.cjs",
+    "diagnostico:v19.2": "node scripts/diagnostico_v19_2_settings_about_cleanup_2026.cjs",
+    "apply:v19.2": "node scripts/apply_v19_2_settings_about_cleanup_2026.cjs --apply",
+    "apply:v19.2.1": "node scripts/apply_v19_2_1_settings_about_room_fix_2026.cjs --apply",
+    "diagnostico:v19.2.1": "node scripts/diagnostico_v19_2_1_settings_about_room_fix_2026.cjs",
+    "apply:v19.3": "node scripts/apply_v19_3_complete_ui_md_2026.cjs --apply",
+    "diagnostico:v19.3": "node scripts/diagnostico_v19_3_complete_ui_md_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

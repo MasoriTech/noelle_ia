@@ -64,28 +64,43 @@ contextBridge.exposeInMainWorld("noelleRoom", {
   saveLayout: (layout) => ipcRenderer.invoke("room:save-layout", layout)
 });
 
-// NOELLE_ROOM_V19_PRELOAD_SAFE_BEGIN
+// NOELLE_V19_3_COMPLETE_PRELOAD_BEGIN
 (() => {
   try {
-    const electronForNoelleRoomV19 = require("electron");
-    const bridgeForNoelleRoomV19 = electronForNoelleRoomV19.contextBridge;
-    const ipcForNoelleRoomV19 = electronForNoelleRoomV19.ipcRenderer;
+    if (globalThis.__NOELLE_V19_3_COMPLETE_BOOTSTRAPPED__) return;
+    globalThis.__NOELLE_V19_3_COMPLETE_BOOTSTRAPPED__ = true;
 
-    if (!bridgeForNoelleRoomV19 || !ipcForNoelleRoomV19) return;
-    if (globalThis.__NOELLE_ROOM_V19_PRELOAD_EXPOSED__) return;
+    const electronForNoelleV19 = require("electron");
+    const bridgeForNoelleV19 = electronForNoelleV19.contextBridge;
+    const ipcForNoelleV19 = electronForNoelleV19.ipcRenderer;
 
-    globalThis.__NOELLE_ROOM_V19_PRELOAD_EXPOSED__ = true;
+    if (bridgeForNoelleV19 && ipcForNoelleV19 && !globalThis.__NOELLE_ROOM_V19_PRELOAD_EXPOSED__) {
+      globalThis.__NOELLE_ROOM_V19_PRELOAD_EXPOSED__ = true;
+      bridgeForNoelleV19.exposeInMainWorld("noelleRoomV19", {
+        open: () => ipcForNoelleV19.invoke("room:open"),
+        listCatalog: () => ipcForNoelleV19.invoke("room:catalog"),
+        loadLayout: () => ipcForNoelleV19.invoke("room:load-layout"),
+        saveLayout: (layout) => ipcForNoelleV19.invoke("room:save-layout", layout)
+      });
+    }
 
-    bridgeForNoelleRoomV19.exposeInMainWorld("noelleRoomV19", {
-      open: () => ipcForNoelleRoomV19.invoke("room:open"),
-      listCatalog: () => ipcForNoelleRoomV19.invoke("room:catalog"),
-      loadLayout: () => ipcForNoelleRoomV19.invoke("room:load-layout"),
-      saveLayout: (layout) => ipcForNoelleRoomV19.invoke("room:save-layout", layout)
-    });
+    const injectNoelleV19Complete = () => {
+      try {
+        if (document.getElementById("noelle-v19-3-complete-runtime-script")) return;
+        const script = document.createElement("script");
+        script.id = "noelle-v19-3-complete-runtime-script";
+        script.src = "./renderer/noelle_v19_3_complete_ui_md.js";
+        script.defer = true;
+        (document.head || document.documentElement).appendChild(script);
+      } catch (err) {
+        try { console.warn("[Noelle] Falha ao injetar V19.3", err); } catch {}
+      }
+    };
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", injectNoelleV19Complete);
+    else injectNoelleV19Complete();
   } catch (err) {
-    try {
-      console.warn("[Noelle] noelleRoomV19 preload indisponível", err);
-    } catch {}
+    try { console.warn("[Noelle] preload V19.3 indisponível", err); } catch {}
   }
 })();
-// NOELLE_ROOM_V19_PRELOAD_SAFE_END
+// NOELLE_V19_3_COMPLETE_PRELOAD_END
