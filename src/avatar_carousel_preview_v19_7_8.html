@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Noelle Avatar Preview V19.7.8</title>
+  <style>
+    html, body { margin:0; width:100%; height:100%; overflow:hidden; background: radial-gradient(circle at 50% 18%, rgba(126, 79, 255, .18), rgba(10, 7, 18, .96) 48%, rgba(4, 3, 9, 1)); }
+    #stage { position:fixed; inset:0; }
+    #status { position:fixed; left:18px; top:18px; z-index:3; color:#ffd47a; font:700 14px system-ui, Segoe UI, sans-serif; background:rgba(12,9,22,.72); border:1px solid rgba(255,212,122,.35); padding:10px 14px; border-radius:999px; backdrop-filter: blur(10px); }
+    #status.ok { color:#39ffc6; border-color:rgba(57,255,198,.35); }
+    #status.err { color:#ff8d9d; border-color:rgba(255,141,157,.38); max-width:76%; border-radius:18px; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="status">Inicializando preview...</div>
+  <script src="./renderer_dist/avatar_carousel_preview_v19_7_8.bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+Noelle V19.7.8 - correção final da aba Avatar
+
+Objetivo:
+- remover restos visuais da tela técnica antiga V19.5;
+- deixar Avatar como carrossel limpo;
+- avatar grande à esquerda;
+- opções à direita;
+- setas embaixo;
+- sem BroadcastChannel/localStorage/Sincronizar Room na interface;
+- um único iniciar.bat central com menu.
+
+Como aplicar:
+1. Copie todo o conteúdo deste pack para a raiz do projeto noelle_ia.
+2. Rode iniciar.bat.
+3. Escolha a opção [1] para verificar, corrigir, gerar bundle e iniciar.
+4. Se quiser organizar os .bat antigos, use a opção [5] primeiro, que move para backup.
+
+A opção [6] apaga .bat antigos permanentemente. Use só se tiver certeza.

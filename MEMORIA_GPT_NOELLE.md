@@ -1178,3 +1178,46 @@ Importante:
 - Remove da interface a tela técnica antiga de sincronização.
 - Avatar escolhe/personagem; Room usa quarto/objetos; Widget Mode mostra sem fundo; Preview/Teste fica seguro.
 - Sempre manter iniciar.bat atualizado nos próximos packs.
+
+
+---
+
+## V19.7.6 Avatar Clean Carousel
+
+Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM/GLB, com avatar grande, setas embaixo e opções à direita. Não mostrar BroadcastChannel, localStorage, Sincronizar Room ou painel técnico V19.5 na interface principal. Room / Quarto, Widget Mode e Preview / Teste ficam separados. Todo pack futuro deve incluir iniciar.bat atualizado.
+
+## V19.7.8 - Avatar final limpo em carrossel
+- Aba Avatar deve ser limpa, sem BroadcastChannel/localStorage/Sincronizar Room na interface.
+- Layout correto: avatar grande à esquerda, opções à direita, setas embaixo.
+- Room / Quarto aplica cenário e objetos; Widget Mode abre avatar sem fundo; Preview/Teste fica na aba Avatar.
+- Manter um único iniciar.bat com menu e opção segura para mover outros .bat para backup.
+
+
+## V19.8.1 — Preload Limpo
+- O preload.js deve expor APIs via contextBridge, não injetar UI visual antiga.
+- Runtimes visuais V19.3/V19.5 não devem criar botões flutuantes automaticamente na janela principal.
+- A aba Avatar final deve ser rota real do renderer principal, não painel injetado por MutationObserver.
+- Compatibilidade com noelleRoomV19 pode existir como API, sem botão/painel visual legado.
+
+
+## V19.8.1a — Preload Forçado
+
+- preload.js consolidado como ponte segura, sem injeção visual V19.3/V19.5.
+- Mantidas APIs window.noelleAPI, window.desktopWidget, window.noelleRoom e window.noelleRoomV19.
+- A aba Avatar final deve ser implementada no renderer principal, não por preload.
+- iniciar.bat continua com opção [1] apenas para iniciar, sem aplicar patch automático.
+
+
+## V19.8.1d - Manifest Forte
+- avatar_manifest.json deve ser sempre uma lista/array JSON.
+- O manifest deve conter entradas VRM/GLB com path/rel válidos no disco.
+- iniciar.bat permanece único; a opção [1] apenas inicia o programa.
+- Esta fase preserva preload limpo e não redesenha a aba Avatar.
+
+
+## V19.8.2 — Aba Avatar Real
+- A aba Avatar deve ser parte do renderer principal, nao injetada pelo preload.
+- Layout final: avatar grande a esquerda, setas embaixo, opcoes a direita.
+- Carrossel deve carregar avatar_manifest.json e renderizar um VRM/GLB por vez.
+- Room / Widget Mode / Preview-Teste continuam separados.
+- Nao reativar V19.3/V19.5 como runtime visual automatico.

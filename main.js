@@ -441,8 +441,8 @@ function createMainWindow() {
   mainWin = new BrowserWindow({
     width: 1320,
     height: 860,
-    minWidth: 900,
-    minHeight: 620,
+    minWidth: 1120,
+    minHeight: 720,
     title: "Noelle Companion",
     icon: getAppIconPath(),
     backgroundColor: "#090711",

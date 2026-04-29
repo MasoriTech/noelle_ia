@@ -50,7 +50,7 @@ function setPage(page) {
   const subtitle = $("#topSubtitle");
   if (title) title.textContent = titles[page] || "Noelle";
   if (subtitle) subtitle.textContent = `${titles[page] || "Noelle"} · Noelle Companion 2026`;
-  if (page === "chat") scrollChatToBottom();
+  if (page === "chat") scrollChatToBottom(); if (page === "avatar") window.NoelleAvatarTabV1982?.render?.();
 }
 
 function setGlobalStatus(text, type = "warn") {
