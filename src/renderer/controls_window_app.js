@@ -457,3 +457,40 @@ document.addEventListener("DOMContentLoaded", boot);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();
 })();
+
+
+(function mountNoelleRoomV19Launcher() {
+  function mount() {
+    if (document.getElementById("noelle-room-v19-launcher")) return;
+    const button = document.createElement("button");
+    button.id = "noelle-room-v19-launcher";
+    button.type = "button";
+    button.textContent = "🏠 Room V19";
+    button.title = "Abrir Noelle Room V19";
+    Object.assign(button.style, {
+      position: "fixed",
+      right: "18px",
+      bottom: "18px",
+      zIndex: "99999",
+      border: "1px solid rgba(255,83,136,.55)",
+      borderRadius: "999px",
+      padding: "11px 16px",
+      color: "#fff",
+      fontWeight: "900",
+      background: "linear-gradient(135deg,#ff477e,#8b5cf6)",
+      boxShadow: "0 14px 44px rgba(0,0,0,.35)",
+      cursor: "pointer"
+    });
+    button.addEventListener("click", async () => {
+      try {
+        await (window.noelleRoomV19 || window.noelleRoom)?.open?.();
+      } catch (err) {
+        console.error("Falha ao abrir Room V19", err);
+      }
+    });
+    document.body.appendChild(button);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
+})();
+

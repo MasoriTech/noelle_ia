@@ -1048,3 +1048,12 @@ O First Person virou Yoru POV:
 - First Person oculta o corpo/avatar para evitar ver por dentro da cabeça.
 - Se VRM não carregar, usa cápsula fallback.
 - Isso ainda não anima braços/mãos em primeira pessoa; isso fica para uma versão futura.
+
+
+## V19 MegaLayout 2026
+
+- Room passa a usar layout anti-sobreposição: topbar, leftbar, viewport central, rightbar e downbar.
+- As 100 sugestões ficam em docs/NOELLE_V19_100_SUGESTOES.md e também aparecem no painel Roadmap 100 da Room.
+- O botão Room V19 é adicionado sem remover a janela principal antiga.
+- Avatar/widget, Chat IA, Emotes, Expressions e Inventário continuam preservados.
+- V19 cria uma Room separada em src/room.html e renderer próprio src/renderer/room_v19_app.js.

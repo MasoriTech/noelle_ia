@@ -63,3 +63,29 @@ contextBridge.exposeInMainWorld("noelleRoom", {
   loadLayout: () => ipcRenderer.invoke("room:load-layout"),
   saveLayout: (layout) => ipcRenderer.invoke("room:save-layout", layout)
 });
+
+// NOELLE_ROOM_V19_PRELOAD_SAFE_BEGIN
+(() => {
+  try {
+    const electronForNoelleRoomV19 = require("electron");
+    const bridgeForNoelleRoomV19 = electronForNoelleRoomV19.contextBridge;
+    const ipcForNoelleRoomV19 = electronForNoelleRoomV19.ipcRenderer;
+
+    if (!bridgeForNoelleRoomV19 || !ipcForNoelleRoomV19) return;
+    if (globalThis.__NOELLE_ROOM_V19_PRELOAD_EXPOSED__) return;
+
+    globalThis.__NOELLE_ROOM_V19_PRELOAD_EXPOSED__ = true;
+
+    bridgeForNoelleRoomV19.exposeInMainWorld("noelleRoomV19", {
+      open: () => ipcForNoelleRoomV19.invoke("room:open"),
+      listCatalog: () => ipcForNoelleRoomV19.invoke("room:catalog"),
+      loadLayout: () => ipcForNoelleRoomV19.invoke("room:load-layout"),
+      saveLayout: (layout) => ipcForNoelleRoomV19.invoke("room:save-layout", layout)
+    });
+  } catch (err) {
+    try {
+      console.warn("[Noelle] noelleRoomV19 preload indisponível", err);
+    } catch {}
+  }
+})();
+// NOELLE_ROOM_V19_PRELOAD_SAFE_END

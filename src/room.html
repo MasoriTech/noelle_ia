@@ -4,119 +4,104 @@
   <meta charset="utf-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; img-src 'self' file: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://127.0.0.1:* http://localhost:* file: blob: data:;" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Noelle Room</title>
-  <link rel="stylesheet" href="./styles/room.css" />
+  <title>Noelle Room V19</title>
+  <link rel="stylesheet" href="./styles/room_v19.css" />
 </head>
 <body>
-  <div id="roomApp" class="room-app">
+  <div id="roomV19" class="room-shell">
     <header class="room-topbar">
       <div class="brand">
-        <span class="brand-dot">✦</span>
+        <span class="brand-mark">♛</span>
         <div>
-          <strong>Noelle Room</strong>
-          <small>Build · Yoru POV · Third Person Yoru</small>
+          <strong>Noelle Room V19</strong>
+          <small>Build · Yoru POV · Third Person · Roadmap 100</small>
         </div>
       </div>
-      <div class="toolbar">
-        <button id="btnModeBuild" class="primary">Build</button>
-        <button id="btnModeFirst">Yoru POV</button>
-        <button id="btnModeThird">Third Person Yoru</button>
-        <button id="btnResetPlayer">Reset Player</button>
-        <button id="btnModeMove" class="primary">Mover</button>
-        <button id="btnModeRotate">Girar</button>
-        <button id="btnModeScale">Escalar</button>
-        <button id="btnUndo">↶ Undo</button>
-        <button id="btnRedo">↷ Redo</button>
-        <button id="btnSave" class="primary">Salvar</button>
+
+      <nav class="mode-tabs" aria-label="Modos da Room">
+        <button id="modeBuild" class="mode active">Build</button>
+        <button id="modePov" class="mode">Yoru POV</button>
+        <button id="modeThird" class="mode">Third Person</button>
+        <button id="btnJump" class="mode">Pular</button>
+        <button id="btnFreeMove" class="mode">Parar foco</button>
+      </nav>
+
+      <div class="top-actions">
+        <button id="btnSave">Salvar</button>
         <button id="btnLoad">Carregar</button>
-        <button id="btnRecover">Recuperar auto</button>
-        <button id="btnGrid">Grid</button>
-        <button id="btnCollision">Colisão</button>
-        <button id="btnFocus">Focar</button>
+        <button id="btnRecover">Autosave</button>
       </div>
     </header>
 
-    <main class="room-main">
-      <aside class="room-sidebar">
-        <section class="panel">
-          <h2>Catálogo Room</h2>
-          <input id="catalogSearch" class="input" placeholder="Buscar móvel/cenário..." />
-          <select id="categoryFilter" class="input">
-            <option value="all">Todas categorias</option>
-            <option value="furniture">Móveis</option>
-            <option value="electronics">Eletrônicos</option>
-            <option value="decor">Decoração</option>
-            <option value="table_prop">Props de mesa</option>
-            <option value="floor_prop">Props de chão</option>
-          </select>
-          <div id="catalogList" class="catalog-list"></div>
-        </section>
-
-        <section class="panel">
-          <h2>Presets</h2>
-          <div id="presetList" class="preset-list"></div>
-        </section>
-
-        <section class="panel">
-          <h2>Selecionado</h2>
-          <div id="selectedInfo" class="selected-info">Nenhum item selecionado.</div>
-          <div class="actions-grid">
-            <button id="btnDuplicate">Duplicar</button>
-            <button id="btnDuplicateX">+X</button>
-            <button id="btnDuplicateZ">+Z</button>
-            <button id="btnRemove" class="danger">Remover</button>
-            <button id="btnReset">Resetar</button>
-            <button id="btnLock">Travar</button>
-            <button id="btnCenterItem">Centralizar</button>
-            <button id="btnGroundItem">Chão</button>
-            <button id="btnRotate90">Rot +90</button>
-          </div>
-        </section>
-      </aside>
-
-      <section class="viewport-wrap">
-        <canvas id="roomCanvas"></canvas>
-        <div id="statusPill" class="status-pill">Room inicializando...</div>
-        <div id="walkHint" class="walk-hint">
-          <b>Yoru POV:</b> clique na tela para entrar na visão dela · WASD = andar · Shift = correr · mouse = olhar · Esc = liberar mouse · </div>
-        <div class="room-help">
-          <b>Build:</b> Gizmo = mover/girar/escalar · Ctrl+Z/Y = undo/redo · Ctrl+S = salvar · Delete = remover · 1/2/3 = modo transform
+    <aside class="room-leftbar">
+      <section class="panel compact">
+        <h2>Ferramentas</h2>
+        <div class="tool-grid">
+          <button id="toolMove">Mover</button>
+          <button id="toolRotate">Girar</button>
+          <button id="toolScale">Escalar</button>
+          <button id="toolGrid">Grid</button>
+          <button id="toolUndo">Undo</button>
+          <button id="toolRedo">Redo</button>
+          <button id="toolResetPlayer">Reset Yoru</button>
+          <button id="toolDefaultCamera">Reset câmera</button>
         </div>
-        <div id="toast" class="toast"></div>
       </section>
 
-      <aside class="room-inspector">
-        <section class="panel">
-          <h2>Modo</h2>
-          <div id="modeBox" class="validation-box">Build Mode ativo.</div>
-        </section>
+      <section class="panel grow">
+        <h2>Assets da Room</h2>
+        <input id="assetSearch" class="field" placeholder="Buscar GLB/VRM/item..." />
+        <select id="assetFilter" class="field">
+          <option value="all">Tudo</option>
+          <option value="furniture">Móveis</option>
+          <option value="decor">Decoração</option>
+          <option value="electronics">Eletrônicos</option>
+          <option value="table_prop">Mesa</option>
+          <option value="avatar">Avatar</option>
+        </select>
+        <div id="assetList" class="scroll-list"></div>
+      </section>
+    </aside>
 
-        <section class="panel">
-          <h2>Transform</h2>
-          <label>X <input id="posX" type="number" step="0.05"></label>
-          <label>Y <input id="posY" type="number" step="0.05"></label>
-          <label>Z <input id="posZ" type="number" step="0.05"></label>
-          <label>Rot Y <input id="rotY" type="number" step="5"></label>
-          <label>Escala <input id="scaleAll" type="number" step="0.05" min="0.01"></label>
-          <button id="btnApplyTransform" class="primary">Aplicar</button>
-        </section>
-
-        <section class="panel">
-          <h2>Segurança</h2>
-          <div id="safetyBox" class="validation-box">Autosave aguardando.</div>
-        </section>
-
-        <section class="panel">
-          <h2>Validação</h2>
-          <div id="validationBox" class="validation-box">Sem item selecionado.</div>
-        </section>
-
-        <section class="panel">
-          <h2>Layout</h2>
-          <div id="layoutList" class="layout-list"></div>
-        </section>
-      </aside>
+    <main class="room-stage">
+      <canvas id="roomCanvas"></canvas>
+      <div id="hudMode" class="hud mode-hud">Build</div>
+      <div id="hudHelp" class="hud help-hud">
+        Build: arraste o gizmo · Yoru POV/Third: WASD anda · mouse olha · Espaço pula · Esc libera mouse.
+      </div>
+      <div id="toast" class="toast"></div>
     </main>
+
+    <aside class="room-rightbar">
+      <section class="panel">
+        <h2>Status</h2>
+        <div id="statusBox" class="status-box">Inicializando Room...</div>
+      </section>
+
+      <section class="panel">
+        <h2>Selecionado</h2>
+        <div id="selectedBox" class="status-box muted">Nenhum objeto selecionado.</div>
+        <div class="tool-grid">
+          <button id="btnDuplicate">Duplicar</button>
+          <button id="btnLock">Travar</button>
+          <button id="btnGround">Chão</button>
+          <button id="btnRemove" class="danger">Remover</button>
+        </div>
+      </section>
+
+      <section class="panel grow">
+        <h2>Roadmap 100</h2>
+        <input id="roadmapSearch" class="field" placeholder="Buscar sugestão..." />
+        <div id="roadmapList" class="scroll-list roadmap-list"></div>
+      </section>
+    </aside>
+
+    <footer class="room-downbar">
+      <span id="downMode">Modo: Build</span>
+      <span id="downPlayer">Yoru: 0,0,0</span>
+      <span id="downAsset">Asset: aguardando</span>
+      <span id="downSave">Autosave: pronto</span>
+    </footer>
   </div>
 
   <script src="./renderer_dist/room.bundle.js"></script>

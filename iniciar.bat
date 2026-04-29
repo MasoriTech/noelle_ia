@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle IA - V18.8 Yoru Player Robust
+title Noelle V19.2 - Settings/About Cleanup
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
@@ -9,13 +9,13 @@ cd /d "%ROOT%"
 :MENU
 cls
 echo ============================================================
-echo  NOELLE IA - V18.8 YORU PLAYER ROBUST
+echo  NOELLE V19.2 - SETTINGS / ABOUT / ROOM BUTTON CLEANUP
 echo ============================================================
 echo.
-echo [1] Aplicar Yoru Player robusto e iniciar Noelle
-echo [2] Aplicar Yoru Player robusto sem iniciar
-echo [3] Diagnostico Yoru Player
-echo [4] Rebuild Room bundle
+echo [1] Aplicar V19.2 e iniciar Noelle
+echo [2] Aplicar V19.2 sem iniciar
+echo [3] Diagnostico V19.2
+echo [4] Rebuild renderers se existir script do projeto
 echo [0] Sair
 echo.
 set /p "OP=Escolha: "
@@ -23,7 +23,7 @@ set /p "OP=Escolha: "
 if "%OP%"=="1" goto APPLY_START
 if "%OP%"=="2" goto APPLY_ONLY
 if "%OP%"=="3" goto DIAG
-if "%OP%"=="4" goto BUILD_ROOM
+if "%OP%"=="4" goto REBUILD
 if "%OP%"=="0" exit /b 0
 goto MENU
 
@@ -43,9 +43,9 @@ if exist "node_modules\.bin\electron.cmd" (
 ) else (
   where npm.cmd >nul 2>nul
   if errorlevel 1 (
-    echo [ERRO] Electron local nao encontrado e npm nao esta no PATH.
-    pause
-    exit /b 1
+    echo [AVISO] Electron local nao encontrado e npm nao esta no PATH.
+    echo [INFO] Vou aplicar o patch, mas nao vou iniciar o app.
+    exit /b 2
   )
   echo [INFO] Instalando dependencias npm porque Electron local nao foi encontrado...
   call npm install
@@ -61,41 +61,28 @@ exit /b 0
 call :CHECK_NODE
 if errorlevel 1 goto MENU
 
-echo.
-echo [1/5] Aplicando V18.8...
-node scripts\harden_room_v18_8.cjs --apply
+node scripts\apply_v19_2_settings_about_cleanup_2026.cjs --apply
 if errorlevel 1 (
-  echo.
-  echo [ERRO] V18.8 falhou com codigo %errorlevel%.
+  echo [ERRO] Patch V19.2 falhou com codigo %errorlevel%.
   pause
   goto MENU
 )
 
-echo.
-echo [2/5] Verificando dependencias...
-call :ENSURE_DEPS
-if errorlevel 1 goto MENU
-
-echo.
-echo [3/5] Gerando bundle da Room...
-node scripts\build_room_v18_8.cjs
+node scripts\diagnostico_v19_2_settings_about_cleanup_2026.cjs
 if errorlevel 1 (
-  echo.
-  echo [ERRO] Build da Room falhou com codigo %errorlevel%.
-  pause
-  goto MENU
-)
-
-echo.
-echo [4/5] Diagnostico...
-node scripts\diagnostico_room_v18_8.cjs
-if errorlevel 1 (
-  echo.
   echo [AVISO] Diagnostico encontrou problemas. Veja acima.
 )
 
-echo.
-echo [5/5] Iniciando Noelle...
+call :ENSURE_DEPS
+if errorlevel 1 goto MENU
+
+if exist "scripts\bundle-renderers.mjs" (
+  echo [INFO] Rebuild renderers via scripts\bundle-renderers.mjs...
+  node scripts\bundle-renderers.mjs
+  if errorlevel 1 echo [AVISO] bundle-renderers falhou. O patch externo ainda foi aplicado.
+)
+
+echo [START] Iniciando Noelle...
 call "node_modules\.bin\electron.cmd" .
 if errorlevel 1 (
   echo [ERRO] Electron saiu com codigo %errorlevel%.
@@ -106,11 +93,11 @@ goto MENU
 :APPLY_ONLY
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\harden_room_v18_8.cjs --apply
+node scripts\apply_v19_2_settings_about_cleanup_2026.cjs --apply
 if errorlevel 1 (
-  echo [ERRO] V18.8 falhou com codigo %errorlevel%.
+  echo [ERRO] Patch V19.2 falhou com codigo %errorlevel%.
 ) else (
-  echo [OK] V18.8 aplicada.
+  echo [OK] Patch V19.2 aplicado.
 )
 pause
 goto MENU
@@ -118,20 +105,22 @@ goto MENU
 :DIAG
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-node scripts\diagnostico_room_v18_8.cjs
+node scripts\diagnostico_v19_2_settings_about_cleanup_2026.cjs
 pause
 goto MENU
 
-:BUILD_ROOM
+:REBUILD
 call :CHECK_NODE
 if errorlevel 1 goto MENU
-call :ENSURE_DEPS
-if errorlevel 1 goto MENU
-node scripts\build_room_v18_8.cjs
-if errorlevel 1 (
-  echo [ERRO] Build da Room falhou com codigo %errorlevel%.
+if exist "scripts\bundle-renderers.mjs" (
+  node scripts\bundle-renderers.mjs
+  if errorlevel 1 (
+    echo [ERRO] Rebuild falhou com codigo %errorlevel%.
+  ) else (
+    echo [OK] Rebuild finalizado.
+  )
 ) else (
-  echo [OK] Bundle da Room gerado.
+  echo [AVISO] scripts\bundle-renderers.mjs nao existe neste projeto.
 )
 pause
 goto MENU
