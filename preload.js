@@ -104,3 +104,30 @@ contextBridge.exposeInMainWorld("noelleRoom", {
   }
 })();
 // NOELLE_V19_3_COMPLETE_PRELOAD_END
+
+// NOELLE_V19_5_AVATAR_REAL_VRM_PRELOAD_BEGIN
+(() => {
+  try {
+    if (globalThis.__NOELLE_V19_5_AVATAR_BOOTSTRAPPED__) return;
+    globalThis.__NOELLE_V19_5_AVATAR_BOOTSTRAPPED__ = true;
+
+    const injectNoelleV195Avatar = () => {
+      try {
+        if (document.getElementById("noelle-v19-5-avatar-panel-script")) return;
+        const script = document.createElement("script");
+        script.id = "noelle-v19-5-avatar-panel-script";
+        script.src = "./renderer/avatar_v19_5_panel_bootstrap.js";
+        script.defer = true;
+        (document.head || document.documentElement).appendChild(script);
+      } catch (err) {
+        try { console.warn("[Noelle] Falha ao injetar Avatar V19.5", err); } catch {}
+      }
+    };
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", injectNoelleV195Avatar);
+    else injectNoelleV195Avatar();
+  } catch (err) {
+    try { console.warn("[Noelle] preload Avatar V19.5 indisponível", err); } catch {}
+  }
+})();
+// NOELLE_V19_5_AVATAR_REAL_VRM_PRELOAD_END

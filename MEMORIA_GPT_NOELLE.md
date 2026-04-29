@@ -1106,3 +1106,19 @@ Não inclui:
 - Correção de animações VRM.
 - Correção completa do player Yoru/Third Person.
 - Mega refactor V20.
+
+## V19.5 Avatar Real VRM Sync Anim — 2026
+
+Este pack implementa os itens que ficaram fora do V19.4.1:
+
+- Preview real do VRM dentro da aba Avatar usando Three.js + @pixiv/three-vrm.
+- Loader novo para Avatar/Widget em `src/renderer/avatar_v19_5_preview_app.js`.
+- Bundle browser em `src/renderer_dist/avatar_v19_5.bundle.js`.
+- Sincronização com Room via `BroadcastChannel("noelle-avatar-room-sync")`, `localStorage` e eventos DOM.
+- Bridge de Room em `src/renderer/avatar_room_sync_bridge_v19_5.js`.
+- Animações VRMA via `@pixiv/three-vrm-animation` quando arquivos `.vrma` e manifest estão disponíveis.
+- Fallback de idle simples quando não há VRMA.
+
+Limite conhecido:
+- A sincronização profunda depende da Room expor APIs como `window.noelleRoomPlayer`, `window.roomPlayerApi` ou escutar `noelle:room-avatar-sync`.
+- O pack já dispara eventos e salva estado; se a Room ainda não consumir, o próximo passo é conectar esses eventos ao player real da Room.
