@@ -1,110 +1,150 @@
 @echo off
-setlocal EnableDelayedExpansion
+setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
-title Noelle V19.6 - Avatar Lab Isolated
+
+title Yoru 2026 - iniciar com Memory Core
+
+echo ================================================================
+echo  Yoru 2026 - iniciar.bat atualizado
+echo ================================================================
+echo.
 
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
 
-:MENU
-cls
-echo ============================================================
-echo  NOELLE V19.6 - AVATAR LAB ISOLATED
-echo ============================================================
-echo.
-echo [1] Aplicar V19.6 Avatar Lab e iniciar Noelle
-echo [2] Aplicar V19.6 Avatar Lab sem iniciar
-echo [3] Build Avatar Lab V19.6
-echo [4] Diagnostico V19.6
-echo [0] Sair
-echo.
-set /p "OP=Escolha: "
+REM ----------------------------------------------------------------
+REM 1) Python robusto
+REM ----------------------------------------------------------------
+set "PYTHON_CMD="
+if exist ".venv\Scripts\python.exe" set "PYTHON_CMD=.venv\Scripts\python.exe"
+if not defined PYTHON_CMD (
+  where py >nul 2>nul && set "PYTHON_CMD=py -3"
+)
+if not defined PYTHON_CMD (
+  where python >nul 2>nul && set "PYTHON_CMD=python"
+)
 
-if "%OP%"=="1" goto APPLY_START
-if "%OP%"=="2" goto APPLY_ONLY
-if "%OP%"=="3" goto BUILD
-if "%OP%"=="4" goto DIAG
-if "%OP%"=="0" exit /b 0
-goto MENU
-
-:CHECK_NODE
-where node >nul 2>nul
-if errorlevel 1 (
-  echo [ERRO] Node nao encontrado no PATH.
+if not defined PYTHON_CMD (
+  echo [ERRO] Python nao encontrado.
+  echo Instale Python 3.10+ ou crie uma .venv antes de iniciar a Yoru.
   pause
   exit /b 1
 )
-for /f "tokens=* delims=" %%A in ('node -v 2^>nul') do echo [OK] Node %%A
-exit /b 0
 
-:ENSURE_NPM
-if exist "node_modules\@pixiv\three-vrm" if exist "node_modules\@pixiv\three-vrm-animation" if exist "node_modules\three" (
-  echo [OK] Dependencias VRM locais encontradas.
-  exit /b 0
-)
-where npm.cmd >nul 2>nul
-if errorlevel 1 (
-  echo [ERRO] npm nao encontrado. Aplique o patch, depois rode npm install manualmente.
-  exit /b 1
-)
-echo [INFO] Instalando dependencias npm para Avatar Lab...
-call npm install
-if errorlevel 1 (
-  echo [ERRO] npm install falhou.
-  exit /b 1
-)
-exit /b 0
+echo [OK] Python: %PYTHON_CMD%
 
-:APPLY_START
-call :CHECK_NODE
-if errorlevel 1 goto MENU
-node scripts\apply_v19_6_avatar_lab_isolated_2026.cjs --apply
-if errorlevel 1 (
-  echo [ERRO] Patch falhou.
-  pause
-  goto MENU
-)
-call :ENSURE_NPM
-if errorlevel 1 (
-  echo [AVISO] Dependencias nao prontas. Patch aplicado, mas Avatar Lab precisa de npm install/build.
-  pause
-  goto MENU
-)
-node scripts\build_avatar_lab_v19_6_2026.cjs
-if errorlevel 1 (
-  echo [ERRO] Build falhou.
-  pause
-  goto MENU
-)
-node scripts\diagnostico_v19_6_avatar_lab_isolated_2026.cjs
-if exist "node_modules\.bin\electron.cmd" (
-  echo [START] Iniciando Noelle...
-  call "node_modules\.bin\electron.cmd" .
+REM ----------------------------------------------------------------
+REM 2) Aplica/verifica memoria da Yoru sem sobrescrever seus arquivos
+REM ----------------------------------------------------------------
+if exist "scripts\yoru_memory_core_setup_2026.py" (
+  echo.
+  echo [INFO] Verificando estrutura de memoria da Yoru...
+  %PYTHON_CMD% "scripts\yoru_memory_core_setup_2026.py" --apply
+  if errorlevel 1 (
+    echo [ERRO] Falha ao preparar a memoria da Yoru.
+    pause
+    exit /b 1
+  )
 ) else (
-  echo [AVISO] Electron local nao encontrado. Inicie pelo fluxo normal do projeto.
-  pause
+  echo [AVISO] scripts\yoru_memory_core_setup_2026.py nao encontrado. Pulando etapa de memoria.
 )
-goto MENU
 
-:APPLY_ONLY
-call :CHECK_NODE
-if errorlevel 1 goto MENU
-node scripts\apply_v19_6_avatar_lab_isolated_2026.cjs --apply
-pause
-goto MENU
+if exist "scripts\yoru_memory_core_diag_2026.py" (
+  echo.
+  echo [INFO] Diagnostico rapido da memoria...
+  %PYTHON_CMD% "scripts\yoru_memory_core_diag_2026.py"
+  if errorlevel 1 (
+    echo [ERRO] Diagnostico da memoria falhou.
+    pause
+    exit /b 1
+  )
+)
 
-:BUILD
-call :CHECK_NODE
-if errorlevel 1 goto MENU
-call :ENSURE_NPM
-if errorlevel 1 goto MENU
-node scripts\build_avatar_lab_v19_6_2026.cjs
-pause
-goto MENU
+REM ----------------------------------------------------------------
+REM 3) Detecta Ollama opcionalmente, sem travar se nao estiver aberto
+REM ----------------------------------------------------------------
+where ollama >nul 2>nul
+if errorlevel 1 (
+  echo [AVISO] Ollama nao encontrado no PATH. Se a Yoru usa Ollama, instale/abra o Ollama.
+) else (
+  echo [OK] Ollama encontrado.
+)
 
-:DIAG
-call :CHECK_NODE
-if errorlevel 1 goto MENU
-node scripts\diagnostico_v19_6_avatar_lab_isolated_2026.cjs
+REM ----------------------------------------------------------------
+REM 4) Inicializa o app da Yoru com fallbacks conhecidos
+REM Use set YORU_ENTRY=arquivo.py para escolher manualmente.
+REM ----------------------------------------------------------------
+echo.
+echo [INFO] Procurando entrada principal da Yoru...
+
+if defined YORU_ENTRY (
+  if exist "%YORU_ENTRY%" (
+    echo [OK] Entrada manual: %YORU_ENTRY%
+    %PYTHON_CMD% "%YORU_ENTRY%"
+    goto :end
+  ) else (
+    echo [ERRO] YORU_ENTRY definido, mas arquivo nao existe: %YORU_ENTRY%
+    pause
+    exit /b 1
+  )
+)
+
+if exist "run_yoru_nicegui.py" (
+  echo [OK] Iniciando run_yoru_nicegui.py
+  %PYTHON_CMD% "run_yoru_nicegui.py"
+  goto :end
+)
+
+if exist "main.py" (
+  echo [OK] Iniciando main.py
+  %PYTHON_CMD% "main.py"
+  goto :end
+)
+
+if exist "app.py" (
+  echo [OK] Iniciando app.py
+  %PYTHON_CMD% "app.py"
+  goto :end
+)
+
+if exist "yoru_chat_core.py" (
+  echo [OK] Iniciando yoru_chat_core.py
+  %PYTHON_CMD% "yoru_chat_core.py"
+  goto :end
+)
+
+if exist "avatar_widget.py" (
+  echo [OK] Iniciando avatar_widget.py
+  %PYTHON_CMD% "avatar_widget.py"
+  goto :end
+)
+
+if exist "package.json" (
+  where npm >nul 2>nul
+  if errorlevel 1 (
+    echo [ERRO] package.json encontrado, mas npm nao esta no PATH.
+    pause
+    exit /b 1
+  )
+  echo [OK] Projeto Node/Electron detectado. Rodando npm start.
+  npm start
+  goto :end
+)
+
+echo [AVISO] Nenhuma entrada principal encontrada.
+echo Foram preparados apenas os arquivos de memoria da Yoru.
+echo Para iniciar manualmente, use por exemplo:
+echo   set YORU_ENTRY=run_yoru_nicegui.py
+echo   iniciar.bat
+
+:end
+set "EXIT_CODE=%ERRORLEVEL%"
+echo.
+if not "%EXIT_CODE%"=="0" (
+  echo [AVISO] A Yoru foi encerrada com codigo %EXIT_CODE%.
+  echo Dica: prefira sempre este iniciar.bat ou .venv\Scripts\python.exe.
+) else (
+  echo [OK] Processo finalizado.
+)
 pause
-goto MENU
+exit /b %EXIT_CODE%
