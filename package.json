@@ -26,7 +26,14 @@
     "diagnostico:v19.5-avatar": "node scripts/diagnostico_v19_5_avatar_real_vrm_sync_anim_2026.cjs",
     "build:avatar-lab-v19.6": "node scripts/build_avatar_lab_v19_6_2026.cjs",
     "apply:v19.6-avatar-lab": "node scripts/apply_v19_6_avatar_lab_isolated_2026.cjs --apply",
-    "diagnostico:v19.6-avatar-lab": "node scripts/diagnostico_v19_6_avatar_lab_isolated_2026.cjs"
+    "diagnostico:v19.6-avatar-lab": "node scripts/diagnostico_v19_6_avatar_lab_isolated_2026.cjs",
+    "apply:v19.7.2-avatar-focus": "node scripts/apply_v19_7_2_avatar_focus_carousel_2026.cjs --apply",
+    "diagnostico:v19.7.2-avatar-focus": "node scripts/diagnostico_v19_7_2_avatar_focus_carousel_2026.cjs",
+    "diagnostico:v19.7.3-build-regex": "node scripts/diagnostico_v19_7_3_build_regex_2026.cjs",
+    "fix:v19.7.4-avatar-preview": "node scripts/fix_v19_7_4_unterminated_strings_2026.cjs",
+    "diagnostico:v19.7.4": "node scripts/diagnostico_v19_7_4_avatar_preview_2026.cjs",
+    "diagnostico:avatar-clean": "node scripts/diagnostico_v19_7_5_avatar_clean_2026.cjs",
+    "diagnostico:v19.7.5-avatar-clean": "node scripts/diagnostico_v19_7_5_avatar_clean_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

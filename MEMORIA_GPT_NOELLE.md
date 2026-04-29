@@ -1145,3 +1145,36 @@ Arquivos principais:
 Importante:
 - A aba principal não recebe MutationObserver global.
 - Se caminho `./assets/Noelle.vrm` falhar, o Avatar Lab permite escolher VRM/GLB local por input de arquivo.
+
+
+---
+
+## V19.7.2 — Avatar Foco + Carrossel VRM
+
+- A aba/janela Avatar deve ter foco visual no personagem.
+- Avatar grande a esquerda, opcoes a direita, setas embaixo.
+- Carrossel deve carregar um VRM/GLB por vez a partir de src/assets/avatar_manifest.json.
+- Nao acoplar o preview a Room em tempo real; Room cuida do quarto/objetos e Widget Mode cuida da janela sem fundo.
+- Todo pack futuro deve incluir iniciar.bat atualizado.
+
+
+## V19.7.3 Build Regex / Avatar Focus
+- Corrige SyntaxError de regex quebrada em scripts/build_avatar_lab_v19_6_2026.cjs.
+- O iniciar.bat deve rodar fix/diagnostico antes de iniciar.
+
+
+---
+
+## Nota V19.7.4 - Avatar Preview robusto
+
+- O Avatar Preview/Avatar Lab deve compilar em build IIFE sem top-level await.
+- Strings com quebra de linha real dentro de aspas simples/duplas devem ser corrigidas para \n escapado.
+- A aba Avatar deve manter foco visual no personagem: preview grande, setas embaixo e opções ao lado.
+- O iniciar.bat deve rodar correção/diagnóstico antes de iniciar para evitar regressões antigas.
+
+
+## V19.7.5 Avatar Clean Carousel 2026
+- Aba Avatar limpa: avatar grande à esquerda, opções à direita e setas embaixo.
+- Remove da interface a tela técnica antiga de sincronização.
+- Avatar escolhe/personagem; Room usa quarto/objetos; Widget Mode mostra sem fundo; Preview/Teste fica seguro.
+- Sempre manter iniciar.bat atualizado nos próximos packs.

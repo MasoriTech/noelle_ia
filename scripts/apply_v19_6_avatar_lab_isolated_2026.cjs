@@ -149,3 +149,7 @@ function apply() {
 
 if (process.argv.includes("--apply")) apply();
 else console.log("Uso: node scripts/apply_v19_6_avatar_lab_isolated_2026.cjs --apply");
+
+
+// V19.7.3: remendo defensivo para manter build iife valido.
+try { require('child_process').spawnSync(process.execPath, ['scripts/fix_v19_7_3_build_regex_2026.cjs', '--ensure'], { cwd: process.cwd(), stdio: 'inherit' }); } catch {}

@@ -1,150 +1,88 @@
 @echo off
-setlocal EnableExtensions EnableDelayedExpansion
-chcp 65001 >nul
+setlocal EnableExtensions
+cd /d "%~dp0"
 
-title Yoru 2026 - iniciar com Memory Core
+title Noelle Companion 2026 - iniciar atualizado
 
-echo ================================================================
-echo  Yoru 2026 - iniciar.bat atualizado
-echo ================================================================
+echo ============================================================
+echo  Noelle Companion 2026 - iniciar.bat atualizado
+echo ============================================================
 echo.
 
-set "ROOT=%~dp0"
-cd /d "%ROOT%"
-
-REM ----------------------------------------------------------------
-REM 1) Python robusto
-REM ----------------------------------------------------------------
-set "PYTHON_CMD="
-if exist ".venv\Scripts\python.exe" set "PYTHON_CMD=.venv\Scripts\python.exe"
-if not defined PYTHON_CMD (
-  where py >nul 2>nul && set "PYTHON_CMD=py -3"
-)
-if not defined PYTHON_CMD (
-  where python >nul 2>nul && set "PYTHON_CMD=python"
-)
-
-if not defined PYTHON_CMD (
-  echo [ERRO] Python nao encontrado.
-  echo Instale Python 3.10+ ou crie uma .venv antes de iniciar a Yoru.
+where node >nul 2>nul
+if errorlevel 1 (
+  echo [ERRO] Node.js nao encontrado no PATH.
+  echo Abra o terminal correto ou instale o Node.js.
   pause
   exit /b 1
 )
 
-echo [OK] Python: %PYTHON_CMD%
-
-REM ----------------------------------------------------------------
-REM 2) Aplica/verifica memoria da Yoru sem sobrescrever seus arquivos
-REM ----------------------------------------------------------------
-if exist "scripts\yoru_memory_core_setup_2026.py" (
-  echo.
-  echo [INFO] Verificando estrutura de memoria da Yoru...
-  %PYTHON_CMD% "scripts\yoru_memory_core_setup_2026.py" --apply
-  if errorlevel 1 (
-    echo [ERRO] Falha ao preparar a memoria da Yoru.
-    pause
-    exit /b 1
-  )
-) else (
-  echo [AVISO] scripts\yoru_memory_core_setup_2026.py nao encontrado. Pulando etapa de memoria.
-)
-
-if exist "scripts\yoru_memory_core_diag_2026.py" (
-  echo.
-  echo [INFO] Diagnostico rapido da memoria...
-  %PYTHON_CMD% "scripts\yoru_memory_core_diag_2026.py"
-  if errorlevel 1 (
-    echo [ERRO] Diagnostico da memoria falhou.
-    pause
-    exit /b 1
-  )
-)
-
-REM ----------------------------------------------------------------
-REM 3) Detecta Ollama opcionalmente, sem travar se nao estiver aberto
-REM ----------------------------------------------------------------
-where ollama >nul 2>nul
+where npm >nul 2>nul
 if errorlevel 1 (
-  echo [AVISO] Ollama nao encontrado no PATH. Se a Yoru usa Ollama, instale/abra o Ollama.
-) else (
-  echo [OK] Ollama encontrado.
+  echo [ERRO] npm nao encontrado no PATH.
+  pause
+  exit /b 1
 )
 
-REM ----------------------------------------------------------------
-REM 4) Inicializa o app da Yoru com fallbacks conhecidos
-REM Use set YORU_ENTRY=arquivo.py para escolher manualmente.
-REM ----------------------------------------------------------------
-echo.
-echo [INFO] Procurando entrada principal da Yoru...
-
-if defined YORU_ENTRY (
-  if exist "%YORU_ENTRY%" (
-    echo [OK] Entrada manual: %YORU_ENTRY%
-    %PYTHON_CMD% "%YORU_ENTRY%"
-    goto :end
+echo [INFO] Verificando Avatar limpo V19.7.5...
+node -e "const fs=require('fs'); const f='src/renderer/avatar_v19_5_panel_bootstrap.js'; process.exit(fs.existsSync(f)&&fs.readFileSync(f,'utf8').includes('NOELLE_V19_7_5_AVATAR_CLEAN')?0:1)" >nul 2>nul
+if errorlevel 1 (
+  echo [INFO] Avatar limpo ainda nao aplicado. Aplicando agora...
+  if exist scripts\fix_v19_7_5_avatar_clean_carousel_2026.cjs (
+    node scripts\fix_v19_7_5_avatar_clean_carousel_2026.cjs
+    if errorlevel 1 (
+      echo [ERRO] Nao foi possivel aplicar o Avatar limpo.
+      pause
+      exit /b 1
+    )
   ) else (
-    echo [ERRO] YORU_ENTRY definido, mas arquivo nao existe: %YORU_ENTRY%
-    pause
-    exit /b 1
+    echo [AVISO] Script V19.7.5 nao encontrado. Continuando sem aplicar patch.
   )
-)
-
-if exist "run_yoru_nicegui.py" (
-  echo [OK] Iniciando run_yoru_nicegui.py
-  %PYTHON_CMD% "run_yoru_nicegui.py"
-  goto :end
-)
-
-if exist "main.py" (
-  echo [OK] Iniciando main.py
-  %PYTHON_CMD% "main.py"
-  goto :end
-)
-
-if exist "app.py" (
-  echo [OK] Iniciando app.py
-  %PYTHON_CMD% "app.py"
-  goto :end
-)
-
-if exist "yoru_chat_core.py" (
-  echo [OK] Iniciando yoru_chat_core.py
-  %PYTHON_CMD% "yoru_chat_core.py"
-  goto :end
-)
-
-if exist "avatar_widget.py" (
-  echo [OK] Iniciando avatar_widget.py
-  %PYTHON_CMD% "avatar_widget.py"
-  goto :end
-)
-
-if exist "package.json" (
-  where npm >nul 2>nul
-  if errorlevel 1 (
-    echo [ERRO] package.json encontrado, mas npm nao esta no PATH.
-    pause
-    exit /b 1
-  )
-  echo [OK] Projeto Node/Electron detectado. Rodando npm start.
-  npm start
-  goto :end
-)
-
-echo [AVISO] Nenhuma entrada principal encontrada.
-echo Foram preparados apenas os arquivos de memoria da Yoru.
-echo Para iniciar manualmente, use por exemplo:
-echo   set YORU_ENTRY=run_yoru_nicegui.py
-echo   iniciar.bat
-
-:end
-set "EXIT_CODE=%ERRORLEVEL%"
-echo.
-if not "%EXIT_CODE%"=="0" (
-  echo [AVISO] A Yoru foi encerrada com codigo %EXIT_CODE%.
-  echo Dica: prefira sempre este iniciar.bat ou .venv\Scripts\python.exe.
 ) else (
-  echo [OK] Processo finalizado.
+  echo [OK] Avatar limpo V19.7.5 ja aplicado.
+)
+
+if not exist node_modules (
+  echo [AVISO] Dependencias nao encontradas.
+  echo Rode: npm install
+  pause
+  exit /b 1
+)
+
+if exist scripts\diagnostico_v19_7_5_avatar_clean_2026.cjs (
+  node scripts\diagnostico_v19_7_5_avatar_clean_2026.cjs
+  if errorlevel 1 (
+    echo [ERRO] Diagnostico falhou. Reaplicando patch V19.7.5...
+    if exist scripts\fix_v19_7_5_avatar_clean_carousel_2026.cjs node scripts\fix_v19_7_5_avatar_clean_carousel_2026.cjs
+    if errorlevel 1 (
+      echo [ERRO] Reparo automatico falhou.
+      pause
+      exit /b 1
+    )
+  )
+)
+
+if not exist src\renderer_dist\avatar_lab_v19_6.bundle.js (
+  echo [INFO] Bundle do Avatar limpo nao encontrado. Gerando...
+  npm run build:avatar-lab-v19.6
+  if errorlevel 1 (
+    echo [ERRO] Build do Avatar limpo falhou.
+    pause
+    exit /b 1
+  )
+) else (
+  echo [OK] Bundle do Avatar limpo encontrado.
+)
+
+echo.
+echo [INFO] Iniciando Noelle Companion...
+npm start
+set EXITCODE=%ERRORLEVEL%
+
+echo.
+echo [INFO] Noelle encerrada com codigo %EXITCODE%.
+if not "%EXITCODE%"=="0" (
+  echo [DICA] Se falhar, rode npm install e depois iniciar.bat novamente.
 )
 pause
-exit /b %EXIT_CODE%
+exit /b %EXITCODE%

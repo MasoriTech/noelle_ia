@@ -439,8 +439,8 @@ function createTrayIcon() {
 
 function createMainWindow() {
   mainWin = new BrowserWindow({
-    width: 1180,
-    height: 760,
+    width: 1320,
+    height: 860,
     minWidth: 900,
     minHeight: 620,
     title: "Noelle Companion",
@@ -578,10 +578,10 @@ function createAvatarWindow({ show = true } = {}) {
 
   const saved = loadState();
   avatarWin = new BrowserWindow({
-    width: 420,
-    height: 680,
-    minWidth: 280,
-    minHeight: 360,
+    width: 720,
+    height: 900,
+    minWidth: 420,
+    minHeight: 640,
     title: "Noelle Avatar Widget",
     icon: getAppIconPath(),
     backgroundColor: "#00000000",
