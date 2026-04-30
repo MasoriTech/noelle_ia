@@ -1236,3 +1236,9 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Corrige guard responsivo da aba Avatar com controle por resize.
 - Mantem preload limpo, sem injeções visuais V19.3/V19.5.
 - Mantem iniciar.bat unico; opcao [1] apenas inicia o programa.
+
+
+## V19.8.7 — Purge Avatar legado
+- Removido do codigo ativo o carrossel/overlay antigo V19.7.6 que carregava `avatar_carousel_v19_7_6.bundle.js`.
+- A aba Avatar valida deve usar somente a implementacao V19.8.x atual, sem pílula flutuante "Avatar Lab" e sem runtime legado sobreposto.
+- Arquivos removidos sao copiados para `backups/` antes de sair do codigo ativo.

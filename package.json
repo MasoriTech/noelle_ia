@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.3a-preview-resize-fix-2026",
+  "version": "19.8.7-purge-legacy-avatar-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -34,10 +34,6 @@
     "diagnostico:v19.7.4": "node scripts/diagnostico_v19_7_4_avatar_preview_2026.cjs",
     "diagnostico:avatar-clean": "node scripts/diagnostico_v19_7_5_avatar_clean_2026.cjs",
     "diagnostico:v19.7.5-avatar-clean": "node scripts/diagnostico_v19_7_5_avatar_clean_2026.cjs",
-    "apply:v19.7.6": "node scripts/fix_mega_avatar_v19_7_6_2026.cjs --apply",
-    "diagnostico:v19.7.6": "node scripts/diagnostico_mega_avatar_v19_7_6_2026.cjs",
-    "build:avatar-carousel-v19.7.6": "node scripts/build_avatar_carousel_v19_7_6_2026.cjs",
-    "avatar:mega-fix": "npm run apply:v19.7.6 && npm run build:avatar-carousel-v19.7.6 && npm run diagnostico:v19.7.6",
     "build:avatar-tab-v19.7.8": "node scripts/build_avatar_tab_v19_7_8_2026.cjs",
     "diagnostico:avatar-tab-v19.7.8": "node scripts/diagnostico_avatar_layout_v19_7_8_2026.cjs",
     "apply:avatar-tab-v19.7.8": "node scripts/fix_avatar_layout_v19_7_8_2026.cjs --apply",
@@ -57,7 +53,9 @@
     "repair:v19.8.3": "node scripts/repair_v19_8_3_resolucao_loadfile_2026.cjs",
     "status:v19.8.3": "node scripts/status_v19_8_3_resolucao_loadfile_2026.cjs",
     "repair:v19.8.3a": "node scripts/repair_v19_8_3a_preview_resize_fix_2026.cjs",
-    "diagnostico:v19.8.3a": "node scripts/diagnostico_v19_8_3a_preview_resize_fix_2026.cjs"
+    "diagnostico:v19.8.3a": "node scripts/diagnostico_v19_8_3a_preview_resize_fix_2026.cjs",
+    "diagnostico:v19.8.7": "node scripts/diagnostico_v19_8_7_purge_legacy_avatar_2026.cjs",
+    "repair:v19.8.7": "node scripts/repair_v19_8_7_purge_legacy_avatar_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",
