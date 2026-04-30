@@ -1221,3 +1221,18 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Carrossel deve carregar avatar_manifest.json e renderizar um VRM/GLB por vez.
 - Room / Widget Mode / Preview-Teste continuam separados.
 - Nao reativar V19.3/V19.5 como runtime visual automatico.
+
+
+## V19.8.3 — Resolução + LoadFile
+- A aba Avatar deve ser responsiva: avatar grande acompanha a janela, opções ficam à direita e descem em telas menores.
+- O preview de teste deve ter caminho seguro por BrowserWindow.loadFile() para evitar falhas frágeis de fetch em file://.
+- O layout deve usar grid/flex, minmax(0, 1fr), overflow auto e breakpoints.
+- A opção [1] do iniciar.bat continua apenas iniciando o programa, sem aplicar patch automaticamente.
+
+
+## V19.8.3a Preview LoadFile + Resize Fix
+
+- Corrige preload com API `openAvatarPreviewLoadFile`.
+- Corrige guard responsivo da aba Avatar com controle por resize.
+- Mantem preload limpo, sem injeções visuais V19.3/V19.5.
+- Mantem iniciar.bat unico; opcao [1] apenas inicia o programa.

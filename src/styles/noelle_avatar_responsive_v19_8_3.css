@@ -1,0 +1,250 @@
+
+/*
+  Noelle V19.8.3 — resolução responsiva + scroll seguro
+  Base: apps Electron grandes não deixam o conteúdo depender de largura fixa.
+  O avatar ocupa o espaço elástico; opções encolhem, quebram ou descem conforme a tela.
+*/
+
+:root {
+  --noelle-avatar-sidebar: clamp(280px, 24vw, 400px);
+  --noelle-avatar-gap: clamp(12px, 1.4vw, 22px);
+  --noelle-avatar-min-h: clamp(460px, calc(100vh - 230px), 860px);
+  --noelle-avatar-preview-min: 360px;
+  --noelle-avatar-controls-h: 104px;
+}
+
+html,
+body {
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+body.noelle-v19-8-3-resolution {
+  --avatar-panel-height: clamp(460px, calc(100vh - 210px), 880px);
+}
+
+body[data-avatar-resolution="compact"] {
+  --noelle-avatar-sidebar: 290px;
+  --noelle-avatar-min-h: clamp(360px, calc(100vh - 190px), 620px);
+  --noelle-avatar-controls-h: 82px;
+}
+
+body[data-avatar-resolution="normal"] {
+  --noelle-avatar-sidebar: clamp(300px, 24vw, 380px);
+  --noelle-avatar-min-h: clamp(460px, calc(100vh - 220px), 820px);
+}
+
+body[data-avatar-resolution="large"] {
+  --noelle-avatar-sidebar: clamp(320px, 23vw, 420px);
+  --noelle-avatar-min-h: clamp(560px, calc(100vh - 180px), 980px);
+}
+
+body[data-avatar-resolution="focus"] {
+  --noelle-avatar-sidebar: 0px;
+  --noelle-avatar-min-h: clamp(580px, calc(100vh - 160px), 1040px);
+}
+
+body[data-avatar-resolution="focus"] .noelle-avatar-options,
+body[data-avatar-resolution="focus"] [data-avatar-options],
+body[data-avatar-resolution="focus"] .avatar-options,
+body[data-avatar-resolution="focus"] .avatar-side-panel {
+  display: none !important;
+}
+
+.noelle-main,
+.app-main,
+main,
+#app,
+#root,
+.page,
+.page.active,
+[data-page],
+[data-active-page] {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+.page.active,
+[data-page="avatar"],
+#page-avatar,
+.noelle-avatar-tab,
+.noelle-avatar-v19-8-2,
+.noelle-avatar-v19-8-3,
+[data-noelle-avatar-tab] {
+  overflow: auto !important;
+  scrollbar-gutter: stable both-edges;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Grid principal: avatar grande à esquerda, opções à direita */
+.noelle-avatar-layout,
+.noelle-avatar-grid,
+.noelle-avatar-shell,
+.avatar-layout,
+.avatar-grid,
+.avatar-shell,
+[data-avatar-layout] {
+  display: grid !important;
+  grid-template-columns: minmax(var(--noelle-avatar-preview-min), 1fr) minmax(270px, var(--noelle-avatar-sidebar)) !important;
+  gap: var(--noelle-avatar-gap) !important;
+  align-items: stretch !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Painel do preview */
+.noelle-avatar-preview-panel,
+.noelle-avatar-preview,
+.avatar-preview,
+.avatar-preview-panel,
+[data-avatar-preview] {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: var(--noelle-avatar-min-h) !important;
+  height: var(--noelle-avatar-min-h) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Canvas/iframe acompanha a tela */
+.noelle-avatar-preview iframe,
+.noelle-avatar-preview canvas,
+.avatar-preview iframe,
+.avatar-preview canvas,
+[data-avatar-preview] iframe,
+[data-avatar-preview] canvas {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: block !important;
+}
+
+/* Setas sempre embaixo do avatar */
+.noelle-avatar-arrows,
+.noelle-avatar-nav,
+.avatar-arrows,
+.avatar-nav,
+[data-avatar-arrows] {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 5 !important;
+  display: grid !important;
+  grid-template-columns: minmax(64px, 120px) 1fr minmax(64px, 120px) !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Opções à direita, com scroll próprio quando a tela fica baixa */
+.noelle-avatar-options,
+.avatar-options,
+.avatar-side-panel,
+[data-avatar-options] {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  max-height: var(--noelle-avatar-min-h) !important;
+  overflow: auto !important;
+  scrollbar-gutter: stable;
+  box-sizing: border-box !important;
+}
+
+.noelle-avatar-options button,
+.avatar-options button,
+.avatar-side-panel button,
+[data-avatar-options] button {
+  max-width: 100% !important;
+  white-space: normal !important;
+}
+
+/* Barra de resolução injetada pela V19.8.3 */
+.noelle-resolution-toolbar-v19-8-3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 14px;
+  padding: 10px;
+  border: 1px solid rgba(255, 90, 180, 0.22);
+  border-radius: 18px;
+  background: rgba(12, 8, 20, 0.58);
+}
+
+.noelle-resolution-toolbar-v19-8-3 strong {
+  margin-right: 4px;
+  opacity: 0.9;
+}
+
+.noelle-resolution-toolbar-v19-8-3 button {
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  color: inherit;
+  padding: 8px 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.noelle-resolution-toolbar-v19-8-3 button[aria-pressed="true"] {
+  border-color: rgba(255, 95, 190, 0.8);
+  background: linear-gradient(135deg, rgba(255, 70, 160, 0.65), rgba(130, 110, 255, 0.62));
+}
+
+/* Botões legados ficam escondidos na aba Avatar */
+body.noelle-v19-8-3-avatar-active #noelle-room-v19-canonical-button,
+body.noelle-v19-8-3-avatar-active #noelle-avatar-lab-button,
+body.noelle-v19-8-3-avatar-active [data-noelle-floating-room],
+body.noelle-v19-8-3-avatar-active [data-noelle-floating-avatar-lab] {
+  display: none !important;
+}
+
+/* Breakpoints: opções descem sem quebrar botões */
+@media (max-width: 1180px) {
+  .noelle-avatar-layout,
+  .noelle-avatar-grid,
+  .noelle-avatar-shell,
+  .avatar-layout,
+  .avatar-grid,
+  .avatar-shell,
+  [data-avatar-layout] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .noelle-avatar-options,
+  .avatar-options,
+  .avatar-side-panel,
+  [data-avatar-options] {
+    max-height: none !important;
+  }
+}
+
+@media (max-height: 760px) {
+  :root {
+    --noelle-avatar-min-h: clamp(340px, calc(100vh - 180px), 560px);
+  }
+  .noelle-resolution-toolbar-v19-8-3 {
+    padding: 8px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --noelle-avatar-preview-min: 260px;
+    --noelle-avatar-controls-h: 76px;
+  }
+  .noelle-avatar-arrows,
+  .noelle-avatar-nav,
+  .avatar-arrows,
+  .avatar-nav,
+  [data-avatar-arrows] {
+    grid-template-columns: 58px 1fr 58px !important;
+    padding: 8px !important;
+  }
+}

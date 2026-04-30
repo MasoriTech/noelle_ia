@@ -906,3 +906,80 @@ ipcMain.handle("room:save-layout", async (_event, layout) => {
 // NOELLE_ROOM_V19_END
 
 
+
+
+// NOELLE_V19_8_3_LOADFILE_BEGIN
+// Preview/Teste aberto por BrowserWindow.loadFile(), evitando fetch frágil para HTML local.
+function noelleV1983SafeAvatarRel(input) {
+  let raw = "";
+  if (typeof input === "string") raw = input;
+  else if (input && typeof input === "object") raw = input.rel || input.path || input.file || input.avatar || "";
+  raw = String(raw || "").replace(/\\/g, "/").trim();
+  raw = raw.replace(/^file:\/\/\/?/i, "");
+  raw = raw.replace(/^.*?\/src\//i, "");
+  raw = raw.replace(/^src\//i, "");
+  raw = raw.replace(/^\/+/, "");
+  if (!raw) raw = "assets/Noelle.vrm";
+  if (raw.includes("..")) throw new Error("Caminho de avatar inseguro: " + raw);
+  if (!/\.(vrm|glb)$/i.test(raw)) throw new Error("Avatar precisa ser .vrm ou .glb: " + raw);
+  return raw;
+}
+
+function noelleV1983PreviewHtmlPath() {
+  const rootDir = typeof ROOT_DIR !== "undefined" ? ROOT_DIR : __dirname;
+  const srcDir = typeof SRC_DIR !== "undefined" ? SRC_DIR : path.join(rootDir, "src");
+  return path.join(srcDir, "avatar_loadfile_preview_v19_8_3.html");
+}
+
+async function noelleV1983OpenAvatarPreviewLoadFile(input) {
+  const rootDir = typeof ROOT_DIR !== "undefined" ? ROOT_DIR : __dirname;
+  const rel = noelleV1983SafeAvatarRel(input);
+  const html = noelleV1983PreviewHtmlPath();
+  if (!fs.existsSync(html)) throw new Error("Preview HTML não encontrado: " + html);
+
+  const win = new BrowserWindow({
+    width: 980,
+    height: 720,
+    minWidth: 520,
+    minHeight: 420,
+    show: false,
+    title: "Noelle Preview / Teste",
+    backgroundColor: "#0b0612",
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(rootDir, "preload.js")
+    }
+  });
+
+  win.once("ready-to-show", () => win.show());
+  await win.loadFile(html, { query: { avatar: rel, source: "loadFile" } });
+  return { ok: true, avatar: rel };
+}
+
+try {
+  ipcMain.handle("noelle:open-avatar-preview-loadfile", async (_event, avatar) => {
+    try {
+      return await noelleV1983OpenAvatarPreviewLoadFile(avatar);
+    } catch (err) {
+      return { ok: false, error: String(err && err.message || err) };
+    }
+  });
+} catch (err) {
+  // Se o handler já existir, não derruba o app.
+  console.warn("[Noelle V19.8.3] handler preview loadFile não registrado:", err && err.message || err);
+}
+
+try {
+  ipcMain.handle("noelle:open-avatar-window-loadfile", async (_event, avatar) => {
+    try {
+      return await noelleV1983OpenAvatarPreviewLoadFile(avatar);
+    } catch (err) {
+      return { ok: false, error: String(err && err.message || err) };
+    }
+  });
+} catch (err) {
+  console.warn("[Noelle V19.8.3] handler avatar loadFile não registrado:", err && err.message || err);
+}
+// NOELLE_V19_8_3_LOADFILE_END

@@ -1,138 +1,173 @@
 @echo off
 setlocal EnableExtensions
-chcp 65001 >nul
-cd /d "%~dp0"
+title Noelle Companion 2026 - V19.8.3a
 
-:MENU
+:menu
 cls
 echo ================================================================
-echo  Noelle Companion 2026 - V19.8.2 Avatar Real
+echo  Noelle Companion 2026 - iniciar.bat unico
+echo  V19.8.3a Preview LoadFile + Resize Fix
 echo ================================================================
+echo.
 echo [1] Iniciar programa agora
-echo [2] Rodar diagnostico V19.8.2
-echo [3] Reparar/aplicar Aba Avatar Real V19.8.2
-echo [4] Gerar/regerar bundle do Avatar Preview
+echo [2] Rodar diagnostico V19.8.3a
+echo [3] Reparar/aplicar V19.8.3a Preview LoadFile + Resize
+echo [4] Regerar manifest/bundles do Avatar se existirem scripts
 echo [5] Limpar outros .bat antigos ^(mover para backup seguro^)
 echo [6] Excluir outros .bat antigos permanentemente
-echo [7] Mostrar status do projeto
+echo [7] Mostrar status basico
 echo [0] Sair
 echo.
-set /p OP=Escolha: 
-if "%OP%"=="1" goto START_APP
-if "%OP%"=="2" goto DIAG
-if "%OP%"=="3" goto REPAIR
-if "%OP%"=="4" goto BUILD_AVATAR
-if "%OP%"=="5" goto CLEAN_BATS
-if "%OP%"=="6" goto DELETE_BATS
-if "%OP%"=="7" goto STATUS
-if "%OP%"=="0" goto END
-goto MENU
+set /p op=Escolha: 
 
-:START_APP
+if "%op%"=="1" goto start
+if "%op%"=="2" goto diag
+if "%op%"=="3" goto repair
+if "%op%"=="4" goto build
+if "%op%"=="5" goto cleanup_safe
+if "%op%"=="6" goto cleanup_delete
+if "%op%"=="7" goto status
+if "%op%"=="0" exit /b 0
+goto menu
+
+:start
+cls
+echo ================================================================
+echo  Iniciando Noelle Companion 2026
+echo ================================================================
 echo.
-echo [START] Iniciando Noelle Companion 2026...
-where npm >nul 2>nul
-if errorlevel 1 (
-  echo [ERRO] npm nao encontrado no PATH. Instale Node.js LTS e tente novamente.
+if not exist package.json (
+  echo [ERRO] package.json nao encontrado. Rode este .bat na raiz do noelle_ia.
   pause
-  goto MENU
+  goto menu
+)
+if not exist node_modules (
+  echo [AVISO] node_modules nao encontrado.
+  echo Rode npm install antes de iniciar.
+  pause
+  goto menu
 )
 call npm.cmd start
-if errorlevel 1 (
-  echo [ERRO] npm start falhou com codigo %errorlevel%.
-  pause
-)
-goto MENU
-
-:DIAG
 echo.
+echo [INFO] Processo finalizado.
+pause
+goto menu
+
+:diag
+cls
 echo ================================================================
-echo  Diagnostico V19.8.2
+echo  Diagnostico V19.8.3a
 echo ================================================================
-node scripts\diagnostico_v19_8_2_avatar_real_2026.cjs
+echo.
+call node scripts\diagnostico_v19_8_3a_preview_resize_fix_2026.cjs
+echo.
+pause
+goto menu
+
+:repair
+cls
+echo ================================================================
+echo  Reparar/aplicar V19.8.3a
+echo ================================================================
+echo.
+call node scripts\repair_v19_8_3a_preview_resize_fix_2026.cjs
 if errorlevel 1 (
   echo.
-  echo [ERRO] Diagnostico encontrou problemas.
-  pause
-  goto MENU
-)
-echo.
-echo [OK] Diagnostico aprovado.
-pause
-goto MENU
-
-:REPAIR
-echo.
-echo ================================================================
-echo  Reparar/aplicar Aba Avatar Real V19.8.2
-echo ================================================================
-node scripts\repair_v19_8_2_avatar_real_2026.cjs
-if errorlevel 1 (
   echo [ERRO] Reparo falhou.
   pause
-  goto MENU
+  goto menu
 )
-node scripts\diagnostico_v19_8_2_avatar_real_2026.cjs
-if errorlevel 1 (
-  echo [ERRO] Diagnostico pos-reparo encontrou problemas.
-  pause
-  goto MENU
-)
-echo [OK] Reparo V19.8.2 aplicado e diagnostico aprovado.
-pause
-goto MENU
-
-:BUILD_AVATAR
 echo.
-echo ================================================================
-echo  Build Avatar Preview V19.8.2
-echo ================================================================
-node scripts\build_avatar_preview_v19_8_2_2026.cjs
-if errorlevel 1 (
-  echo [ERRO] Build do Avatar Preview falhou.
-  pause
-  goto MENU
-)
-echo [OK] Bundle do Avatar Preview gerado.
-pause
-goto MENU
-
-:CLEAN_BATS
+call node scripts\diagnostico_v19_8_3a_preview_resize_fix_2026.cjs
 echo.
-echo [INFO] Movendo .bat antigos para backup seguro...
-set "BK=backups\bat_cleanup_%DATE:/=-%_%TIME::=-%"
-set "BK=%BK: =0%"
-mkdir "%BK%" >nul 2>nul
+pause
+goto menu
+
+:build
+cls
+echo ================================================================
+echo  Regerar manifest/bundles do Avatar
+echo ================================================================
+echo.
+if exist scripts\repair_v19_8_1d_manifest_forte_2026.cjs (
+  call node scripts\repair_v19_8_1d_manifest_forte_2026.cjs
+) else (
+  echo [AVISO] Script de manifest V19.8.1d nao encontrado.
+)
+if exist scripts\build_avatar_preview_v19_8_2_2026.cjs (
+  call node scripts\build_avatar_preview_v19_8_2_2026.cjs
+) else (
+  echo [AVISO] Script build Avatar V19.8.2 nao encontrado.
+)
+echo.
+pause
+goto menu
+
+:cleanup_safe
+cls
+echo ================================================================
+echo  Limpar outros .bat antigos - mover para backup seguro
+echo ================================================================
+echo.
+set "STAMP=%DATE:/=-%_%TIME::=-%"
+set "STAMP=%STAMP: =0%"
+set "BKP=backups\bat_cleanup_%STAMP%"
+mkdir "%BKP%" >nul 2>nul
 for %%F in (*.bat) do (
   if /I not "%%~nxF"=="iniciar.bat" (
-    echo [MOVE] %%~nxF -^> %BK%\%%~nxF
-    move /Y "%%~fF" "%BK%\%%~nxF" >nul
+    echo [MOVE] %%~nxF
+    move "%%~fF" "%BKP%\" >nul
   )
 )
-echo [OK] Limpeza concluida. Backup: %BK%
-pause
-goto MENU
-
-:DELETE_BATS
 echo.
-echo [AVISO] Isto apaga permanentemente todos os .bat da raiz, exceto iniciar.bat.
-set /p CONF=Digite APAGAR para confirmar: 
-if /I not "%CONF%"=="APAGAR" goto MENU
+echo [OK] .bat antigos movidos para %BKP%
+pause
+goto menu
+
+:cleanup_delete
+cls
+echo ================================================================
+echo  Excluir outros .bat antigos permanentemente
+echo ================================================================
+echo.
+echo Isto apaga todos os .bat da raiz, exceto iniciar.bat.
+set /p confirm=Digite SIM para confirmar: 
+if /I not "%confirm%"=="SIM" goto menu
 for %%F in (*.bat) do (
   if /I not "%%~nxF"=="iniciar.bat" (
     echo [DEL] %%~nxF
-    del /F /Q "%%~fF"
+    del /f /q "%%~fF"
   )
 )
-echo [OK] .bat antigos excluidos.
+echo [OK] Limpeza concluida.
 pause
-goto MENU
+goto menu
 
-:STATUS
-node scripts\status_v19_8_2_avatar_real_2026.cjs
+:status
+cls
+echo ================================================================
+echo  Status basico
+echo ================================================================
+echo.
+echo Pasta atual:
+cd
+echo.
+if exist package.json (
+  node -e "const p=require('./package.json'); console.log('package.json version:', p.version); console.log('scripts:', Object.keys(p.scripts||{}).filter(k=>k.includes('v19.8')).join(', ') || '(sem scripts v19.8)')"
+) else (
+  echo [ERRO] package.json ausente.
+)
+echo.
+if exist preload.js (
+  echo [OK] preload.js existe.
+) else (
+  echo [ERRO] preload.js ausente.
+)
+if exist src\assets\avatar_manifest.json (
+  node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync('src/assets/avatar_manifest.json','utf8')); console.log('avatar_manifest:', Array.isArray(m)?m.length+' entrada(s)':'formato invalido')"
+) else (
+  echo [AVISO] avatar_manifest.json ausente.
+)
+echo.
 pause
-goto MENU
-
-:END
-endlocal
-exit /b 0
+goto menu

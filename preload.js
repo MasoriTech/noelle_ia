@@ -17,6 +17,8 @@ const noelleAPI = {
   openExternal: (url) => invoke("noelle:open-external", url),
 
   openAvatar: () => invoke("avatar:open"),
+  openAvatarPreviewLoadFile: (payload = {}) => invoke("noelle:open-avatar-preview-loadfile", payload),
+  openAvatarPreview: (payload = {}) => invoke("noelle:open-avatar-preview-loadfile", payload),
   closeAvatar: () => invoke("avatar:close"),
   avatarCommand: (command, payload) => invoke("avatar:command", command, payload),
   setAvatarAlwaysOnTop: (enabled) => invoke("avatar:always-on-top", enabled),
@@ -46,6 +48,8 @@ contextBridge.exposeInMainWorld("desktopWidget", {
   getAssets: noelleAPI.assets,
   listAssets: noelleAPI.assets,
   openAvatar: noelleAPI.openAvatar,
+  openAvatarPreviewLoadFile: noelleAPI.openAvatarPreviewLoadFile,
+  openAvatarPreview: noelleAPI.openAvatarPreviewLoadFile,
   closeAvatar: noelleAPI.closeAvatar,
   saveAvatarPosition: noelleAPI.saveAvatarPosition,
   setAlwaysOnTop: noelleAPI.setAvatarAlwaysOnTop,

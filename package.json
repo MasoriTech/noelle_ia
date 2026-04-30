@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.2-avatar-real-2026",
+  "version": "19.8.3a-preview-resize-fix-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -52,7 +52,12 @@
     "build:avatar-preview-v19.8.2": "node scripts/build_avatar_preview_v19_8_2_2026.cjs",
     "repair:v19.8.2-avatar-real": "node scripts/repair_v19_8_2_avatar_real_2026.cjs",
     "diagnostico:v19.8.2": "node scripts/diagnostico_v19_8_2_avatar_real_2026.cjs",
-    "status:v19.8.2": "node scripts/status_v19_8_2_avatar_real_2026.cjs"
+    "status:v19.8.2": "node scripts/status_v19_8_2_avatar_real_2026.cjs",
+    "diagnostico:v19.8.3": "node scripts/diagnostico_v19_8_3_resolucao_loadfile_2026.cjs",
+    "repair:v19.8.3": "node scripts/repair_v19_8_3_resolucao_loadfile_2026.cjs",
+    "status:v19.8.3": "node scripts/status_v19_8_3_resolucao_loadfile_2026.cjs",
+    "repair:v19.8.3a": "node scripts/repair_v19_8_3a_preview_resize_fix_2026.cjs",
+    "diagnostico:v19.8.3a": "node scripts/diagnostico_v19_8_3a_preview_resize_fix_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

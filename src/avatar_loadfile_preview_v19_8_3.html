@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data: blob:; connect-src 'self' file: data: blob:;" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Noelle Preview LoadFile V19.8.3</title>
+  <style>
+    :root { color-scheme: dark; --bg: #0b0612; --panel: rgba(18, 12, 28, .82); --line: rgba(255, 92, 190, .28); --txt: #fff; --muted: #cdbddd; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: radial-gradient(circle at 50% 20%, #251138 0, #0b0612 52%, #050309 100%); color: var(--txt); font-family: system-ui, Segoe UI, Arial, sans-serif; }
+    #app { width: 100%; height: 100%; display: grid; grid-template-rows: auto 1fr auto; min-width: 0; min-height: 0; }
+    header, footer { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(7, 4, 12, .7); border-color: var(--line); }
+    header { border-bottom: 1px solid var(--line); }
+    footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+    #stage { min-width: 0; min-height: 0; position: relative; overflow: hidden; }
+    #stage canvas { width: 100% !important; height: 100% !important; display: block; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.07); }
+    button { border: 1px solid rgba(255,255,255,.16); border-radius: 14px; padding: 8px 12px; background: rgba(255,255,255,.09); color: inherit; font: inherit; cursor: pointer; }
+    button:hover { background: rgba(255,255,255,.15); }
+    #status { color: #ffd3ea; }
+    #error { color: #ff9faf; max-width: 100%; overflow-wrap: anywhere; }
+    .hidden { display: none !important; }
+    @media (max-width: 700px), (max-height: 540px) {
+      header, footer { padding: 8px 10px; gap: 8px; }
+      .pill { padding: 6px 10px; }
+      button { padding: 7px 10px; }
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../node_modules/three/build/three.module.js",
+      "three/examples/jsm/": "../node_modules/three/examples/jsm/",
+      "@pixiv/three-vrm": "../node_modules/@pixiv/three-vrm/lib/three-vrm.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div>
+        <strong>Preview / Teste — LoadFile</strong>
+        <span id="avatarName" class="pill">carregando...</span>
+      </div>
+      <div id="status" class="pill">iniciando</div>
+    </header>
+    <main id="stage" aria-label="Preview 3D do avatar"></main>
+    <footer>
+      <div id="pathInfo">avatar: —</div>
+      <div>
+        <button id="btnFit" type="button">Enquadrar</button>
+        <button id="btnReset" type="button">Reset câmera</button>
+      </div>
+      <div id="error" class="hidden"></div>
+    </footer>
+  </div>
+  <script type="module" src="./renderer/avatar_loadfile_preview_v19_8_3_app.mjs"></script>
+</body>
+</html>
