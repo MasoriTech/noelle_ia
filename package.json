@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.13-rollback-antigo-funcional-2026",
+  "version": "19.8.18-avatar-fit-viewport-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -69,7 +69,15 @@
     "diagnostico:v19.8.11c-config": "node scripts/diagnostico_v19_8_11c_config_premium_robust_2026.cjs",
     "status:v19.8.11c-config": "node scripts/status_v19_8_11c_config_premium_robust_2026.cjs",
     "repair:v19.8.13-rollback": "node scripts/repair_v19_8_13_rollback_antigo_funcional_2026.cjs",
-    "diagnostico:v19.8.13-rollback": "node scripts/diagnostico_v19_8_13_rollback_antigo_funcional_2026.cjs"
+    "diagnostico:v19.8.13-rollback": "node scripts/diagnostico_v19_8_13_rollback_antigo_funcional_2026.cjs",
+    "repair:v19.8.14-avatar": "node scripts/repair_v19_8_14_avatar_apose_transparent_2026.cjs",
+    "diagnostico:v19.8.14-avatar": "node scripts/diagnostico_v19_8_14_avatar_apose_transparent_2026.cjs",
+    "repair:v19.8.15-avatar-real": "node scripts/repair_v19_8_15_avatar_fix_real_target_2026.cjs",
+    "diagnostico:v19.8.15-avatar-real": "node scripts/diagnostico_v19_8_15_avatar_fix_real_target_2026.cjs",
+    "repair:v19.8.17-avatar-target": "node scripts/repair_v19_8_17_avatar_targeted_apose_darkbg_2026.cjs",
+    "diagnostico:v19.8.17-avatar-target": "node scripts/diagnostico_v19_8_17_avatar_targeted_apose_darkbg_2026.cjs",
+    "repair:v19.8.18-avatar-fit": "node scripts/repair_v19_8_18_avatar_fit_viewport_2026.cjs",
+    "diagnostico:v19.8.18-avatar-fit": "node scripts/diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

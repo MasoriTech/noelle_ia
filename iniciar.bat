@@ -6,13 +6,12 @@ cd /d "%~dp0"
 :MENU
 cls
 echo ================================================================
-echo  Noelle/Yoru Companion 2026 - Rollback V19.8.13
+echo  Noelle/Yoru Companion 2026 - Microfix Avatar V19.8.18
 echo ================================================================
 echo.
 echo  [1] Iniciar programa agora
-echo  [2] Rodar diagnostico rollback
-echo  [3] Restaurar antigo funcional
-echo  [4] Mostrar status
+echo  [2] Rodar diagnostico V19.8.18 Avatar
+echo  [3] Aplicar fit viewport da aba Avatar
 echo  [0] Sair
 echo.
 set /p OP=Escolha uma opcao: 
@@ -20,7 +19,6 @@ set /p OP=Escolha uma opcao:
 if "%OP%"=="1" goto START_ONLY
 if "%OP%"=="2" goto DIAG
 if "%OP%"=="3" goto REPAIR
-if "%OP%"=="4" goto STATUS
 if "%OP%"=="0" goto END
 
 echo.
@@ -54,44 +52,34 @@ goto MENU
 
 :DIAG
 cls
-if not exist scripts\diagnostico_v19_8_13_rollback_antigo_funcional_2026.cjs (
+if not exist scripts\diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs (
   echo [ERRO] Script de diagnostico nao encontrado.
   pause
   goto MENU
 )
-node scripts\diagnostico_v19_8_13_rollback_antigo_funcional_2026.cjs
+node scripts\diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs
 pause
 goto MENU
 
 :REPAIR
 cls
-if not exist scripts\repair_v19_8_13_rollback_antigo_funcional_2026.cjs (
+if not exist scripts\repair_v19_8_18_avatar_fit_viewport_2026.cjs (
   echo [ERRO] Script de reparo nao encontrado.
   pause
   goto MENU
 )
-node scripts\repair_v19_8_13_rollback_antigo_funcional_2026.cjs
+node scripts\repair_v19_8_18_avatar_fit_viewport_2026.cjs
 if errorlevel 1 (
   echo.
-  echo [ERRO] Rollback falhou.
+  echo [ERRO] Reparo falhou.
   pause
   goto MENU
 )
 echo.
-echo [INFO] Rodando diagnostico apos rollback...
-node scripts\diagnostico_v19_8_13_rollback_antigo_funcional_2026.cjs
+echo [INFO] Rodando diagnostico apos reparo...
+node scripts\diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs
 echo.
 echo [INFO] Feche e abra o app pela opcao [1].
-pause
-goto MENU
-
-:STATUS
-cls
-if exist scripts\status_v19_8_13_rollback_antigo_funcional_2026.cjs (
-  node scripts\status_v19_8_13_rollback_antigo_funcional_2026.cjs
-) else (
-  echo [AVISO] Script de status nao encontrado.
-)
 pause
 goto MENU
 

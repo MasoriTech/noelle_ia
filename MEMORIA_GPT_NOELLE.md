@@ -1284,3 +1284,25 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Remove referências a dashboards/guards que causaram tela vazia ou texto repetido.
 - Não apaga assets VRM/VRMA/PNG/GLB, Chat, Room ou Widget.
 - O iniciar.bat continua único e a opção [1] apenas inicia.
+
+
+## V19.8.14 — Avatar microfix
+
+- Ajusta preview/avatar para usar A-pose leve no lugar de T-pose.
+- Tenta tornar o renderer transparente (`alpha: true` + `setClearColor(0x000000, 0)`).
+- Injeta CSS seguro para remover fundo branco da área do avatar.
+- Patch pequeno e localizado; não mexe nas outras abas.
+
+
+## V19.8.15 — Avatar fix real target
+
+- Microfix mais certeiro para fundo branco e T-pose/A-pose no Avatar.
+- Varre `src/renderer`, `src/renderer_dist` e HTMLs de preview para pegar o arquivo realmente usado pela aba Avatar.
+- Não mexe nas outras abas e faz backup antes de alterar.
+
+
+## V19.8.17 — Avatar targeted\n\n- Correção mira especificamente `src/renderer_dist/avatar_carousel_preview_v19_8_2.bundle.js` e `src/renderer/avatar_carousel_preview_v19_8_2_app.mjs`, encontrados pelo diagnóstico V19.8.16.\n- Remove fundo branco usando clearColor/background escuro Yoru Ember no alvo real.\n- Aplica A-pose leve após o carregamento do VRM.\n- Patch pequeno e localizado na aba Avatar.\n
+
+## V19.8.18 — Avatar fit viewport
+
+- Microfix para a aba Avatar caber verticalmente na janela atual.\n- O problema corrigido é layout/altura da página, não câmera 3D.\n- Preview fica limitado ao viewport e painel lateral rola por dentro se necessário.\n- Não mexe em Chat, Room, Configurações ou assets.\n

@@ -1,0 +1,32 @@
+/* Noelle/Yoru V19.8.14 — Avatar microfix: A-pose + fundo transparente */
+/* Seguro: atua apenas na área de avatar/preview */
+[data-noelle-avatar-stage],
+[data-noelle-avatar-preview],
+.avatar-stage,
+.avatar-preview,
+.avatar-view,
+.avatar-hero,
+.avatar-canvas-wrap,
+.avatar-preview-wrap,
+.avatar-panel canvas,
+.avatar-stage canvas,
+.avatar-preview canvas,
+.avatar-view canvas,
+.avatar-hero canvas,
+[data-noelle-avatar-stage] canvas,
+[data-noelle-avatar-preview] canvas {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Caso algum wrapper imponha branco, neutraliza */
+.avatar-stage,
+.avatar-preview,
+.avatar-view,
+.avatar-hero,
+.avatar-canvas-wrap,
+.avatar-preview-wrap,
+[data-noelle-avatar-stage],
+[data-noelle-avatar-preview] {
+  box-shadow: none;
+}

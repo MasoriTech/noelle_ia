@@ -18,13 +18,13 @@
         border: 1px solid rgba(255,83,136,.42);
         border-radius: 999px;
         padding: 8px 12px;
-        color: #fff4fb;
+        color: transparent4fb;
         background: rgba(14,14,25,.90);
         box-shadow: 0 14px 38px rgba(0,0,0,.32);
         font-weight: 800;
         font-size: 13px;
         max-width: 360px;
-        white-space: nowrap;
+        transparent-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }

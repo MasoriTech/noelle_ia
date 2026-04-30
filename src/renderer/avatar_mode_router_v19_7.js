@@ -139,7 +139,7 @@
       }
       .noelle-mode-title {
         display:flex; align-items:center; gap:8px;
-        font-size:13px; font-weight:900; color:#fff8f8; margin-bottom:9px;
+        font-size:13px; font-weight:900; color:transparent8f8; margin-bottom:9px;
       }
       .noelle-mode-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:8px; }
       .noelle-mode-btn {
@@ -147,7 +147,7 @@
         border-radius: 16px;
         border: 1px solid rgba(255,255,255,.13);
         background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
-        color: #fff8f8;
+        color: transparent8f8;
         cursor: pointer;
         padding: 9px 8px;
         display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:4px;

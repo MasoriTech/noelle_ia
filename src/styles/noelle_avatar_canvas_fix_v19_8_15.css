@@ -1,0 +1,57 @@
+/*
+  Noelle/Yoru V19.8.15 — Avatar canvas real fix
+  Microfix focado no preview/canvas real do Avatar.
+*/
+#avatar-root,
+#avatar-preview,
+#avatar-stage,
+#preview,
+#stage,
+#canvas,
+.avatar-root,
+.avatar-preview,
+.avatar-stage,
+.avatar-view,
+.avatar-panel,
+.avatar-hero,
+.avatar-canvas,
+.avatar-canvas-wrap,
+.avatar-preview-wrap,
+.vrm-preview,
+.vrm-stage,
+[data-page="avatar"],
+[data-route="avatar"],
+[data-noelle-avatar],
+[data-noelle-avatar-stage],
+[data-noelle-avatar-preview] {
+  background-color: transparent !important;
+  background-image:
+    radial-gradient(circle at 50% 35%, rgba(255,122,26,.12), transparent 35%),
+    linear-gradient(135deg, rgba(8,7,6,.96), rgba(18,16,14,.96)) !important;
+}
+
+#avatar-root canvas,
+#avatar-preview canvas,
+#avatar-stage canvas,
+#preview canvas,
+#stage canvas,
+.avatar-root canvas,
+.avatar-preview canvas,
+.avatar-stage canvas,
+.avatar-view canvas,
+.avatar-panel canvas,
+.avatar-hero canvas,
+.avatar-canvas canvas,
+.avatar-canvas-wrap canvas,
+.avatar-preview-wrap canvas,
+.vrm-preview canvas,
+.vrm-stage canvas,
+[data-page="avatar"] canvas,
+[data-route="avatar"] canvas,
+[data-noelle-avatar] canvas,
+[data-noelle-avatar-stage] canvas,
+[data-noelle-avatar-preview] canvas {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}

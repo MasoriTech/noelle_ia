@@ -17,7 +17,7 @@
         border: 1px solid rgba(255,83,136,.52);
         border-radius: 999px;
         padding: 10px 14px;
-        color: #fff;
+        color: transparent;
         background: linear-gradient(135deg,#ff477e,#8b5cf6);
         box-shadow: 0 14px 40px rgba(0,0,0,.34);
         font-weight: 900;

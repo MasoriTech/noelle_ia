@@ -1,0 +1,20 @@
+/*
+  Noelle/Yoru V19.8.17 — Targeted Avatar V19.8.2 dark background
+  Escopo: preview/carrossel de avatar. Não altera outras abas.
+*/
+body.noelle-avatar-v19817-active canvas {
+  background: #080706 !important;
+  background-color: #080706 !important;
+}
+
+body.noelle-avatar-v19817-active [data-noelle-avatar-v19817-stage="true"],
+body.noelle-avatar-v19817-active [data-noelle-avatar-v19817-stage="true"] *:not(canvas) {
+  background-color: transparent;
+}
+
+body.noelle-avatar-v19817-active [data-noelle-avatar-v19817-card="true"] {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 122, 26, 0.14), transparent 36%),
+    linear-gradient(135deg, #080706 0%, #15100c 55%, #080706 100%) !important;
+  background-color: #080706 !important;
+}

@@ -1,3 +1,65 @@
+
+/* NOELLE_V19_8_15_AVATAR_FIX_BEGIN */
+function noelleForceAvatarAPoseV19815(vrm, THREERef) {
+  try {
+    const THREE_SAFE = THREERef || (typeof THREE !== 'undefined' ? THREE : null);
+    const humanoid = vrm && vrm.humanoid;
+    if (!humanoid || !THREE_SAFE || !THREE_SAFE.MathUtils) return false;
+    const getBone = humanoid.getNormalizedBoneNode
+      ? (name) => humanoid.getNormalizedBoneNode(name)
+      : (name) => (humanoid.getRawBoneNode ? humanoid.getRawBoneNode(name) : null);
+    const rad = THREE_SAFE.MathUtils.degToRad || ((v) => v * Math.PI / 180);
+    const set = (name, axis, deg) => {
+      const b = getBone(name);
+      if (b && b.rotation) b.rotation[axis] = rad(deg);
+    };
+    set('leftShoulder', 'z', 8);
+    set('rightShoulder', 'z', -8);
+    set('leftUpperArm', 'z', 22);
+    set('rightUpperArm', 'z', -22);
+    set('leftLowerArm', 'z', -4);
+    set('rightLowerArm', 'z', 4);
+    set('leftHand', 'z', -2);
+    set('rightHand', 'z', 2);
+    if (typeof vrm.update === 'function') vrm.update(0);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+/* NOELLE_V19_8_15_AVATAR_FIX_END */
+
+
+/* NOELLE_V19_8_14_AVATAR_FIX_BEGIN */
+function noelleApplyDefaultAPose(vrm, THREERef) {
+  try {
+    const humanoid = vrm && vrm.humanoid;
+    const THREE_SAFE = THREERef || (typeof THREE !== 'undefined' ? THREE : null);
+    if (!humanoid || !humanoid.getNormalizedBoneNode || !THREE_SAFE || !THREE_SAFE.MathUtils) return false;
+    const rad = THREE_SAFE.MathUtils.degToRad;
+    const bone = (name) => humanoid.getNormalizedBoneNode(name);
+    const leftShoulder = bone('leftShoulder');
+    const rightShoulder = bone('rightShoulder');
+    const leftUpperArm = bone('leftUpperArm');
+    const rightUpperArm = bone('rightUpperArm');
+    const leftLowerArm = bone('leftLowerArm');
+    const rightLowerArm = bone('rightLowerArm');
+
+    if (leftShoulder) leftShoulder.rotation.z = rad(6);
+    if (rightShoulder) rightShoulder.rotation.z = rad(-6);
+    if (leftUpperArm) leftUpperArm.rotation.z = rad(18);
+    if (rightUpperArm) rightUpperArm.rotation.z = rad(-18);
+    if (leftLowerArm) leftLowerArm.rotation.z = rad(-2);
+    if (rightLowerArm) rightLowerArm.rotation.z = rad(2);
+
+    if (typeof vrm.update === 'function') vrm.update(0);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+/* NOELLE_V19_8_14_AVATAR_FIX_END */
+
 const $ = (selector) => document.querySelector(selector);
 
 const state = {
@@ -78,8 +140,36 @@ async function tryLoad3D() {
     const camera = new THREE.PerspectiveCamera(28, canvas.clientWidth / Math.max(1, canvas.clientHeight), 0.1, 20);
     camera.position.set(0, 1.35, 3.2);
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setClearColor(0x000000, 0);
+try {
+  const stage = (renderer && renderer.domElement && renderer.domElement.parentElement) ? renderer.domElement.parentElement : null;
+  if (stage) {
+    stage.style.background = 'transparent';
+    stage.style.backgroundImage = 'none';
+  }
+  if (renderer && renderer.domElement) renderer.domElement.style.background = 'transparent';
+} catch (_) {}
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+try {
+  const noelleAvatarTransparentV19815 = (r) => {
+    if (!r) return;
+    if (typeof r.setClearColor === 'function') r.setClearColor(0x000000, 0);
+    if (typeof r.setClearAlpha === 'function') r.setClearAlpha(0);
+    if (r.domElement) {
+      r.domElement.style.background = 'transparent';
+      r.domElement.style.backgroundColor = 'transparent';
+      if (r.domElement.parentElement) {
+        r.domElement.parentElement.style.background = 'transparent';
+        r.domElement.parentElement.style.backgroundColor = 'transparent';
+      }
+    }
+  };
+  if (typeof renderer !== 'undefined') noelleAvatarTransparentV19815(renderer);
+} catch (_) {}
+
     const light = new THREE.DirectionalLight(0xffffff, 1.7);
     light.position.set(1, 2, 3);
     scene.add(light);
@@ -94,6 +184,8 @@ async function tryLoad3D() {
     if (VRMUtils?.removeUnnecessaryJoints) VRMUtils.removeUnnecessaryJoints(gltf.scene);
     vrm.scene.rotation.y = Math.PI;
     scene.add(vrm.scene);
+noelleForceAvatarAPoseV19815(vrm, typeof THREE !== "undefined" ? THREE : null);
+noelleApplyDefaultAPose(vrm, typeof THREE !== "undefined" ? THREE : null);
     state.vrm = vrm;
     state.vrmLoaded = true;
     state.rendererReady = true;

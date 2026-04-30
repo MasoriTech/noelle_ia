@@ -1,0 +1,130 @@
+/*
+  Noelle/Yoru V19.8.18 — Avatar fit viewport
+  Objetivo: aba Avatar caber verticalmente na janela atual sem scroll obrigatório.
+  Escopo: só Avatar.
+*/
+
+body.noelle-avatar-fit-v19818 {
+  overflow: hidden !important;
+}
+
+/* Página Avatar marcada pelo guard */
+.noelle-avatar-page-v19818 {
+  height: calc(100vh - var(--noelle-avatar-top-offset-v19818, 0px)) !important;
+  max-height: calc(100vh - var(--noelle-avatar-top-offset-v19818, 0px)) !important;
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-columns: minmax(420px, 1fr) minmax(280px, 420px) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: clamp(12px, 1.6vw, 22px) !important;
+  align-items: stretch !important;
+  padding-bottom: 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* Quando o app usa um wrapper com título acima da área do avatar */
+.noelle-avatar-main-v19818 {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Card/stage do avatar */
+.noelle-avatar-stage-card-v19818 {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Canvas/preview: ocupa só o espaço que existe */
+.noelle-avatar-stage-v19818 {
+  height: 100% !important;
+  min-height: 260px !important;
+  max-height: calc(100vh - var(--noelle-avatar-stage-reserve-v19818, 235px)) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.noelle-avatar-stage-v19818 canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: block !important;
+}
+
+/* Barra inferior com setas/nome sempre visível */
+.noelle-avatar-nav-v19818,
+.noelle-avatar-arrows-v19818 {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+  margin-top: 10px !important;
+}
+
+/* Painel lateral rola por dentro se precisar, não empurra a página inteira */
+.noelle-avatar-side-v19818 {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+  padding-right: 4px !important;
+  box-sizing: border-box !important;
+}
+
+/* Scroll só interno e mais discreto */
+.noelle-avatar-side-v19818::-webkit-scrollbar {
+  width: 8px;
+}
+.noelle-avatar-side-v19818::-webkit-scrollbar-thumb {
+  background: rgba(255, 122, 26, .72);
+  border-radius: 999px;
+}
+.noelle-avatar-side-v19818::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, .04);
+}
+
+/* Em telas baixas, reduz folgas e mantém tudo visível */
+@media (max-height: 820px) {
+  .noelle-avatar-page-v19818 {
+    gap: 12px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .noelle-avatar-stage-v19818 {
+    min-height: 220px !important;
+    max-height: calc(100vh - var(--noelle-avatar-stage-reserve-low-v19818, 205px)) !important;
+  }
+
+  .noelle-avatar-nav-v19818,
+  .noelle-avatar-arrows-v19818 {
+    margin-top: 6px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .noelle-avatar-stage-v19818 {
+    min-height: 180px !important;
+    max-height: calc(100vh - var(--noelle-avatar-stage-reserve-tiny-v19818, 178px)) !important;
+  }
+}
+
+/* Em largura pequena, painel lateral desce, mas ainda sem estourar tanto */
+@media (max-width: 1180px) {
+  .noelle-avatar-page-v19818 {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    overflow: auto !important;
+  }
+
+  .noelle-avatar-side-v19818 {
+    max-height: 260px !important;
+  }
+}

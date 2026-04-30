@@ -3,6 +3,37 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
 
+/* NOELLE_V19_8_14_AVATAR_FIX_BEGIN */
+function noelleApplyDefaultAPose(vrm, THREERef) {
+  try {
+    const humanoid = vrm && vrm.humanoid;
+    const THREE_SAFE = THREERef || (typeof THREE !== 'undefined' ? THREE : null);
+    if (!humanoid || !humanoid.getNormalizedBoneNode || !THREE_SAFE || !THREE_SAFE.MathUtils) return false;
+    const rad = THREE_SAFE.MathUtils.degToRad;
+    const bone = (name) => humanoid.getNormalizedBoneNode(name);
+    const leftShoulder = bone('leftShoulder');
+    const rightShoulder = bone('rightShoulder');
+    const leftUpperArm = bone('leftUpperArm');
+    const rightUpperArm = bone('rightUpperArm');
+    const leftLowerArm = bone('leftLowerArm');
+    const rightLowerArm = bone('rightLowerArm');
+
+    if (leftShoulder) leftShoulder.rotation.z = rad(6);
+    if (rightShoulder) rightShoulder.rotation.z = rad(-6);
+    if (leftUpperArm) leftUpperArm.rotation.z = rad(18);
+    if (rightUpperArm) rightUpperArm.rotation.z = rad(-18);
+    if (leftLowerArm) leftLowerArm.rotation.z = rad(-2);
+    if (rightLowerArm) rightLowerArm.rotation.z = rad(2);
+
+    if (typeof vrm.update === 'function') vrm.update(0);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+/* NOELLE_V19_8_14_AVATAR_FIX_END */
+
+
 (() => {
   "use strict";
 
@@ -117,6 +148,16 @@ import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
   }
 
   const renderer = new THREE.WebGLRenderer({ canvas: els.canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+renderer.setClearColor(0x000000, 0);
+try {
+  const stage = (renderer && renderer.domElement && renderer.domElement.parentElement) ? renderer.domElement.parentElement : null;
+  if (stage) {
+    stage.style.background = 'transparent';
+    stage.style.backgroundImage = 'none';
+  }
+  if (renderer && renderer.domElement) renderer.domElement.style.background = 'transparent';
+} catch (_) {}
+
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
@@ -155,6 +196,24 @@ import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
     const width = Math.max(1, Math.floor(rect.width));
     const height = Math.max(1, Math.floor(rect.height));
     renderer.setSize(width, height, false);
+
+try {
+  const noelleAvatarTransparentV19815 = (r) => {
+    if (!r) return;
+    if (typeof r.setClearColor === 'function') r.setClearColor(0x000000, 0);
+    if (typeof r.setClearAlpha === 'function') r.setClearAlpha(0);
+    if (r.domElement) {
+      r.domElement.style.background = 'transparent';
+      r.domElement.style.backgroundColor = 'transparent';
+      if (r.domElement.parentElement) {
+        r.domElement.parentElement.style.background = 'transparent';
+        r.domElement.parentElement.style.backgroundColor = 'transparent';
+      }
+    }
+  };
+  if (typeof renderer !== 'undefined') noelleAvatarTransparentV19815(renderer);
+} catch (_) {}
+
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
   }
