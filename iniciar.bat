@@ -1,173 +1,201 @@
 @echo off
-setlocal EnableExtensions
-title Noelle Companion 2026 - V19.8.3a
+setlocal EnableExtensions EnableDelayedExpansion
+cd /d "%~dp0"
+chcp 65001 >nul
 
-:menu
+:MENU
 cls
 echo ================================================================
-echo  Noelle Companion 2026 - iniciar.bat unico
-echo  V19.8.3a Preview LoadFile + Resize Fix
+echo  Noelle Companion 2026 - Inicializador unico V19.8.6
 echo ================================================================
 echo.
 echo [1] Iniciar programa agora
-echo [2] Rodar diagnostico V19.8.3a
-echo [3] Reparar/aplicar V19.8.3a Preview LoadFile + Resize
-echo [4] Regerar manifest/bundles do Avatar se existirem scripts
+echo [2] Rodar diagnostico V19.8.6 Overlay Killer
+echo [3] Reparar/aplicar V19.8.6 Overlay Killer
+echo [4] Regerar manifest/bundles do Avatar ^(se scripts existirem^)
 echo [5] Limpar outros .bat antigos ^(mover para backup seguro^)
 echo [6] Excluir outros .bat antigos permanentemente
-echo [7] Mostrar status basico
+echo [7] Mostrar status V19.8.6
 echo [0] Sair
 echo.
-set /p op=Escolha: 
+set /p OP=Escolha uma opcao: 
 
-if "%op%"=="1" goto start
-if "%op%"=="2" goto diag
-if "%op%"=="3" goto repair
-if "%op%"=="4" goto build
-if "%op%"=="5" goto cleanup_safe
-if "%op%"=="6" goto cleanup_delete
-if "%op%"=="7" goto status
-if "%op%"=="0" exit /b 0
-goto menu
+if "%OP%"=="1" goto START_APP
+if "%OP%"=="2" goto DIAG
+if "%OP%"=="3" goto REPAIR
+if "%OP%"=="4" goto BUILD_AVATAR
+if "%OP%"=="5" goto CLEAN_BATS
+if "%OP%"=="6" goto DELETE_BATS
+if "%OP%"=="7" goto STATUS
+if "%OP%"=="0" goto END
 
-:start
+echo [ERRO] Opcao invalida.
+pause
+goto MENU
+
+:START_APP
 cls
 echo ================================================================
 echo  Iniciando Noelle Companion 2026
 echo ================================================================
-echo.
-if not exist package.json (
-  echo [ERRO] package.json nao encontrado. Rode este .bat na raiz do noelle_ia.
+echo [INFO] Opcao 1 nao aplica patch, nao roda build e nao reescreve arquivos.
+where node >nul 2>nul
+if errorlevel 1 (
+  echo [ERRO] Node.js nao encontrado no PATH.
   pause
-  goto menu
+  goto MENU
 )
-if not exist node_modules (
-  echo [AVISO] node_modules nao encontrado.
-  echo Rode npm install antes de iniciar.
+where npm.cmd >nul 2>nul
+if errorlevel 1 (
+  echo [ERRO] npm.cmd nao encontrado no PATH.
   pause
-  goto menu
+  goto MENU
+)
+if not exist package.json (
+  echo [ERRO] package.json nao encontrado. Rode este .bat na raiz do projeto.
+  pause
+  goto MENU
+)
+if not exist node_modules\electron (
+  echo [AVISO] Electron local nao encontrado em node_modules.
+  echo [INFO] Rode npm install manualmente, ou use a opcao de reparo se seu projeto exigir.
 )
 call npm.cmd start
-echo.
-echo [INFO] Processo finalizado.
-pause
-goto menu
+if errorlevel 1 (
+  echo.
+  echo [ERRO] npm start falhou com codigo %errorlevel%.
+  pause
+)
+goto MENU
 
-:diag
+:DIAG
 cls
 echo ================================================================
-echo  Diagnostico V19.8.3a
+echo  Diagnostico V19.8.6 Overlay Killer
 echo ================================================================
+node scripts\diagnostico_v19_8_6_overlay_launcher_killer_2026.cjs
+if errorlevel 1 (
+  echo.
+  echo [ERRO] Diagnostico encontrou problemas.
+  pause
+  goto MENU
+)
 echo.
-call node scripts\diagnostico_v19_8_3a_preview_resize_fix_2026.cjs
-echo.
+echo [OK] Diagnostico aprovado.
 pause
-goto menu
+goto MENU
 
-:repair
+:REPAIR
 cls
 echo ================================================================
-echo  Reparar/aplicar V19.8.3a
+echo  Reparar/aplicar V19.8.6 Overlay Killer
 echo ================================================================
-echo.
-call node scripts\repair_v19_8_3a_preview_resize_fix_2026.cjs
+node scripts\repair_v19_8_6_overlay_launcher_killer_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Reparo falhou.
   pause
-  goto menu
+  goto MENU
 )
 echo.
-call node scripts\diagnostico_v19_8_3a_preview_resize_fix_2026.cjs
+echo [INFO] Rodando diagnostico pos-reparo...
+node scripts\diagnostico_v19_8_6_overlay_launcher_killer_2026.cjs
+if errorlevel 1 (
+  echo.
+  echo [ERRO] Diagnostico pos-reparo falhou.
+  pause
+  goto MENU
+)
 echo.
+echo [OK] Reparo V19.8.6 aplicado e diagnosticado.
 pause
-goto menu
+goto MENU
 
-:build
+:BUILD_AVATAR
 cls
 echo ================================================================
 echo  Regerar manifest/bundles do Avatar
 echo ================================================================
-echo.
 if exist scripts\repair_v19_8_1d_manifest_forte_2026.cjs (
-  call node scripts\repair_v19_8_1d_manifest_forte_2026.cjs
+  echo [INFO] Reparando manifest V19.8.1d...
+  node scripts\repair_v19_8_1d_manifest_forte_2026.cjs
+  if errorlevel 1 (
+    echo [ERRO] Reparo de manifest falhou.
+    pause
+    goto MENU
+  )
 ) else (
-  echo [AVISO] Script de manifest V19.8.1d nao encontrado.
+  echo [AVISO] Script de manifest V19.8.1d nao encontrado. Pulando.
 )
-if exist scripts\build_avatar_preview_v19_8_2_2026.cjs (
-  call node scripts\build_avatar_preview_v19_8_2_2026.cjs
-) else (
-  echo [AVISO] Script build Avatar V19.8.2 nao encontrado.
-)
-echo.
-pause
-goto menu
 
-:cleanup_safe
+if exist scripts\build_avatar_preview_v19_8_2_2026.cjs (
+  echo [INFO] Gerando bundle Preview V19.8.2...
+  node scripts\build_avatar_preview_v19_8_2_2026.cjs
+  if errorlevel 1 (
+    echo [ERRO] Build de preview falhou.
+    pause
+    goto MENU
+  )
+) else (
+  echo [AVISO] Script build_avatar_preview_v19_8_2_2026.cjs nao encontrado. Pulando.
+)
+
+echo [OK] Etapa de manifest/bundles finalizada.
+pause
+goto MENU
+
+:CLEAN_BATS
 cls
 echo ================================================================
-echo  Limpar outros .bat antigos - mover para backup seguro
+echo  Mover outros .bat antigos para backup seguro
 echo ================================================================
-echo.
-set "STAMP=%DATE:/=-%_%TIME::=-%"
-set "STAMP=%STAMP: =0%"
-set "BKP=backups\bat_cleanup_%STAMP%"
-mkdir "%BKP%" >nul 2>nul
+set BK=backups\bat_cleanup_%date:~-4%%date:~3,2%%date:~0,2%_%time:~0,2%%time:~3,2%%time:~6,2%
+set BK=%BK: =0%
+mkdir "%BK%" >nul 2>nul
+set MOVED=0
 for %%F in (*.bat) do (
   if /I not "%%~nxF"=="iniciar.bat" (
-    echo [MOVE] %%~nxF
-    move "%%~fF" "%BKP%\" >nul
+    echo [INFO] Movendo %%~nxF para %BK%\
+    move /Y "%%~fF" "%BK%\%%~nxF" >nul
+    set /a MOVED+=1
   )
 )
-echo.
-echo [OK] .bat antigos movidos para %BKP%
+if "%MOVED%"=="0" echo [OK] Nenhum outro .bat encontrado.
+if not "%MOVED%"=="0" echo [OK] %MOVED% .bat movido(s) para %BK%.
 pause
-goto menu
+goto MENU
 
-:cleanup_delete
+:DELETE_BATS
 cls
 echo ================================================================
 echo  Excluir outros .bat antigos permanentemente
 echo ================================================================
-echo.
-echo Isto apaga todos os .bat da raiz, exceto iniciar.bat.
-set /p confirm=Digite SIM para confirmar: 
-if /I not "%confirm%"=="SIM" goto menu
+echo [ATENCAO] Isto apaga todos os .bat da raiz, exceto iniciar.bat.
+set /p CONF=Digite EXCLUIR para confirmar: 
+if /I not "%CONF%"=="EXCLUIR" (
+  echo [INFO] Cancelado.
+  pause
+  goto MENU
+)
 for %%F in (*.bat) do (
   if /I not "%%~nxF"=="iniciar.bat" (
-    echo [DEL] %%~nxF
-    del /f /q "%%~fF"
+    echo [INFO] Excluindo %%~nxF
+    del /F /Q "%%~fF"
   )
 )
-echo [OK] Limpeza concluida.
+echo [OK] Limpeza permanente finalizada.
 pause
-goto menu
+goto MENU
 
-:status
+:STATUS
 cls
 echo ================================================================
-echo  Status basico
+echo  Status V19.8.6
 echo ================================================================
-echo.
-echo Pasta atual:
-cd
-echo.
-if exist package.json (
-  node -e "const p=require('./package.json'); console.log('package.json version:', p.version); console.log('scripts:', Object.keys(p.scripts||{}).filter(k=>k.includes('v19.8')).join(', ') || '(sem scripts v19.8)')"
-) else (
-  echo [ERRO] package.json ausente.
-)
-echo.
-if exist preload.js (
-  echo [OK] preload.js existe.
-) else (
-  echo [ERRO] preload.js ausente.
-)
-if exist src\assets\avatar_manifest.json (
-  node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync('src/assets/avatar_manifest.json','utf8')); console.log('avatar_manifest:', Array.isArray(m)?m.length+' entrada(s)':'formato invalido')"
-) else (
-  echo [AVISO] avatar_manifest.json ausente.
-)
-echo.
+node scripts\status_v19_8_6_overlay_launcher_killer_2026.cjs
 pause
-goto menu
+goto MENU
+
+:END
+endlocal
+exit /b 0

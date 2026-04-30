@@ -1,0 +1,61 @@
+/* Noelle V19.8.6 — remove launchers flutuantes legados sem mexer no Avatar real */
+#noelle-room-v19-canonical-button,
+#noelle-avatar-lab-floating-button,
+#noelle-avatar-lab-button,
+#noelle-room-v19-floating-button,
+.noelle-room-v19-floating,
+.noelle-avatar-lab-floating,
+.noelle-floating-avatar-lab,
+.noelle-floating-room-v19,
+.noelle-legacy-floating-launcher,
+[data-noelle-overlay-killed="1"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+.noelle-avatar-v19-8-6-close {
+  position: sticky;
+  top: 12px;
+  float: right;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(36, 32, 45, .92);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+}
+
+.noelle-avatar-v19-8-6-close:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 120, 210, .55);
+}
+
+/* Garante que a aba real do avatar não se comporte como overlay global. */
+#noelle-avatar-real-tab,
+#noelle-avatar-tab-v19-8-2,
+#noelle-avatar-tab-v19-8-3,
+#noelle-avatar-tab-v19-8-4,
+#noelle-avatar-tab-v19-8-5,
+[data-noelle-avatar-tab],
+.noelle-avatar-tab-v19-8-2,
+.noelle-avatar-tab-v19-8-3,
+.noelle-avatar-tab-v19-8-4,
+.noelle-avatar-tab-v19-8-5,
+.noelle-avatar-real-tab,
+.noelle-avatar-page-shell,
+.noelle-avatar-carousel-shell {
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
