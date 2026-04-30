@@ -1306,3 +1306,26 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 ## V19.8.18 — Avatar fit viewport
 
 - Microfix para a aba Avatar caber verticalmente na janela atual.\n- O problema corrigido é layout/altura da página, não câmera 3D.\n- Preview fica limitado ao viewport e painel lateral rola por dentro se necessário.\n- Não mexe em Chat, Room, Configurações ou assets.\n
+
+## V19.8.20 — Avatar compacto + importar
+
+- Microfix para reduzir a altura do card do Avatar, sem mexer na câmera 3D.
+- Adiciona botão **Importar avatar** na aba Avatar.
+- Adiciona botão **Acionar avatar** para salvar/acionar o avatar atual pela própria aba.
+- Importação copia `.vrm`/`.glb` para `src/assets/avatars` e atualiza `src/assets/avatar_manifest.json`.
+- Não usa MutationObserver e não remove DOM.
+
+
+## V19.8.20a — Correção de diagnóstico Avatar
+
+- Corrige falso positivo do diagnóstico V19.8.20 que acusava `MutationObserver` por causa de comentário no runtime.
+- O runtime do Avatar compacto/importar não usa observador de DOM ativo.
+- Não altera layout, VRM, câmera, importação ou abas.
+
+
+## V19.8.21 — Botão Adicionar avatar
+
+- Adiciona botão **Adicionar avatar** na aba Avatar, perto de `Recarregar lista`/ações do avatar.
+- O botão abre seletor `.vrm`/`.glb`, copia para `src/assets/avatars` e atualiza `src/assets/avatar_manifest.json`.
+- Depois tenta clicar em `Recarregar lista` automaticamente.
+- Micro-patch sem observador de DOM, sem remover containers e sem mexer no renderer 3D.

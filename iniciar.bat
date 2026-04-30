@@ -1,17 +1,17 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-chcp 65001 >nul
 cd /d "%~dp0"
 
 :MENU
 cls
 echo ================================================================
-echo  Noelle/Yoru Companion 2026 - Microfix Avatar V19.8.18
+echo  Noelle/Yoru Companion 2026 - iniciar.bat seguro V19.8.21a
 echo ================================================================
 echo.
 echo  [1] Iniciar programa agora
-echo  [2] Rodar diagnostico V19.8.18 Avatar
-echo  [3] Aplicar fit viewport da aba Avatar
+echo  [2] Rodar diagnostico V19.8.21 Avatar
+echo  [3] Aplicar botao Adicionar avatar
+echo  [4] Rodar npm install
 echo  [0] Sair
 echo.
 set /p OP=Escolha uma opcao: 
@@ -19,6 +19,7 @@ set /p OP=Escolha uma opcao:
 if "%OP%"=="1" goto START_ONLY
 if "%OP%"=="2" goto DIAG
 if "%OP%"=="3" goto REPAIR
+if "%OP%"=="4" goto NPM_INSTALL
 if "%OP%"=="0" goto END
 
 echo.
@@ -40,7 +41,7 @@ if not exist package.json (
 )
 where npm.cmd >nul 2>nul
 if errorlevel 1 (
-  echo [ERRO] npm.cmd nao encontrado no PATH.
+  echo [ERRO] npm.cmd nao encontrado no PATH. Instale Node.js ou abra o terminal correto.
   pause
   goto MENU
 )
@@ -52,23 +53,31 @@ goto MENU
 
 :DIAG
 cls
-if not exist scripts\diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs (
+echo ================================================================
+echo  Diagnostico V19.8.21 Avatar
+echo ================================================================
+if not exist scripts\diagnostico_v19_8_21_adicionar_avatar_botao_2026.cjs (
   echo [ERRO] Script de diagnostico nao encontrado.
+  echo [INFO] Copie o pack V19.8.21 inteiro para a raiz do projeto.
   pause
   goto MENU
 )
-node scripts\diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs
+node scripts\diagnostico_v19_8_21_adicionar_avatar_botao_2026.cjs
 pause
 goto MENU
 
 :REPAIR
 cls
-if not exist scripts\repair_v19_8_18_avatar_fit_viewport_2026.cjs (
+echo ================================================================
+echo  Aplicar botao Adicionar avatar
+echo ================================================================
+if not exist scripts\repair_v19_8_21_adicionar_avatar_botao_2026.cjs (
   echo [ERRO] Script de reparo nao encontrado.
+  echo [INFO] Copie o pack V19.8.21 inteiro para a raiz do projeto.
   pause
   goto MENU
 )
-node scripts\repair_v19_8_18_avatar_fit_viewport_2026.cjs
+node scripts\repair_v19_8_21_adicionar_avatar_botao_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Reparo falhou.
@@ -77,9 +86,26 @@ if errorlevel 1 (
 )
 echo.
 echo [INFO] Rodando diagnostico apos reparo...
-node scripts\diagnostico_v19_8_18_avatar_fit_viewport_2026.cjs
+node scripts\diagnostico_v19_8_21_adicionar_avatar_botao_2026.cjs
 echo.
 echo [INFO] Feche e abra o app pela opcao [1].
+pause
+goto MENU
+
+:NPM_INSTALL
+cls
+echo ================================================================
+echo  Rodando npm install
+echo ================================================================
+where npm.cmd >nul 2>nul
+if errorlevel 1 (
+  echo [ERRO] npm.cmd nao encontrado no PATH.
+  pause
+  goto MENU
+)
+call npm.cmd install
+echo.
+echo [INFO] npm install terminou com codigo %ERRORLEVEL%.
 pause
 goto MENU
 

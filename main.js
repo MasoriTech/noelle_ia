@@ -983,3 +983,264 @@ try {
   console.warn("[Noelle V19.8.3] handler avatar loadFile não registrado:", err && err.message || err);
 }
 // NOELLE_V19_8_3_LOADFILE_END
+
+// NOELLE_V19_8_20_IMPORT_MAIN_BEGIN
+try {
+  const { ipcMain, dialog, app } = require("electron");
+  const fs = require("fs");
+  const path = require("path");
+
+  if (!global.__NOELLE_V19_8_20_IMPORT_AVATAR__) {
+    global.__NOELLE_V19_8_20_IMPORT_AVATAR__ = true;
+
+    function noelleV19820ProjectRoot() {
+      const candidates = [
+        process.cwd(),
+        app && typeof app.getAppPath === "function" ? app.getAppPath() : "",
+        __dirname
+      ].filter(Boolean);
+
+      for (const candidate of candidates) {
+        try {
+          if (fs.existsSync(path.join(candidate, "package.json")) && fs.existsSync(path.join(candidate, "src"))) {
+            return candidate;
+          }
+        } catch (_) {}
+      }
+
+      return process.cwd();
+    }
+
+    function noelleV19820SafeName(name) {
+      return String(name || "avatar")
+        .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 80) || "avatar";
+    }
+
+    function noelleV19820ReadJson(file, fallback) {
+      try {
+        if (!fs.existsSync(file)) return fallback;
+        return JSON.parse(fs.readFileSync(file, "utf8"));
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    function noelleV19820WriteManifest(root, relPath, displayName, ext) {
+      const manifestPath = path.join(root, "src", "assets", "avatar_manifest.json");
+      fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+
+      const current = noelleV19820ReadJson(manifestPath, []);
+      const entryObject = {
+        name: displayName,
+        path: relPath,
+        file: relPath,
+        type: ext.replace(/^\\./, "").toUpperCase()
+      };
+
+      let next = current;
+
+      if (Array.isArray(current)) {
+        const hasStringStyle = current.some((item) => typeof item === "string");
+        const existsAlready = current.some((item) => {
+          if (typeof item === "string") return item.replace(/\\\\/g, "/") === relPath;
+          const p = String(item.path || item.file || item.url || "").replace(/\\\\/g, "/");
+          return p === relPath;
+        });
+
+        if (!existsAlready) next = current.concat([hasStringStyle ? relPath : entryObject]);
+      } else if (current && typeof current === "object" && Array.isArray(current.avatars)) {
+        const existsAlready = current.avatars.some((item) => {
+          if (typeof item === "string") return item.replace(/\\\\/g, "/") === relPath;
+          const p = String(item.path || item.file || item.url || "").replace(/\\\\/g, "/");
+          return p === relPath;
+        });
+        if (!existsAlready) {
+          next = Object.assign({}, current, { avatars: current.avatars.concat([entryObject]) });
+        }
+      } else {
+        next = [entryObject];
+      }
+
+      fs.writeFileSync(manifestPath, JSON.stringify(next, null, 2) + "\\n", "utf8");
+      return {
+        manifestPath,
+        count: Array.isArray(next) ? next.length : (Array.isArray(next.avatars) ? next.avatars.length : 1)
+      };
+    }
+
+    ipcMain.handle("noelle:v19_8_20:import-avatar", async () => {
+      try {
+        const result = await dialog.showOpenDialog({
+          title: "Importar avatar VRM/GLB",
+          properties: ["openFile"],
+          filters: [
+            { name: "Avatares VRM/GLB", extensions: ["vrm", "glb"] }
+          ]
+        });
+
+        if (result.canceled || !result.filePaths || !result.filePaths[0]) {
+          return { ok: true, canceled: true };
+        }
+
+        const source = result.filePaths[0];
+        const ext = path.extname(source).toLowerCase();
+
+        if (![".vrm", ".glb"].includes(ext)) {
+          return { ok: false, error: "Escolha um arquivo .vrm ou .glb." };
+        }
+
+        const root = noelleV19820ProjectRoot();
+        const avatarDir = path.join(root, "src", "assets", "avatars");
+        fs.mkdirSync(avatarDir, { recursive: true });
+
+        const base = noelleV19820SafeName(path.basename(source, ext));
+        let fileName = base + ext;
+        let dest = path.join(avatarDir, fileName);
+        let index = 2;
+
+        while (fs.existsSync(dest)) {
+          fileName = base + "_" + index + ext;
+          dest = path.join(avatarDir, fileName);
+          index += 1;
+        }
+
+        fs.copyFileSync(source, dest);
+
+        const relPath = path.relative(path.join(root, "src"), dest).replace(/\\\\/g, "/");
+        const publicRelPath = "assets/" + relPath.replace(/^assets\//, "");
+        const manifest = noelleV19820WriteManifest(root, publicRelPath, base, ext);
+
+        return {
+          ok: true,
+          canceled: false,
+          name: base,
+          path: publicRelPath,
+          destination: dest,
+          manifestCount: manifest.count
+        };
+      } catch (err) {
+        return { ok: false, error: err && err.message ? err.message : String(err) };
+      }
+    });
+  }
+} catch (err) {
+  console.warn("[Noelle V19.8.20] Import avatar IPC indisponível:", err && err.message ? err.message : err);
+}
+// NOELLE_V19_8_20_IMPORT_MAIN_END
+
+// NOELLE_V19_8_21_IMPORT_MAIN_BEGIN
+;(() => {
+  try {
+    const electron = require("electron");
+    const ipcMain = electron.ipcMain;
+    const dialog = electron.dialog;
+    const app = electron.app;
+    const fs = require("fs");
+    const path = require("path");
+
+    if (!ipcMain || !dialog || global.__NOELLE_V19_8_21_IMPORT_AVATAR__) return;
+    global.__NOELLE_V19_8_21_IMPORT_AVATAR__ = true;
+
+    function projectRoot() {
+      const candidates = [process.cwd(), app && app.getAppPath ? app.getAppPath() : "", __dirname].filter(Boolean);
+      for (const candidate of candidates) {
+        try {
+          if (fs.existsSync(path.join(candidate, "package.json")) && fs.existsSync(path.join(candidate, "src"))) return candidate;
+        } catch (_) {}
+      }
+      return process.cwd();
+    }
+
+    function safeName(name) {
+      return String(name || "avatar")
+        .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 90) || "avatar";
+    }
+
+    function readJson(file, fallback) {
+      try {
+        if (!fs.existsSync(file)) return fallback;
+        return JSON.parse(fs.readFileSync(file, "utf8"));
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    function writeManifest(root, relPath, name, ext) {
+      const manifestPath = path.join(root, "src", "assets", "avatar_manifest.json");
+      fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+      const current = readJson(manifestPath, []);
+      const entry = { name: name, path: relPath, file: relPath, type: ext.replace(/^\\./, "").toUpperCase() };
+      let next = current;
+
+      if (Array.isArray(current)) {
+        const useString = current.some((item) => typeof item === "string");
+        const already = current.some((item) => {
+          if (typeof item === "string") return item.replace(/\\\\/g, "/") === relPath;
+          const p = String(item.path || item.file || item.url || "").replace(/\\\\/g, "/");
+          return p === relPath;
+        });
+        if (!already) next = current.concat([useString ? relPath : entry]);
+      } else if (current && typeof current === "object" && Array.isArray(current.avatars)) {
+        const already = current.avatars.some((item) => {
+          if (typeof item === "string") return item.replace(/\\\\/g, "/") === relPath;
+          const p = String(item.path || item.file || item.url || "").replace(/\\\\/g, "/");
+          return p === relPath;
+        });
+        if (!already) next = Object.assign({}, current, { avatars: current.avatars.concat([entry]) });
+      } else {
+        next = [entry];
+      }
+
+      fs.writeFileSync(manifestPath, JSON.stringify(next, null, 2) + "\\n", "utf8");
+      return Array.isArray(next) ? next.length : (Array.isArray(next.avatars) ? next.avatars.length : 1);
+    }
+
+    ipcMain.handle("noelle:v19_8_21:import-avatar", async () => {
+      try {
+        const chosen = await dialog.showOpenDialog({
+          title: "Adicionar avatar VRM/GLB",
+          properties: ["openFile"],
+          filters: [{ name: "Avatares VRM/GLB", extensions: ["vrm", "glb"] }]
+        });
+
+        if (chosen.canceled || !chosen.filePaths || !chosen.filePaths[0]) return { ok: true, canceled: true };
+
+        const source = chosen.filePaths[0];
+        const ext = path.extname(source).toLowerCase();
+        if (ext !== ".vrm" && ext !== ".glb") return { ok: false, error: "Escolha um arquivo .vrm ou .glb." };
+
+        const root = projectRoot();
+        const avatarDir = path.join(root, "src", "assets", "avatars");
+        fs.mkdirSync(avatarDir, { recursive: true });
+
+        const base = safeName(path.basename(source, ext));
+        let fileName = base + ext;
+        let dest = path.join(avatarDir, fileName);
+        let n = 2;
+        while (fs.existsSync(dest)) {
+          fileName = base + "_" + n + ext;
+          dest = path.join(avatarDir, fileName);
+          n += 1;
+        }
+
+        fs.copyFileSync(source, dest);
+        const relFromSrc = path.relative(path.join(root, "src"), dest).replace(/\\\\/g, "/");
+        const publicRel = "assets/" + relFromSrc.replace(/^assets\//, "");
+        const count = writeManifest(root, publicRel, base, ext);
+
+        return { ok: true, canceled: false, name: base, path: publicRel, destination: dest, manifestCount: count };
+      } catch (err) {
+        return { ok: false, error: err && err.message ? err.message : String(err) };
+      }
+    });
+  } catch (err) {
+    console.warn("[Noelle V19.8.21] Import avatar IPC indisponível:", err && err.message ? err.message : err);
+  }
+})();
+// NOELLE_V19_8_21_IMPORT_MAIN_END
