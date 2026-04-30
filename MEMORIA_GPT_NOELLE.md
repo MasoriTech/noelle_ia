@@ -1367,3 +1367,11 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - `main.js` unifica o IPC de adicionar/importar avatar em V19.8.24 com aliases compatíveis V19.8.20/V19.8.21.
 - `preload.js` expõe `noelleAvatarImport`, `noelleAvatarImportV19824`, `noelleAvatarImportV19821` e `noelleAvatarImportV19820` apontando para o canal novo.
 - Não mexe em UI, Avatar renderer, Chat, Room, assets ou renderer_dist.
+
+
+## V19.8.25 — Root BAT cleanup
+
+- Move `.bat` legados da raiz para `legacy_bats/`.
+- Mantém apenas `iniciar.bat` como arquivo `.bat` principal da raiz.
+- Arquivos movidos nesta execução: 6.
+- Não mexe em UI, Avatar, Chat, Room, renderer, preload ou assets.

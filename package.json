@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.24-clean-maintenance-2026",
+  "version": "19.8.25-root-bat-cleanup-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -15,7 +15,9 @@
     "diagnostico:main": "node scripts/diagnostico_v19_8_24_main_2026.cjs",
     "diagnostico:preload": "node scripts/diagnostico_v19_8_24_preload_2026.cjs",
     "diagnostico:avatar": "node scripts/diagnostico_v19_8_24_avatar_2026.cjs",
-    "repair:v19.8.24-clean": "node scripts/repair_v19_8_24_clean_maintenance_2026.cjs"
+    "repair:v19.8.24-clean": "node scripts/repair_v19_8_24_clean_maintenance_2026.cjs",
+    "repair:v19.8.25-root-bat-cleanup": "node scripts/repair_v19_8_25_root_bat_cleanup_2026.cjs",
+    "diagnostico:v19.8.25-root-bat-cleanup": "node scripts/diagnostico_v19_8_25_root_bat_cleanup_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",
