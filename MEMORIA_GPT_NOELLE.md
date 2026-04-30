@@ -1257,3 +1257,30 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - `iniciar.bat` deve continuar único; a opção [1] apenas inicia o programa e não aplica patch.
 - O runtime de tema pode estilizar botões e instalar painel em Configurações, mas não deve criar overlay flutuante nem reativar Avatar Lab / Room V19.
 - Botões devem acompanhar a tela: flex-wrap, largura segura, foco visível e estados primary/secondary/room/widget/preview/danger.
+
+
+## V19.8.11a — Configurações Premium Reforço 2026
+
+- Aba Configurações deve usar o dashboard V19.8.11a.
+- O card chamado **Interface** não deve voltar; usar **Aparência** para densidade/layout.
+- Manter Yoru Ember como tema padrão, sem reativar Avatar Lab / Room V19.
+- Reforçar idempotência: não duplicar painel, não criar overlay, não mexer em assets VRM/VRMA/PNG/GLB.
+- `iniciar.bat` continua único; opção [1] apenas inicia o programa.
+
+
+## V19.8.11c — Configurações Premium Robusta
+
+- Reforço da aba Configurações para evitar tela vazia.
+- Runtime único: `noelle_config_premium_v19_8_11c.js`.
+- Remove referências antigas V19.8.10/V19.8.11/V19.8.11a/V19.8.11b antes de instalar o novo runtime.
+- Bloqueia visualmente `Avatar Lab` e `Room V19` legados.
+- Mantém Yoru Ember como tema principal e preserva Chat, Avatar, Room, Widget, VRM, VRMA, PNG e GLB.
+- `iniciar.bat` permanece único; opção [1] apenas inicia.
+
+
+## V19.8.13 — Rollback antigo funcional
+
+- Reverte a janela principal para um backup funcional anterior aos runtimes agressivos de Configurações V19.8.11/11a/11b/11c/11d/12.
+- Remove referências a dashboards/guards que causaram tela vazia ou texto repetido.
+- Não apaga assets VRM/VRMA/PNG/GLB, Chat, Room ou Widget.
+- O iniciar.bat continua único e a opção [1] apenas inicia.

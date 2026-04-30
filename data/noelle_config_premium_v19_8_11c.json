@@ -1,0 +1,18 @@
+{
+  "version": "19.8.11c-config-premium-robust-2026",
+  "defaultTheme": "yoru-ember",
+  "density": [
+    "compacta",
+    "normal",
+    "confortavel"
+  ],
+  "cards": [
+    "Temas",
+    "Aparência",
+    "IA / Ollama",
+    "Avatar",
+    "Áudio",
+    "Sistema"
+  ],
+  "safeStart": "iniciar.bat opção [1] apenas inicia"
+}

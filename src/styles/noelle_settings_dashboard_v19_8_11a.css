@@ -1,0 +1,526 @@
+/*
+  Noelle/Yoru V19.8.11 — Configurações Premium CSS
+*/
+
+:root,
+[data-noelle-theme="yoru-ember"] {
+  --n-bg: #080706;
+  --n-panel: #12100e;
+  --n-card: #1b1713;
+  --n-card-2: #241b14;
+  --n-text: #fff3e8;
+  --n-muted: #bfa99a;
+  --n-primary: #ff7a1a;
+  --n-secondary: #e13b1a;
+  --n-accent: #ffb15c;
+  --n-border: rgba(255, 122, 26, 0.24);
+  --n-glow: rgba(255, 122, 26, 0.28);
+}
+
+[data-noelle-theme="noelle-noir"] {
+  --n-bg: #07070a;
+  --n-panel: #101014;
+  --n-card: #17151a;
+  --n-card-2: #221820;
+  --n-text: #f8f4f7;
+  --n-muted: #c8b8c2;
+  --n-primary: #e83d68;
+  --n-secondary: #8b1e3f;
+  --n-accent: #ff9ab5;
+  --n-border: rgba(232, 61, 104, 0.28);
+  --n-glow: rgba(232, 61, 104, 0.25);
+}
+
+[data-noelle-theme="yoru-midnight"] {
+  --n-bg: #050713;
+  --n-panel: #0b1020;
+  --n-card: #11182b;
+  --n-card-2: #182446;
+  --n-text: #f0f4ff;
+  --n-muted: #b5c0e6;
+  --n-primary: #6c8cff;
+  --n-secondary: #8a5cff;
+  --n-accent: #aebdff;
+  --n-border: rgba(108, 140, 255, 0.25);
+  --n-glow: rgba(108, 140, 255, 0.25);
+}
+
+[data-noelle-theme="sakura-dark"] {
+  --n-bg: #0b0710;
+  --n-panel: #15101b;
+  --n-card: #201727;
+  --n-card-2: #2b1d35;
+  --n-text: #fff3fa;
+  --n-muted: #d5b8cc;
+  --n-primary: #ff79b7;
+  --n-secondary: #b86bff;
+  --n-accent: #ffc5df;
+  --n-border: rgba(255, 121, 183, 0.25);
+  --n-glow: rgba(255, 121, 183, 0.24);
+}
+
+[data-noelle-theme="cyber-violet"] {
+  --n-bg: #06030d;
+  --n-panel: #10081d;
+  --n-card: #1a102b;
+  --n-card-2: #23133f;
+  --n-text: #f6eeff;
+  --n-muted: #c6ade9;
+  --n-primary: #a855f7;
+  --n-secondary: #22d3ee;
+  --n-accent: #d9b8ff;
+  --n-border: rgba(168, 85, 247, 0.28);
+  --n-glow: rgba(168, 85, 247, 0.26);
+}
+
+[data-noelle-theme="crimson-glass"] {
+  --n-bg: #050505;
+  --n-panel: rgba(20, 20, 24, 0.86);
+  --n-card: rgba(32, 28, 34, 0.78);
+  --n-card-2: rgba(45, 34, 40, 0.82);
+  --n-text: #ffffff;
+  --n-muted: #c9bcc0;
+  --n-primary: #ff3f5e;
+  --n-secondary: #b11232;
+  --n-accent: #ff9dad;
+  --n-border: rgba(255, 63, 94, 0.24);
+  --n-glow: rgba(255, 63, 94, 0.24);
+}
+
+[data-noelle-theme="forest-spirit"] {
+  --n-bg: #06100b;
+  --n-panel: #0d1a12;
+  --n-card: #132419;
+  --n-card-2: #1b3123;
+  --n-text: #efffef;
+  --n-muted: #bfd6bf;
+  --n-primary: #4ade80;
+  --n-secondary: #d6b56d;
+  --n-accent: #b9f6ca;
+  --n-border: rgba(74, 222, 128, 0.22);
+  --n-glow: rgba(74, 222, 128, 0.2);
+}
+
+[data-noelle-theme="light-pearl"] {
+  --n-bg: #f8f5f1;
+  --n-panel: #ffffff;
+  --n-card: #fffaf5;
+  --n-card-2: #f0e5dc;
+  --n-text: #251d19;
+  --n-muted: #6c5b51;
+  --n-primary: #d35428;
+  --n-secondary: #9f2e1c;
+  --n-accent: #ff9b66;
+  --n-border: rgba(159, 46, 28, 0.2);
+  --n-glow: rgba(211, 84, 40, 0.18);
+}
+
+html[data-noelle-density="compacta"] {
+  --n-space: 14px;
+  --n-radius: 18px;
+  --n-font-scale: .94;
+}
+
+html[data-noelle-density="normal"],
+html:not([data-noelle-density]) {
+  --n-space: 18px;
+  --n-radius: 22px;
+  --n-font-scale: 1;
+}
+
+html[data-noelle-density="confortavel"] {
+  --n-space: 24px;
+  --n-radius: 26px;
+  --n-font-scale: 1.06;
+}
+
+body.noelle-v19-8-11-ready {
+  background:
+    radial-gradient(circle at 20% 5%, color-mix(in srgb, var(--n-primary), transparent 86%), transparent 34%),
+    radial-gradient(circle at 95% 20%, color-mix(in srgb, var(--n-secondary), transparent 90%), transparent 30%),
+    var(--n-bg) !important;
+  color: var(--n-text) !important;
+}
+
+body.noelle-v19-8-11-ready button,
+body.noelle-v19-8-11-ready select,
+body.noelle-v19-8-11-ready input,
+body.noelle-v19-8-11-ready textarea {
+  font-family: inherit;
+}
+
+.noelle-v19811-hidden-legacy,
+.noelle-v19811-legacy-settings-card {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.noelle-v19811-dashboard {
+  width: min(100%, 1320px);
+  margin: clamp(14px, 2vw, 26px) auto;
+  padding: 0 clamp(10px, 1.8vw, 24px) clamp(22px, 3vw, 38px);
+  box-sizing: border-box;
+  font-size: calc(16px * var(--n-font-scale, 1));
+  color: var(--n-text);
+  position: relative;
+  z-index: 1;
+}
+
+.noelle-v19811-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid var(--n-border);
+  border-radius: calc(var(--n-radius, 22px) + 6px);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--n-card), transparent 8%), color-mix(in srgb, var(--n-card-2), transparent 10%));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .28), 0 0 0 1px rgba(255,255,255,.03) inset;
+}
+
+.noelle-v19811-kicker {
+  display: inline-block;
+  color: var(--n-accent);
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-size: .76em;
+  margin-bottom: 8px;
+}
+
+.noelle-v19811-hero h2 {
+  font-size: clamp(30px, 4vw, 54px);
+  margin: 0 0 8px;
+  line-height: .98;
+}
+
+.noelle-v19811-hero p {
+  margin: 0;
+  color: var(--n-muted);
+  font-size: clamp(16px, 1.35vw, 20px);
+  line-height: 1.45;
+}
+
+.noelle-v19811-hero-badge {
+  min-width: 160px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid var(--n-border);
+  background: color-mix(in srgb, var(--n-primary), transparent 86%);
+  box-shadow: 0 0 36px var(--n-glow);
+}
+
+.noelle-v19811-hero-badge strong,
+.noelle-v19811-hero-badge span {
+  display: block;
+}
+
+.noelle-v19811-hero-badge strong {
+  font-size: 20px;
+}
+
+.noelle-v19811-hero-badge span {
+  color: var(--n-muted);
+  margin-top: 4px;
+}
+
+.noelle-v19811-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+  margin-top: clamp(16px, 2vw, 24px);
+}
+
+.noelle-v19811-card {
+  border: 1px solid var(--n-border);
+  border-radius: var(--n-radius, 22px);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--n-panel), transparent 2%), color-mix(in srgb, var(--n-card), transparent 4%));
+  padding: var(--n-space, 18px);
+  box-shadow: 0 16px 44px rgba(0,0,0,.22);
+  min-width: 0;
+}
+
+.noelle-v19811-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.noelle-v19811-card h3 {
+  margin: 0 0 6px;
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+.noelle-v19811-card p {
+  margin: 0;
+  color: var(--n-muted);
+  line-height: 1.45;
+}
+
+.noelle-v19811-card-body {
+  display: grid;
+  gap: 14px;
+}
+
+.noelle-v19811-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.noelle-v19811-field {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 240px;
+  color: var(--n-muted);
+  font-weight: 800;
+  letter-spacing: .03em;
+}
+
+.noelle-v19811-field select,
+.noelle-v19811-select {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 16px;
+  border: 1px solid var(--n-border);
+  background: color-mix(in srgb, var(--n-card-2), transparent 4%);
+  color: var(--n-text);
+  padding: 0 16px;
+  font-size: 16px;
+  outline: none;
+}
+
+.noelle-v19811-action,
+.noelle-v19811-button,
+.noelle-v19811-theme-card {
+  border: 1px solid var(--n-border);
+  color: var(--n-text);
+  background: color-mix(in srgb, var(--n-card-2), transparent 4%);
+  border-radius: 16px;
+  min-height: 52px;
+  padding: 0 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.noelle-v19811-action:hover,
+.noelle-v19811-button:hover,
+.noelle-v19811-theme-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px var(--n-glow);
+  border-color: color-mix(in srgb, var(--n-primary), white 10%);
+}
+
+.noelle-v19811-action[data-v19811-button="primary"],
+.noelle-v19811-button[data-v19811-button="primary"],
+.noelle-v19811-action[data-v19811-button="widget"],
+.noelle-v19811-button[data-v19811-button="widget"] {
+  background: linear-gradient(135deg, var(--n-primary), var(--n-secondary));
+  color: #fff;
+}
+
+.noelle-v19811-action[data-v19811-button="room"],
+.noelle-v19811-button[data-v19811-button="room"] {
+  background: linear-gradient(135deg, var(--n-secondary), color-mix(in srgb, var(--n-primary), white 8%));
+}
+
+.noelle-v19811-action[data-v19811-button="preview"],
+.noelle-v19811-button[data-v19811-button="preview"] {
+  background: color-mix(in srgb, var(--n-primary), transparent 72%);
+}
+
+.noelle-v19811-action[data-v19811-button="danger"],
+.noelle-v19811-button[data-v19811-button="danger"] {
+  background: linear-gradient(135deg, #8b1111, #ff3838);
+  border-color: rgba(255, 56, 56, .38);
+}
+
+.noelle-v19811-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(210px, 1fr));
+  gap: 12px;
+}
+
+.noelle-v19811-theme-card {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  min-height: 142px;
+  align-content: start;
+  padding: 16px;
+}
+
+.noelle-v19811-theme-card[aria-pressed="true"] {
+  border-color: var(--n-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--n-primary), transparent 60%) inset, 0 14px 34px var(--n-glow);
+}
+
+.noelle-v19811-theme-title {
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.noelle-v19811-theme-role,
+.noelle-v19811-theme-desc {
+  color: var(--n-muted);
+  font-size: 13px;
+}
+
+.noelle-v19811-swatches {
+  display: flex;
+  gap: 6px;
+  margin: 2px 0;
+}
+
+.noelle-v19811-swatches i {
+  width: 28px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+.noelle-v19811-segment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.noelle-v19811-segment button[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--n-primary), var(--n-secondary));
+  color: #fff;
+}
+
+.noelle-v19811-status-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--n-border), transparent 20%);
+  background: color-mix(in srgb, var(--n-bg), transparent 20%);
+  color: var(--n-muted);
+}
+
+.noelle-v19811-status-line strong {
+  color: var(--n-text);
+}
+
+.noelle-v19811-status-line .is-online,
+.noelle-v19811-status-line .is-offline,
+.noelle-v19811-status-line span:first-child:not(:empty) {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--n-primary);
+  box-shadow: 0 0 14px var(--n-glow);
+}
+
+.noelle-v19811-status-line .is-offline {
+  background: #ff5c5c;
+}
+
+.noelle-v19811-note {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--n-primary), transparent 90%);
+  border: 1px solid var(--n-border);
+}
+
+@media (max-width: 1180px) {
+  .noelle-v19811-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .noelle-v19811-dashboard {
+    padding: 10px;
+  }
+
+  .noelle-v19811-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .noelle-v19811-theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .noelle-v19811-row > *,
+  .noelle-v19811-action {
+    flex: 1 1 100%;
+  }
+}
+
+/* V19.8.11a reforço */
+body.noelle-v19-8-11a-ready .noelle-v19811-dashboard {
+  isolation: isolate;
+}
+
+body.noelle-v19811a-compact-settings .noelle-v19811-hero {
+  padding: 18px !important;
+}
+
+body.noelle-v19811a-compact-settings .noelle-v19811-grid {
+  gap: 12px !important;
+}
+
+body.noelle-v19811a-compact-settings .noelle-v19811-card {
+  padding: 14px !important;
+}
+
+body.noelle-v19811a-compact-settings .noelle-v19811-theme-grid {
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.noelle-v19811-dashboard button[aria-pressed="true"],
+.noelle-v19811-dashboard .noelle-v19811-action[aria-pressed="true"] {
+  outline: 2px solid color-mix(in srgb, var(--n-accent), transparent 35%);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--n-primary), transparent 82%);
+}
+
+.noelle-v19811-dashboard select,
+.noelle-v19811-select {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 16px;
+  border: 1px solid var(--n-border);
+  background: color-mix(in srgb, var(--n-card-2), transparent 16%);
+  color: var(--n-text);
+  padding: 0 14px;
+  outline: none;
+}
+
+.noelle-v19811-dashboard .noelle-v19811-row,
+.noelle-v19811-dashboard .noelle-v19811-segment {
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .noelle-v19811-hero,
+  .noelle-v19811-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .noelle-v19811-hero-badge {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .noelle-v19811-row,
+  .noelle-v19811-segment {
+    flex-direction: column;
+  }
+
+  .noelle-v19811-action,
+  .noelle-v19811-button {
+    width: 100%;
+  }
+}

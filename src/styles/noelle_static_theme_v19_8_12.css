@@ -1,0 +1,45 @@
+/*
+  Noelle/Yoru V19.8.12 — Static Theme Safe
+  CSS estático. Não cria painel, não repete texto, não observa DOM.
+*/
+:root {
+  --noelle-bg: #080706;
+  --noelle-panel: #12100e;
+  --noelle-card: #1b1713;
+  --noelle-card-2: #241b14;
+  --noelle-primary: #ff7a1a;
+  --noelle-secondary: #e13b1a;
+  --noelle-accent: #ffb15c;
+  --noelle-text: #fff3e8;
+  --noelle-muted: #bfa99a;
+  --noelle-border: rgba(255, 122, 26, 0.25);
+}
+
+/* Mantém o tema Yoru Ember sem runtime agressivo */
+body {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(255, 122, 26, 0.10), transparent 32%),
+    linear-gradient(135deg, #050403, #100b08 48%, #050403) !important;
+}
+
+/* Botões responsivos, sem alterar containers principais */
+button, .btn, .button, [role="button"] {
+  max-width: 100%;
+}
+
+/* Bloqueio por atributos/classes conhecidos de overlays legados */
+.noelle-legacy-floating,
+[data-noelle-legacy-floating="true"],
+[data-noelle-kill-floating="avatar-lab"],
+[data-noelle-kill-floating="room-v19"],
+#noelle-v19-5-avatar-panel-script,
+#noelle-v19-3-complete-runtime-script {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Segurança de layout */
+main, .content, .page, section, article, aside {
+  min-width: 0;
+}

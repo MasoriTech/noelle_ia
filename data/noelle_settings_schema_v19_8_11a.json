@@ -1,0 +1,27 @@
+{
+  "version": "19.8.11a-configuracoes-premium-reforco-2026",
+  "defaultTheme": "yoru-ember",
+  "cards": [
+    "Temas",
+    "Aparência",
+    "IA / Ollama",
+    "Avatar",
+    "Áudio",
+    "Sistema"
+  ],
+  "removedLegacyCards": [
+    "Interface",
+    "Tema e interface",
+    "Áudio essencial"
+  ],
+  "density": [
+    "compacta",
+    "normal",
+    "confortavel"
+  ],
+  "defaultAvatarMode": [
+    "widget",
+    "room",
+    "preview"
+  ]
+}
