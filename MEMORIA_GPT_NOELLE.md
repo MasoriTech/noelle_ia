@@ -1339,3 +1339,22 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - `writeJson` passa a usar escrita atômica para reduzir risco de corromper estado.
 - `loadState`/`saveState` recebem cache curto de 1 segundo para reduzir leituras repetidas de disco.
 - Não mexe em UI, Avatar, Room, Chat ou renderer.
+
+
+## V19.8.23 — Log queue performance
+
+- Segunda fase de performance/manutenção do `main.js`.
+- Extrai fila de logs para `src/main/performance/log_queue_v19_8_23.cjs`.
+- `appendLog` deixa de usar `fs.appendFileSync` direto no main process.
+- Logs passam a ser agrupados e escritos assíncronamente.
+- Adiciona rotação simples quando o log passa de 2 MB.
+- Adiciona flush seguro em `before-quit` quando o padrão existe.
+- Não mexe em Avatar, Chat, Room, UI ou preload.
+
+
+## V19.8.23a — Log queue fix
+
+- Corrige o V19.8.23 quando o padrão exato de `appendLog` não é encontrado.
+- Usa scanner de função com balanceamento de chaves para substituir `appendLog` de forma mais robusta.
+- Mantém `log_queue_v19_8_23.cjs` como módulo extraído.
+- Não mexe em UI, Avatar, Chat, Room ou preload.

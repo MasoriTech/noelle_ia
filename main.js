@@ -4,7 +4,7 @@ const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require(
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
-const { spawn } = require("child_process"); const { OLLAMA_HTTP_AGENT } = require("./src/main/performance/ollama_http_agent_v19_8_22.cjs"); const { writeJsonAtomic } = require("./src/main/performance/safe_json_v19_8_22.cjs");
+const { spawn } = require("child_process"); const { OLLAMA_HTTP_AGENT } = require("./src/main/performance/ollama_http_agent_v19_8_22.cjs"); const { appendNoelleLog, flushNoelleLogsNow } = require("./src/main/performance/log_queue_v19_8_23.cjs"); const { writeJsonAtomic } = require("./src/main/performance/safe_json_v19_8_22.cjs");
 
 const APP_YEAR = 2026;
 const OLLAMA_HOST = process.env.OLLAMA_HOST || "127.0.0.1";
@@ -114,11 +114,7 @@ function logFile() {
   return path.join(dir, "noelle-core.log");
 }
 
-function appendLog(message, extra = null) {
-  try {
-    fs.appendFileSync(logFile(), JSON.stringify({ at: new Date().toISOString(), message, extra }) + "\n", "utf8");
-  } catch {}
-}
+function appendLog(message, extra = null) { appendNoelleLog(logFile(), message, extra); }
 
 function readJson(file, fallback) {
   try {
@@ -759,7 +755,7 @@ app.whenReady().then(() => {
   });
 });
 
-app.on("before-quit", () => { isQuitting = true; });
+app.on("before-quit", () => { isQuitting = true; try { flushNoelleLogsNow(); } catch {} });
 app.on("window-all-closed", (event) => {
   if (!isQuitting) event.preventDefault();
 });

@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.22-main-perf-modular-2026",
+  "version": "19.8.23a-log-queue-fix-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -84,7 +84,11 @@
     "repair:v19.8.21-add-avatar-button": "node scripts/repair_v19_8_21_adicionar_avatar_botao_2026.cjs",
     "diagnostico:v19.8.21-add-avatar-button": "node scripts/diagnostico_v19_8_21_adicionar_avatar_botao_2026.cjs",
     "repair:v19.8.22-main-perf": "node scripts/repair_v19_8_22_main_perf_modular_2026.cjs",
-    "diagnostico:v19.8.22-main-perf": "node scripts/diagnostico_v19_8_22_main_perf_modular_2026.cjs"
+    "diagnostico:v19.8.22-main-perf": "node scripts/diagnostico_v19_8_22_main_perf_modular_2026.cjs",
+    "repair:v19.8.23-log-queue": "node scripts/repair_v19_8_23_log_queue_perf_2026.cjs",
+    "diagnostico:v19.8.23-log-queue": "node scripts/diagnostico_v19_8_23_log_queue_perf_2026.cjs",
+    "repair:v19.8.23a-log-queue-fix": "node scripts/repair_v19_8_23a_log_queue_fix_2026.cjs",
+    "diagnostico:v19.8.23a-log-queue-fix": "node scripts/diagnostico_v19_8_23a_log_queue_fix_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

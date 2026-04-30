@@ -5,12 +5,12 @@ cd /d "%~dp0"
 :MENU
 cls
 echo ================================================================
-echo  Noelle/Yoru Companion 2026 - Performance V19.8.22
+echo  Noelle/Yoru Companion 2026 - Log Queue Fix V19.8.23a
 echo ================================================================
 echo.
 echo  [1] Iniciar programa agora
-echo  [2] Rodar diagnostico V19.8.22 Performance
-echo  [3] Aplicar performance modular no main.js
+echo  [2] Rodar diagnostico V19.8.23a
+echo  [3] Corrigir appendLog para log queue
 echo  [0] Sair
 echo.
 set /p OP=Escolha uma opcao: 
@@ -51,23 +51,23 @@ goto MENU
 
 :DIAG
 cls
-if not exist scripts\diagnostico_v19_8_22_main_perf_modular_2026.cjs (
+if not exist scripts\diagnostico_v19_8_23a_log_queue_fix_2026.cjs (
   echo [ERRO] Script de diagnostico nao encontrado.
   pause
   goto MENU
 )
-node scripts\diagnostico_v19_8_22_main_perf_modular_2026.cjs
+node scripts\diagnostico_v19_8_23a_log_queue_fix_2026.cjs
 pause
 goto MENU
 
 :REPAIR
 cls
-if not exist scripts\repair_v19_8_22_main_perf_modular_2026.cjs (
+if not exist scripts\repair_v19_8_23a_log_queue_fix_2026.cjs (
   echo [ERRO] Script de reparo nao encontrado.
   pause
   goto MENU
 )
-node scripts\repair_v19_8_22_main_perf_modular_2026.cjs
+node scripts\repair_v19_8_23a_log_queue_fix_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Reparo falhou.
@@ -76,7 +76,7 @@ if errorlevel 1 (
 )
 echo.
 echo [INFO] Rodando diagnostico apos reparo...
-node scripts\diagnostico_v19_8_22_main_perf_modular_2026.cjs
+node scripts\diagnostico_v19_8_23a_log_queue_fix_2026.cjs
 echo.
 echo [INFO] Feche e abra o app pela opcao [1].
 pause
