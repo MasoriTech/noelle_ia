@@ -83,32 +83,22 @@ contextBridge.exposeInMainWorld("noelleRoomV19", {
   saveLayout: roomBridge.saveLayout
 });
 
-// NOELLE_V19_8_20_IMPORT_PRELOAD_BEGIN
-try {
-  const { contextBridge, ipcRenderer } = require("electron");
-  if (contextBridge && ipcRenderer && !globalThis.__NOELLE_V19_8_20_PRELOAD__) {
-    globalThis.__NOELLE_V19_8_20_PRELOAD__ = true;
-    contextBridge.exposeInMainWorld("noelleAvatarImportV19820", {
-      importAvatar: () => ipcRenderer.invoke("noelle:v19_8_20:import-avatar")
-    });
-  }
-} catch (err) {
-  console.warn("[Noelle V19.8.20] preload import avatar indisponível:", err && err.message ? err.message : err);
-}
-// NOELLE_V19_8_20_IMPORT_PRELOAD_END
-
-// NOELLE_V19_8_21_IMPORT_PRELOAD_BEGIN
+// NOELLE_V19_8_24_IMPORT_AVATAR_PRELOAD_BEGIN
 try {
   const electron = require("electron");
   const contextBridge = electron.contextBridge;
   const ipcRenderer = electron.ipcRenderer;
-  if (contextBridge && ipcRenderer && !globalThis.__NOELLE_V19_8_21_PRELOAD__) {
-    globalThis.__NOELLE_V19_8_21_PRELOAD__ = true;
-    contextBridge.exposeInMainWorld("noelleAvatarImportV19821", {
-      importAvatar: () => ipcRenderer.invoke("noelle:v19_8_21:import-avatar")
-    });
+  if (contextBridge && ipcRenderer && !globalThis.__NOELLE_V19_8_24_IMPORT_AVATAR_PRELOAD__) {
+    globalThis.__NOELLE_V19_8_24_IMPORT_AVATAR_PRELOAD__ = true;
+    const importAvatarApi = {
+      importAvatar: () => ipcRenderer.invoke("noelle:v19_8_24:import-avatar")
+    };
+    contextBridge.exposeInMainWorld("noelleAvatarImport", importAvatarApi);
+    contextBridge.exposeInMainWorld("noelleAvatarImportV19824", importAvatarApi);
+    contextBridge.exposeInMainWorld("noelleAvatarImportV19821", importAvatarApi);
+    contextBridge.exposeInMainWorld("noelleAvatarImportV19820", importAvatarApi);
   }
 } catch (err) {
-  console.warn("[Noelle V19.8.21] preload import avatar indisponível:", err && err.message ? err.message : err);
+  console.warn("[Noelle V19.8.24] preload import avatar indisponível:", err && err.message ? err.message : err);
 }
-// NOELLE_V19_8_21_IMPORT_PRELOAD_END
+// NOELLE_V19_8_24_IMPORT_AVATAR_PRELOAD_END

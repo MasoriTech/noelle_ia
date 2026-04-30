@@ -1358,3 +1358,12 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Usa scanner de função com balanceamento de chaves para substituir `appendLog` de forma mais robusta.
 - Mantém `log_queue_v19_8_23.cjs` como módulo extraído.
 - Não mexe em UI, Avatar, Chat, Room ou preload.
+
+
+## V19.8.24 — Clean maintenance
+
+- Limpeza controlada de manutenção.
+- `package.json` mantém scripts principais e move scripts legados V19.x para `docs/SCRIPTS_LEGADOS_V19_8_24.md`.
+- `main.js` unifica o IPC de adicionar/importar avatar em V19.8.24 com aliases compatíveis V19.8.20/V19.8.21.
+- `preload.js` expõe `noelleAvatarImport`, `noelleAvatarImportV19824`, `noelleAvatarImportV19821` e `noelleAvatarImportV19820` apontando para o canal novo.
+- Não mexe em UI, Avatar renderer, Chat, Room, assets ou renderer_dist.

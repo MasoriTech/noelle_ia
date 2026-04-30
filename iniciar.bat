@@ -5,12 +5,15 @@ cd /d "%~dp0"
 :MENU
 cls
 echo ================================================================
-echo  Noelle/Yoru Companion 2026 - Log Queue Fix V19.8.23a
+echo  Noelle/Yoru Companion 2026 - Clean Maintenance V19.8.24
 echo ================================================================
 echo.
 echo  [1] Iniciar programa agora
-echo  [2] Rodar diagnostico V19.8.23a
-echo  [3] Corrigir appendLog para log queue
+echo  [2] Rodar diagnostico V19.8.24
+echo  [3] Aplicar limpeza controlada V19.8.24
+echo  [4] Diagnostico main
+echo  [5] Diagnostico preload
+echo  [6] Diagnostico avatar
 echo  [0] Sair
 echo.
 set /p OP=Escolha uma opcao: 
@@ -18,6 +21,9 @@ set /p OP=Escolha uma opcao:
 if "%OP%"=="1" goto START_ONLY
 if "%OP%"=="2" goto DIAG
 if "%OP%"=="3" goto REPAIR
+if "%OP%"=="4" goto DIAG_MAIN
+if "%OP%"=="5" goto DIAG_PRELOAD
+if "%OP%"=="6" goto DIAG_AVATAR
 if "%OP%"=="0" goto END
 
 echo.
@@ -51,23 +57,41 @@ goto MENU
 
 :DIAG
 cls
-if not exist scripts\diagnostico_v19_8_23a_log_queue_fix_2026.cjs (
+if not exist scripts\diagnostico_v19_8_24_clean_maintenance_2026.cjs (
   echo [ERRO] Script de diagnostico nao encontrado.
   pause
   goto MENU
 )
-node scripts\diagnostico_v19_8_23a_log_queue_fix_2026.cjs
+node scripts\diagnostico_v19_8_24_clean_maintenance_2026.cjs
+pause
+goto MENU
+
+:DIAG_MAIN
+cls
+node scripts\diagnostico_v19_8_24_main_2026.cjs
+pause
+goto MENU
+
+:DIAG_PRELOAD
+cls
+node scripts\diagnostico_v19_8_24_preload_2026.cjs
+pause
+goto MENU
+
+:DIAG_AVATAR
+cls
+node scripts\diagnostico_v19_8_24_avatar_2026.cjs
 pause
 goto MENU
 
 :REPAIR
 cls
-if not exist scripts\repair_v19_8_23a_log_queue_fix_2026.cjs (
+if not exist scripts\repair_v19_8_24_clean_maintenance_2026.cjs (
   echo [ERRO] Script de reparo nao encontrado.
   pause
   goto MENU
 )
-node scripts\repair_v19_8_23a_log_queue_fix_2026.cjs
+node scripts\repair_v19_8_24_clean_maintenance_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Reparo falhou.
@@ -76,7 +100,7 @@ if errorlevel 1 (
 )
 echo.
 echo [INFO] Rodando diagnostico apos reparo...
-node scripts\diagnostico_v19_8_23a_log_queue_fix_2026.cjs
+node scripts\diagnostico_v19_8_24_clean_maintenance_2026.cjs
 echo.
 echo [INFO] Feche e abra o app pela opcao [1].
 pause
