@@ -1329,3 +1329,13 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - O botão abre seletor `.vrm`/`.glb`, copia para `src/assets/avatars` e atualiza `src/assets/avatar_manifest.json`.
 - Depois tenta clicar em `Recarregar lista` automaticamente.
 - Micro-patch sem observador de DOM, sem remover containers e sem mexer no renderer 3D.
+
+
+## V19.8.22 — Main performance modular
+
+- Primeira fase de modularização segura do `main.js`.
+- Adiciona módulos `src/main/performance/ollama_http_agent_v19_8_22.cjs` e `safe_json_v19_8_22.cjs`.
+- `ollamaRequest` passa a usar HTTP keep-alive para reduzir overhead em chamadas locais ao Ollama.
+- `writeJson` passa a usar escrita atômica para reduzir risco de corromper estado.
+- `loadState`/`saveState` recebem cache curto de 1 segundo para reduzir leituras repetidas de disco.
+- Não mexe em UI, Avatar, Room, Chat ou renderer.

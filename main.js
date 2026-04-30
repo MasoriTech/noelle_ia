@@ -4,7 +4,7 @@ const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require(
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
-const { spawn } = require("child_process");
+const { spawn } = require("child_process"); const { OLLAMA_HTTP_AGENT } = require("./src/main/performance/ollama_http_agent_v19_8_22.cjs"); const { writeJsonAtomic } = require("./src/main/performance/safe_json_v19_8_22.cjs");
 
 const APP_YEAR = 2026;
 const OLLAMA_HOST = process.env.OLLAMA_HOST || "127.0.0.1";

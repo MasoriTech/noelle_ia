@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.21-adicionar-avatar-botao-2026",
+  "version": "19.8.22-main-perf-modular-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -82,7 +82,9 @@
     "diagnostico:v19.8.20-avatar-compact-import": "node scripts/diagnostico_v19_8_20_avatar_compact_import_2026.cjs",
     "repair:v19.8.20a-avatar-diagfix": "node scripts/repair_v19_8_20a_avatar_compact_import_diagfix_2026.cjs",
     "repair:v19.8.21-add-avatar-button": "node scripts/repair_v19_8_21_adicionar_avatar_botao_2026.cjs",
-    "diagnostico:v19.8.21-add-avatar-button": "node scripts/diagnostico_v19_8_21_adicionar_avatar_botao_2026.cjs"
+    "diagnostico:v19.8.21-add-avatar-button": "node scripts/diagnostico_v19_8_21_adicionar_avatar_botao_2026.cjs",
+    "repair:v19.8.22-main-perf": "node scripts/repair_v19_8_22_main_perf_modular_2026.cjs",
+    "diagnostico:v19.8.22-main-perf": "node scripts/diagnostico_v19_8_22_main_perf_modular_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",
