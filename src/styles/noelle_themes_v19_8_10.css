@@ -1,0 +1,431 @@
+/*
+  Noelle/Yoru V19.8.10 — Sistema de Temas 2026
+  Tema principal: Yoru Ember
+  Objetivo: padronizar tema, botões, foco visual e responsividade sem reativar runtimes legados.
+*/
+
+:root,
+html[data-noelle-theme="yoru-ember"],
+body[data-noelle-theme="yoru-ember"] {
+  --noelle-theme-id: "yoru-ember";
+  --noelle-bg: #080706;
+  --noelle-bg-soft: #0d0b09;
+  --noelle-panel: #12100e;
+  --noelle-card: #1b1713;
+  --noelle-card-2: #241b14;
+  --noelle-card-hover: #2c2118;
+  --noelle-primary: #ff7a1a;
+  --noelle-primary-2: #e13b1a;
+  --noelle-accent: #ffb15c;
+  --noelle-text: #fff3e8;
+  --noelle-muted: #bfa99a;
+  --noelle-border: rgba(255, 122, 26, 0.25);
+  --noelle-border-strong: rgba(255, 122, 26, 0.48);
+  --noelle-glow: rgba(255, 122, 26, 0.34);
+  --noelle-shadow: rgba(0, 0, 0, 0.52);
+  --noelle-danger: #ff4f3f;
+  --noelle-success: #43d17a;
+  --noelle-warning: #ffb15c;
+  --noelle-radius: 18px;
+  --noelle-radius-sm: 12px;
+  --noelle-font: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html[data-noelle-theme="noelle-noir"],
+body[data-noelle-theme="noelle-noir"] {
+  --noelle-theme-id: "noelle-noir";
+  --noelle-bg: #07070a;
+  --noelle-bg-soft: #0c0b0f;
+  --noelle-panel: #101014;
+  --noelle-card: #17151a;
+  --noelle-card-2: #211922;
+  --noelle-card-hover: #281e2a;
+  --noelle-primary: #e83d68;
+  --noelle-primary-2: #8b1e3f;
+  --noelle-accent: #ff88a9;
+  --noelle-text: #f8f4f7;
+  --noelle-muted: #c7adb7;
+  --noelle-border: rgba(232, 61, 104, 0.28);
+  --noelle-border-strong: rgba(232, 61, 104, 0.48);
+  --noelle-glow: rgba(232, 61, 104, 0.32);
+  --noelle-shadow: rgba(0, 0, 0, 0.54);
+  --noelle-danger: #ff4f6a;
+  --noelle-success: #3fd58c;
+  --noelle-warning: #ffcc66;
+}
+
+html[data-noelle-theme="yoru-midnight"],
+body[data-noelle-theme="yoru-midnight"] {
+  --noelle-theme-id: "yoru-midnight";
+  --noelle-bg: #050713;
+  --noelle-bg-soft: #080c1c;
+  --noelle-panel: #0b1020;
+  --noelle-card: #11182b;
+  --noelle-card-2: #17213a;
+  --noelle-card-hover: #1f2b4d;
+  --noelle-primary: #6c8cff;
+  --noelle-primary-2: #8a5cff;
+  --noelle-accent: #9bb1ff;
+  --noelle-text: #f0f4ff;
+  --noelle-muted: #aeb9da;
+  --noelle-border: rgba(108, 140, 255, 0.25);
+  --noelle-border-strong: rgba(108, 140, 255, 0.46);
+  --noelle-glow: rgba(108, 140, 255, 0.3);
+  --noelle-shadow: rgba(0, 0, 0, 0.56);
+  --noelle-danger: #ff5277;
+  --noelle-success: #55e6b2;
+  --noelle-warning: #ffd166;
+}
+
+html[data-noelle-theme="sakura-dark"],
+body[data-noelle-theme="sakura-dark"] {
+  --noelle-theme-id: "sakura-dark";
+  --noelle-bg: #0b0710;
+  --noelle-bg-soft: #120b17;
+  --noelle-panel: #15101b;
+  --noelle-card: #201727;
+  --noelle-card-2: #2a1d33;
+  --noelle-card-hover: #352340;
+  --noelle-primary: #ff79b7;
+  --noelle-primary-2: #b86bff;
+  --noelle-accent: #ffc4df;
+  --noelle-text: #fff3fa;
+  --noelle-muted: #d3b6c7;
+  --noelle-border: rgba(255, 121, 183, 0.25);
+  --noelle-border-strong: rgba(255, 121, 183, 0.46);
+  --noelle-glow: rgba(255, 121, 183, 0.32);
+  --noelle-shadow: rgba(0, 0, 0, 0.52);
+  --noelle-danger: #ff5b7d;
+  --noelle-success: #6ee7b7;
+  --noelle-warning: #ffd166;
+}
+
+html[data-noelle-theme="cyber-violet"],
+body[data-noelle-theme="cyber-violet"] {
+  --noelle-theme-id: "cyber-violet";
+  --noelle-bg: #06030d;
+  --noelle-bg-soft: #0b0614;
+  --noelle-panel: #10081d;
+  --noelle-card: #1a102b;
+  --noelle-card-2: #24133d;
+  --noelle-card-hover: #2f1852;
+  --noelle-primary: #a855f7;
+  --noelle-primary-2: #22d3ee;
+  --noelle-accent: #d8b4fe;
+  --noelle-text: #f6eeff;
+  --noelle-muted: #c8b6df;
+  --noelle-border: rgba(168, 85, 247, 0.28);
+  --noelle-border-strong: rgba(168, 85, 247, 0.5);
+  --noelle-glow: rgba(168, 85, 247, 0.32);
+  --noelle-shadow: rgba(0, 0, 0, 0.56);
+  --noelle-danger: #ff3f85;
+  --noelle-success: #22d3aa;
+  --noelle-warning: #facc15;
+}
+
+html[data-noelle-theme="crimson-glass"],
+body[data-noelle-theme="crimson-glass"] {
+  --noelle-theme-id: "crimson-glass";
+  --noelle-bg: #050505;
+  --noelle-bg-soft: #0b0a0b;
+  --noelle-panel: rgba(20, 20, 24, 0.88);
+  --noelle-card: rgba(32, 28, 34, 0.82);
+  --noelle-card-2: rgba(42, 32, 38, 0.86);
+  --noelle-card-hover: rgba(56, 38, 45, 0.92);
+  --noelle-primary: #ff3f5e;
+  --noelle-primary-2: #b11232;
+  --noelle-accent: #ff9bad;
+  --noelle-text: #ffffff;
+  --noelle-muted: #cfc5c9;
+  --noelle-border: rgba(255, 63, 94, 0.22);
+  --noelle-border-strong: rgba(255, 63, 94, 0.46);
+  --noelle-glow: rgba(255, 63, 94, 0.30);
+  --noelle-shadow: rgba(0, 0, 0, 0.6);
+  --noelle-danger: #ff334d;
+  --noelle-success: #46e68a;
+  --noelle-warning: #ffd166;
+}
+
+html[data-noelle-theme="forest-spirit"],
+body[data-noelle-theme="forest-spirit"] {
+  --noelle-theme-id: "forest-spirit";
+  --noelle-bg: #06100b;
+  --noelle-bg-soft: #09170f;
+  --noelle-panel: #0d1a12;
+  --noelle-card: #132419;
+  --noelle-card-2: #193020;
+  --noelle-card-hover: #203c29;
+  --noelle-primary: #4ade80;
+  --noelle-primary-2: #d6b56d;
+  --noelle-accent: #bbf7d0;
+  --noelle-text: #efffef;
+  --noelle-muted: #b8d4bf;
+  --noelle-border: rgba(74, 222, 128, 0.22);
+  --noelle-border-strong: rgba(74, 222, 128, 0.46);
+  --noelle-glow: rgba(74, 222, 128, 0.24);
+  --noelle-shadow: rgba(0, 0, 0, 0.55);
+  --noelle-danger: #ff5f56;
+  --noelle-success: #4ade80;
+  --noelle-warning: #d6b56d;
+}
+
+html[data-noelle-theme="light-pearl"],
+body[data-noelle-theme="light-pearl"] {
+  --noelle-theme-id: "light-pearl";
+  --noelle-bg: #f8f5f1;
+  --noelle-bg-soft: #f0ebe4;
+  --noelle-panel: #ffffff;
+  --noelle-card: #fffaf4;
+  --noelle-card-2: #f2e7db;
+  --noelle-card-hover: #efe1d1;
+  --noelle-primary: #d35428;
+  --noelle-primary-2: #9f2e1c;
+  --noelle-accent: #ff8a3d;
+  --noelle-text: #221915;
+  --noelle-muted: #725f55;
+  --noelle-border: rgba(151, 82, 32, 0.22);
+  --noelle-border-strong: rgba(151, 82, 32, 0.42);
+  --noelle-glow: rgba(255, 122, 26, 0.20);
+  --noelle-shadow: rgba(66, 44, 32, 0.18);
+  --noelle-danger: #d12f2f;
+  --noelle-success: #188252;
+  --noelle-warning: #b7791f;
+}
+
+html[data-noelle-theme],
+body[data-noelle-theme] {
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--noelle-primary) 22%, transparent), transparent 34vw),
+    linear-gradient(135deg, var(--noelle-bg), var(--noelle-bg-soft));
+  color: var(--noelle-text);
+  font-family: var(--noelle-font);
+}
+
+html[data-noelle-theme="light-pearl"],
+html[data-noelle-theme="light-pearl"] body,
+body[data-noelle-theme="light-pearl"] {
+  color-scheme: light;
+}
+
+.noelle-theme-ready :where(.app-shell, .shell, main, .content, .page, .panel, .card, section, article) {
+  scrollbar-color: var(--noelle-primary) transparent;
+}
+
+.noelle-theme-ready :where(.card, .panel, .settings-card, .avatar-panel, .noelle-card, section[data-noelle-card="true"]) {
+  border-color: var(--noelle-border);
+}
+
+.noelle-theme-ready :where(input, select, textarea) {
+  background: color-mix(in srgb, var(--noelle-card) 88%, #000 12%);
+  color: var(--noelle-text);
+  border: 1px solid var(--noelle-border);
+  border-radius: 12px;
+  outline: none;
+}
+
+.noelle-theme-ready :where(input, select, textarea):focus {
+  border-color: var(--noelle-border-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--noelle-primary) 24%, transparent);
+}
+
+.noelle-theme-ready :where(button, .btn, .button, [role="button"], input[type="button"], input[type="submit"]) {
+  min-height: 38px;
+  max-width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--noelle-border);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--noelle-card) 90%, #000 10%), color-mix(in srgb, var(--noelle-card-2) 92%, #000 8%));
+  color: var(--noelle-text);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--noelle-shadow) 75%, transparent);
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+
+.noelle-theme-ready :where(button, .btn, .button, [role="button"]):hover {
+  transform: translateY(-1px);
+  border-color: var(--noelle-border-strong);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--noelle-glow) 34%, var(--noelle-shadow));
+}
+
+.noelle-theme-ready :where(button, .btn, .button, [role="button"]):active {
+  transform: translateY(0) scale(0.99);
+}
+
+.noelle-theme-ready :where(button, .btn, .button, [role="button"]):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--noelle-primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.noelle-theme-ready .noelle-btn-primary,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="primary"] {
+  background: linear-gradient(135deg, var(--noelle-primary), var(--noelle-primary-2));
+  color: #fff;
+  border-color: color-mix(in srgb, var(--noelle-primary) 70%, #fff 10%);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--noelle-glow) 55%, transparent);
+}
+
+.noelle-theme-ready .noelle-btn-secondary,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="secondary"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--noelle-card-2) 90%, var(--noelle-primary) 10%), var(--noelle-card));
+  border-color: var(--noelle-border);
+}
+
+.noelle-theme-ready .noelle-btn-ghost,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="ghost"] {
+  background: color-mix(in srgb, var(--noelle-card) 70%, transparent);
+  box-shadow: none;
+}
+
+.noelle-theme-ready .noelle-btn-danger,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="danger"] {
+  background: linear-gradient(135deg, var(--noelle-danger), color-mix(in srgb, var(--noelle-danger) 55%, #000 45%));
+  border-color: color-mix(in srgb, var(--noelle-danger) 64%, transparent);
+  color: #fff;
+}
+
+.noelle-theme-ready .noelle-btn-room,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="room"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--noelle-primary) 72%, #222 28%), color-mix(in srgb, var(--noelle-primary-2) 72%, #111 28%));
+  color: #fff;
+}
+
+.noelle-theme-ready .noelle-btn-widget,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="widget"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--noelle-accent) 78%, #222 22%), color-mix(in srgb, var(--noelle-primary) 72%, #222 28%));
+  color: #16110d;
+}
+
+.noelle-theme-ready .noelle-btn-preview,
+.noelle-theme-ready :where(button, .btn, .button, [role="button"])[data-noelle-button-role="preview"] {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--noelle-card-2) 80%, var(--noelle-accent) 20%), color-mix(in srgb, var(--noelle-card) 88%, var(--noelle-primary) 12%));
+}
+
+.noelle-theme-button-row,
+.noelle-theme-ready :where(.actions, .button-row, .controls, .toolbar, .avatar-actions, .settings-actions) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 12px);
+  align-items: center;
+}
+
+.noelle-theme-panel-v19-8-10 {
+  width: min(100%, 980px);
+  margin: 18px 0;
+  padding: clamp(14px, 2vw, 22px);
+  border: 1px solid var(--noelle-border);
+  border-radius: var(--noelle-radius);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--noelle-primary) 14%, transparent), transparent 38%),
+    linear-gradient(135deg, color-mix(in srgb, var(--noelle-card) 90%, transparent), color-mix(in srgb, var(--noelle-panel) 96%, transparent));
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--noelle-shadow) 74%, transparent);
+}
+
+.noelle-theme-panel-v19-8-10 h3 {
+  margin: 0 0 6px;
+  font-size: clamp(18px, 2.3vw, 24px);
+  color: var(--noelle-text);
+}
+
+.noelle-theme-panel-v19-8-10 p {
+  margin: 0;
+  color: var(--noelle-muted);
+  line-height: 1.5;
+}
+
+.noelle-theme-grid-v19-8-10 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.noelle-theme-card-v19-8-10 {
+  border: 1px solid var(--noelle-border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--noelle-card) 88%, transparent);
+  color: var(--noelle-text);
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.noelle-theme-card-v19-8-10[aria-pressed="true"] {
+  border-color: var(--noelle-border-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--noelle-primary) 24%, transparent), 0 18px 42px color-mix(in srgb, var(--noelle-glow) 42%, transparent);
+}
+
+.noelle-theme-card-v19-8-10 strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.noelle-theme-swatches-v19-8-10 {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.noelle-theme-swatch-v19-8-10 {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+}
+
+.noelle-theme-active-badge-v19-8-10 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  margin-top: 12px;
+  border: 1px solid var(--noelle-border);
+  border-radius: 999px;
+  color: var(--noelle-accent);
+  background: color-mix(in srgb, var(--noelle-card-2) 70%, transparent);
+  font-size: 13px;
+}
+
+.noelle-theme-compact-controls-v19-8-10 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.noelle-theme-compact-controls-v19-8-10 select {
+  min-width: min(100%, 260px);
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.noelle-theme-ready .noelle-legacy-floating,
+.noelle-theme-ready [data-noelle-legacy-floating="true"],
+.noelle-theme-ready .avatar-lab-floating,
+.noelle-theme-ready .room-v19-floating {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 900px) {
+  .noelle-theme-ready :where(button, .btn, .button, [role="button"]) {
+    min-height: 42px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (max-width: 680px) {
+  .noelle-theme-panel-v19-8-10 {
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .noelle-theme-grid-v19-8-10 {
+    grid-template-columns: 1fr;
+  }
+  .noelle-theme-ready :where(button, .btn, .button, [role="button"]) {
+    width: auto;
+    max-width: 100%;
+    white-space: normal;
+  }
+}

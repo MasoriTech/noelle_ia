@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="./styles/noelle_avatar_tab_v19_8_2.css">
   
 
+  <link rel="stylesheet" href="./styles/noelle_ui_polish_v19_8_9a.css">
+  <link rel="stylesheet" href="./styles/noelle_themes_v19_8_10.css" data-noelle-theme-v19-8-10="true">
 </head>
 <body class="theme-noelle">
   <div class="app-shell">
@@ -45,7 +47,7 @@
         </div>
         <div class="top-actions">
           <button class="ghost-btn" id="refreshStatusBtn">Status</button>
-          <button class="primary-btn" id="openAvatarBtnTop">Abrir avatar</button>
+          <button class="primary-btn" id="openAvatarBtnTop">Abrir Widget</button>
         </div>
       </header>
 
@@ -54,7 +56,7 @@
           <div>
             <span class="eyebrow">Base restaurada</span>
             <h2>Noelle com boot automático, chat, avatar, emotes e inventário conectados.</h2>
-            <p>A opção 1 do INICIAR.bat verifica dependências, TTS/STT, Ollama, modelo e assets antes de abrir.</p>
+            <p>A opção 1 do iniciar.bat abre a Noelle sem aplicar reparos. Diagnóstico e manutenção ficam nas outras opções do menu.</p>
           </div>
           <div class="hero-badge">2026</div>
         </div>
@@ -72,7 +74,7 @@
           <article class="card">
             <h3>Ações rápidas</h3>
             <div class="button-grid compact">
-              <button data-avatar-action="open">Abrir avatar</button>
+              <button data-avatar-action="open">Abrir Widget</button>
               <button data-avatar-camera="face">Rosto</button>
               <button data-avatar-camera="bust">Busto</button>
               <button data-avatar-camera="full">Corpo inteiro</button>
@@ -90,7 +92,7 @@
             <h2>Avatar da Noelle</h2>
             <p>Usa os arquivos reais em <code>src/assets/Noelle.vrm</code> e <code>src/assets/avatars/*.vrm</code>.</p>
           </div>
-          <button class="primary-btn" id="openAvatarBtn">Abrir janela do avatar</button>
+          <button class="primary-btn" id="openAvatarBtn">Abrir Widget</button>
         </div>
 
         <div class="grid two">
@@ -179,7 +181,7 @@
             <h2>Expressões PNG + animações VRMA</h2>
             <p>Esta aba lê <code>src/assets/expressions</code> e <code>src/assets/motions</code>. Não usa mais placeholders fixos.</p>
           </div>
-          <button class="primary-btn" data-avatar-action="open">Abrir avatar</button>
+          <button class="primary-btn" data-avatar-action="open">Abrir Widget</button>
         </div>
 
         <div class="grid two">
@@ -224,7 +226,7 @@
           </article>
           <article class="card">
             <h3>Áudio essencial</h3>
-            <p>O INICIAR.bat instala STT/TTS. O app usa Piper quando houver voz .onnx e fallback Windows SAPI quando não houver.</p>
+            <p>O áudio usa Piper quando houver voz .onnx configurada. Se não houver, usa fallback Windows SAPI. Use Testar TTS para verificar.</p>
             <div class="button-row">
               <button id="testTtsBtn">Testar TTS</button>
               <button id="refreshAssetsBtn">Recarregar assets</button>
@@ -265,5 +267,7 @@
   <script src="./renderer/noelle_avatar_tab_v19_8_2.js" defer></script>
   
 
+  <script defer src="./renderer/noelle_ui_polish_v19_8_9a.js"></script>
+  <script src="./renderer/noelle_theme_manager_v19_8_10.js" defer data-noelle-theme-v19-8-10="true"></script>
 </body>
 </html>

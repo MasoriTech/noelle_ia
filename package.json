@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.7-purge-legacy-avatar-2026",
+  "version": "19.8.10-yoru-ember-themes-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -55,7 +55,13 @@
     "repair:v19.8.3a": "node scripts/repair_v19_8_3a_preview_resize_fix_2026.cjs",
     "diagnostico:v19.8.3a": "node scripts/diagnostico_v19_8_3a_preview_resize_fix_2026.cjs",
     "diagnostico:v19.8.7": "node scripts/diagnostico_v19_8_7_purge_legacy_avatar_2026.cjs",
-    "repair:v19.8.7": "node scripts/repair_v19_8_7_purge_legacy_avatar_2026.cjs"
+    "repair:v19.8.7": "node scripts/repair_v19_8_7_purge_legacy_avatar_2026.cjs",
+    "diagnostico:v19.8.9a": "node scripts/diagnostico_v19_8_9a_mega_ui_settings_reforco_2026.cjs",
+    "repair:v19.8.9a": "node scripts/repair_v19_8_9a_mega_ui_settings_reforco_2026.cjs",
+    "status:v19.8.9a": "node scripts/status_v19_8_9a_mega_ui_settings_reforco_2026.cjs",
+    "repair:v19.8.10-themes": "node scripts/repair_v19_8_10_yoru_ember_themes_2026.cjs",
+    "diagnostico:v19.8.10-themes": "node scripts/diagnostico_v19_8_10_yoru_ember_themes_2026.cjs",
+    "status:v19.8.10-themes": "node scripts/status_v19_8_10_yoru_ember_themes_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

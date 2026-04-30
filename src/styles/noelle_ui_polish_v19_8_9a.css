@@ -1,0 +1,183 @@
+/* Noelle V19.8.9a — Reforço Mega UI/Settings 2026 */
+:root {
+  --noelle-v1989a-bg: #050407;
+  --noelle-v1989a-panel: rgba(15, 15, 22, 0.94);
+  --noelle-v1989a-panel-2: rgba(22, 20, 29, 0.96);
+  --noelle-v1989a-border: rgba(255, 95, 150, 0.22);
+  --noelle-v1989a-text: #fff7ff;
+  --noelle-v1989a-muted: #c9bdd2;
+  --noelle-v1989a-red: #f0446f;
+  --noelle-v1989a-pink: #ff6f9e;
+  --noelle-v1989a-accent: #ff4f88;
+  --noelle-v1989a-gray: #23212b;
+  --noelle-v1989a-radius: 24px;
+  --noelle-v1989a-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+body.theme-pbv,
+body.theme-noelle-pbv,
+body[data-noelle-theme="pbv"] {
+  --accent: var(--noelle-v1989a-accent);
+  --primary: var(--noelle-v1989a-accent);
+  --panel: var(--noelle-v1989a-panel);
+}
+
+.noelle-v1989a-hidden-legacy,
+.noelle-v1989-hidden-legacy,
+.noelle-floating-avatar-lab,
+.noelle-floating-room-v19,
+#noelle-room-v19-canonical-button,
+#noelle-avatar-lab-canonical-button,
+[id*="avatar-lab" i],
+[class*="avatar-lab" i],
+[id*="avatar_lab" i],
+[class*="avatar_lab" i],
+[id*="room-v19" i],
+[class*="room-v19" i],
+[id*="room_v19" i],
+[class*="room_v19" i] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.noelle-v1989a-settings {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 24px;
+}
+
+.noelle-v1989a-card {
+  background: linear-gradient(180deg, rgba(17, 17, 24, .96), rgba(10, 9, 14, .96));
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: var(--noelle-v1989a-radius);
+  box-shadow: var(--noelle-v1989a-shadow);
+  padding: 22px;
+  min-width: 0;
+}
+
+.noelle-v1989a-card h2,
+.noelle-v1989a-card h3 {
+  margin: 0 0 12px 0;
+  color: var(--noelle-v1989a-text);
+  letter-spacing: -0.02em;
+}
+
+.noelle-v1989a-card p,
+.noelle-v1989a-card .muted {
+  color: var(--noelle-v1989a-muted);
+  line-height: 1.5;
+}
+
+.noelle-v1989a-label {
+  display: block;
+  color: var(--noelle-v1989a-muted);
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 12px 0 8px;
+}
+
+.noelle-v1989a-grid-small {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.noelle-v1989a-grid-small.top-gap,
+.top-gap {
+  margin-top: 12px;
+}
+
+.noelle-v1989a-btn,
+.noelle-v1989a-settings button,
+.noelle-v1989a-settings select {
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .11);
+  background: rgba(35, 33, 43, .95);
+  color: var(--noelle-v1989a-text);
+  padding: 10px 14px;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.noelle-v1989a-settings select {
+  width: 100%;
+  font-weight: 700;
+}
+
+.noelle-v1989a-btn.primary {
+  background: linear-gradient(135deg, var(--noelle-v1989a-red), #8a4ff8);
+  border-color: rgba(255, 255, 255, .16);
+}
+
+.noelle-v1989a-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .09);
+  color: var(--noelle-v1989a-muted);
+  font-weight: 800;
+}
+
+.noelle-v1989a-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ff5b6e;
+  box-shadow: 0 0 12px rgba(255, 91, 110, .4);
+}
+.noelle-v1989a-dot.ok {
+  background: #51e29a;
+  box-shadow: 0 0 12px rgba(81, 226, 154, .4);
+}
+
+.noelle-v1989a-wide {
+  grid-column: 1 / -1;
+}
+
+.noelle-v1989a-report {
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 220px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(0,0,0,.28);
+  color: #f8ddeb;
+}
+
+.noelle-v1989a-settings-page {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 111, 158, .65) rgba(0,0,0,.18);
+}
+
+.noelle-v1989a-settings-page::-webkit-scrollbar { width: 12px; }
+.noelle-v1989a-settings-page::-webkit-scrollbar-thumb { background: rgba(255, 111, 158, .65); border-radius: 999px; }
+
+@media (max-width: 1100px) {
+  .noelle-v1989a-settings { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .noelle-v1989a-card { padding: 16px; border-radius: 18px; }
+  .noelle-v1989a-grid-small { grid-template-columns: 1fr; }
+}

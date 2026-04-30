@@ -1242,3 +1242,18 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Removido do codigo ativo o carrossel/overlay antigo V19.7.6 que carregava `avatar_carousel_v19_7_6.bundle.js`.
 - A aba Avatar valida deve usar somente a implementacao V19.8.x atual, sem pílula flutuante "Avatar Lab" e sem runtime legado sobreposto.
 - Arquivos removidos sao copiados para `backups/` antes de sair do codigo ativo.
+
+## V19.8.9a Mega UI/Settings Reforco — 2026
+- Reforça V19.8.9 antes de aplicar: remove tags antigas V19.8.9 e instala apenas V19.8.9a.
+- Bloqueia com mais força botões flutuantes legados Avatar Lab/Room V19, sem mexer em VRM/VRMA/PNG/GLB.
+- Mantém preload limpo, iniciar.bat único e opção [1] apenas iniciar.
+- Configurações recebe cards úteis de Interface, IA/Ollama, Avatar, Áudio e Sistema.
+
+
+## V19.8.10 — Temas Yoru Ember 2026
+
+- Tema principal da Yoru: `Yoru Ember` / id interno `yoru-ember`.
+- O sistema de temas deve preservar Chat IA, Room, Widget, Preview, VRM, VRMA, expressions PNG e items GLB.
+- `iniciar.bat` deve continuar único; a opção [1] apenas inicia o programa e não aplica patch.
+- O runtime de tema pode estilizar botões e instalar painel em Configurações, mas não deve criar overlay flutuante nem reativar Avatar Lab / Room V19.
+- Botões devem acompanhar a tela: flex-wrap, largura segura, foco visível e estados primary/secondary/room/widget/preview/danger.

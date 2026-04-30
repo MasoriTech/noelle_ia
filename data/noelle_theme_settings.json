@@ -1,0 +1,16 @@
+{
+  "version": "19.8.10-yoru-ember-themes-2026",
+  "defaultTheme": "yoru-ember",
+  "activeTheme": "yoru-ember",
+  "themes": [
+    "yoru-ember",
+    "noelle-noir",
+    "yoru-midnight",
+    "sakura-dark",
+    "cyber-violet",
+    "crimson-glass",
+    "forest-spirit",
+    "light-pearl"
+  ],
+  "notes": "Arquivo de referência. O renderer salva a escolha em localStorage para não depender de IPC."
+}

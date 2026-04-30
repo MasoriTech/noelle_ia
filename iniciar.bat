@@ -1,46 +1,73 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
+chcp 65001 >nul
 cd /d "%~dp0"
 
-:MENU
+:title
 cls
 echo ================================================================
-echo  Noelle Companion 2026 - V19.8.7 Purge Avatar legado
+echo  Noelle/Yoru Companion 2026 - Iniciador unico V19.8.10
 echo ================================================================
 echo.
-echo [1] Iniciar programa agora
-echo [2] Rodar diagnostico V19.8.7
-echo [3] Apagar/remover do codigo ativo o Avatar legado V19.7.6
-echo [4] Mostrar status do projeto
-echo [5] Limpar outros .bat antigos ^(mover para backup seguro^)
-echo [0] Sair
+echo  [1] Iniciar programa agora
+echo  [2] Rodar diagnostico V19.8.10 Temas
+echo  [3] Reparar/aplicar Mega Temas Yoru Ember V19.8.10
+echo  [4] Mostrar status do projeto
+echo  [5] Limpar outros .bat antigos ^(mover para backup seguro^)
+echo  [6] Excluir outros .bat antigos permanentemente
+echo  [0] Sair
 echo.
-set /p OP=Escolha: 
-if "%OP%"=="1" goto START_APP
+set /p OP=Escolha uma opcao: 
+
+if "%OP%"=="1" goto START_ONLY
 if "%OP%"=="2" goto DIAG
 if "%OP%"=="3" goto REPAIR
 if "%OP%"=="4" goto STATUS
-if "%OP%"=="5" goto CLEAN_BATS
+if "%OP%"=="5" goto CLEAN_SAFE
+if "%OP%"=="6" goto CLEAN_DELETE
 if "%OP%"=="0" goto END
-goto MENU
 
-:START_APP
 echo.
-echo [START] Iniciando Noelle Companion...
-if exist node_modules\.bin\electron.cmd (
-  call npm.cmd start
-) else (
-  echo [AVISO] Electron local nao encontrado em node_modules.
-  echo [INFO] Rode npm install se o start falhar.
-  call npm.cmd start
-)
-echo.
+echo [ERRO] Opcao invalida.
 pause
-goto MENU
+goto title
+
+:START_ONLY
+cls
+echo ================================================================
+echo  Iniciando programa agora
+echo ================================================================
+echo [INFO] Esta opcao nao aplica patch, nao roda build e nao reescreve arquivos.
+echo.
+if not exist package.json (
+  echo [ERRO] package.json nao encontrado. Rode este .bat na raiz do projeto.
+  pause
+  goto title
+)
+where npm.cmd >nul 2>nul
+if errorlevel 1 (
+  echo [ERRO] npm.cmd nao encontrado no PATH. Instale Node.js ou abra um terminal com Node configurado.
+  pause
+  goto title
+)
+call npm.cmd start
+set EXITCODE=%ERRORLEVEL%
+echo.
+echo [INFO] Programa encerrado com codigo %EXITCODE%.
+pause
+goto title
 
 :DIAG
-echo.
-node scripts\diagnostico_v19_8_7_purge_legacy_avatar_2026.cjs
+cls
+echo ================================================================
+echo  Diagnostico V19.8.10 Temas
+echo ================================================================
+if not exist scripts\diagnostico_v19_8_10_yoru_ember_themes_2026.cjs (
+  echo [ERRO] Script de diagnostico nao encontrado.
+  pause
+  goto title
+)
+node scripts\diagnostico_v19_8_10_yoru_ember_themes_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Diagnostico encontrou problemas.
@@ -49,48 +76,95 @@ if errorlevel 1 (
   echo [OK] Diagnostico aprovado.
 )
 pause
-goto MENU
+goto title
 
 :REPAIR
-echo.
-node scripts\repair_v19_8_7_purge_legacy_avatar_2026.cjs
+cls
+echo ================================================================
+echo  Reparar/aplicar Mega Temas Yoru Ember V19.8.10
+echo ================================================================
+if not exist scripts\repair_v19_8_10_yoru_ember_themes_2026.cjs (
+  echo [ERRO] Script de reparo nao encontrado.
+  pause
+  goto title
+)
+node scripts\repair_v19_8_10_yoru_ember_themes_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Reparo falhou.
   pause
-  goto MENU
+  goto title
 )
 echo.
-node scripts\diagnostico_v19_8_7_purge_legacy_avatar_2026.cjs
+echo [INFO] Rodando diagnostico apos reparo...
+node scripts\diagnostico_v19_8_10_yoru_ember_themes_2026.cjs
 if errorlevel 1 (
   echo.
   echo [ERRO] Diagnostico pos-reparo falhou.
 ) else (
   echo.
-  echo [OK] Purge aprovado. O Avatar legado V19.7.6 saiu do codigo ativo.
+  echo [OK] Reparo e diagnostico aprovados.
 )
 pause
-goto MENU
+goto title
 
 :STATUS
-echo.
-node scripts\status_v19_8_7_purge_legacy_avatar_2026.cjs
+cls
+if exist scripts\status_v19_8_10_yoru_ember_themes_2026.cjs (
+  node scripts\status_v19_8_10_yoru_ember_themes_2026.cjs
+) else (
+  echo [AVISO] Script de status nao encontrado.
+  if exist package.json type package.json | findstr /i "version"
+)
 pause
-goto MENU
+goto title
 
-:CLEAN_BATS
-set BACKUP=backups\bat_cleanup_%DATE:~-4%%DATE:~3,2%%DATE:~0,2%_%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%
-set BACKUP=%BACKUP: =0%
-mkdir "%BACKUP%" >nul 2>nul
+:CLEAN_SAFE
+cls
+echo ================================================================
+echo  Limpeza segura de .bat antigos
+echo ================================================================
+set "BACKUP_DIR=backups\bat_cleanup_%DATE:/=-%_%TIME::=-%"
+set "BACKUP_DIR=%BACKUP_DIR: =0%"
+mkdir "%BACKUP_DIR%" >nul 2>nul
+set MOVED=0
 for %%F in (*.bat) do (
   if /I not "%%~nxF"=="iniciar.bat" (
-    echo [OK] Movendo %%~nxF para %BACKUP%
-    move "%%~fF" "%BACKUP%\" >nul
+    echo [INFO] Movendo %%~nxF para %BACKUP_DIR%
+    move /Y "%%~fF" "%BACKUP_DIR%\%%~nxF" >nul
+    set /a MOVED+=1
   )
 )
-echo [OK] Limpeza concluida. Backup: %BACKUP%
+echo.
+echo [OK] Arquivos movidos: !MOVED!
+echo [INFO] Backup: %BACKUP_DIR%
 pause
-goto MENU
+goto title
+
+:CLEAN_DELETE
+cls
+echo ================================================================
+echo  Excluir .bat antigos permanentemente
+echo ================================================================
+echo [CUIDADO] Isto apaga todos os .bat da raiz, exceto iniciar.bat.
+set /p CONF=Digite EXCLUIR para confirmar: 
+if /I not "%CONF%"=="EXCLUIR" (
+  echo [INFO] Operacao cancelada.
+  pause
+  goto title
+)
+set DELETED=0
+for %%F in (*.bat) do (
+  if /I not "%%~nxF"=="iniciar.bat" (
+    echo [INFO] Excluindo %%~nxF
+    del /F /Q "%%~fF" >nul
+    set /a DELETED+=1
+  )
+)
+echo.
+echo [OK] Arquivos excluidos: !DELETED!
+pause
+goto title
 
 :END
 endlocal
