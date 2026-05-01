@@ -1,15 +1,15 @@
-
 @echo off
-title Noelle Companion 2026
+title Yoru Agent Runtime V24
 
 echo ================================
-echo Boot Runtime Tabs V20
+echo Agent Identity Runtime Boot
 echo ================================
+
+echo Verificando ambiente Node...
 
 if not exist node_modules (
-  echo Instalando dependencias...
   npm install
 )
 
-echo Iniciando app...
+echo Iniciando aplicativo...
 npm start

@@ -1,0 +1,8 @@
+
+{
+  "engine": "auto",
+  "model": "small",
+  "auto_download": true,
+  "auto_gpu_detect": true,
+  "async_queue": true
+}
