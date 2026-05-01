@@ -1,10 +1,5 @@
 "use strict";
 
-/*
-  Noelle/Yoru V19.8.22
-  Escrita JSON atômica para reduzir risco de corromper state/config/logs se o app fechar no meio da gravação.
-*/
-
 const fs = require("fs");
 const path = require("path");
 
