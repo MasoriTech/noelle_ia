@@ -1,0 +1,21 @@
+Noelle Companion 2026 - Tabs Guard v19.8.35
+
+Objetivo:
+- Blindar a troca de abas sem apagar o codigo antigo.
+- Principal, Chat IA, Avatar, Stream e demais abas passam por um router de seguranca.
+
+Como aplicar:
+1. Extraia este ZIP na raiz do projeto noelle_ia.
+2. Rode APLICAR_TABS_GUARD_V19_8_35.bat.
+3. Rode iniciar.bat.
+
+O que ele faz:
+- Cria src/renderer/modules/noelle_tabs_guard_v19_8_35.js
+- Cria src/renderer/styles/noelle_tabs_guard_v19_8_35.css
+- Injeta os arquivos no HTML do renderer quando encontrado.
+- Mantem backup em backups/tabs_guard_v19.8.35_*
+- Usa delegacao de eventos, MutationObserver, ARIA, hidden e localStorage.
+
+Nao faz:
+- Nao mexe em STT, Ollama ou TTS.
+- Nao remove Chat, Avatar, Widget nem Stream.

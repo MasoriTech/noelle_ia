@@ -468,3 +468,7 @@ async function main() {
 }
 
 main().catch((err) => showError(err?.stack || err));
+
+
+// Noelle Tabs Guard v19.8.35
+try { import('./modules/noelle_tabs_guard_v19_8_35.js'); } catch (e) { console.warn('[Noelle] Tabs Guard import falhou', e); }

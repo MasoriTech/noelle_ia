@@ -1,0 +1,4 @@
+/* Noelle Tabs Guard v19.8.35 */
+.noelle-tab-hidden, [hidden] { display: none !important; }
+.noelle-tab-active[role="tabpanel"], .tab-page.noelle-tab-active, .page.noelle-tab-active { display: block; }
+[role="tab"][aria-selected="true"], [data-noelle-tab-id].noelle-tab-active { outline-offset: 2px; }

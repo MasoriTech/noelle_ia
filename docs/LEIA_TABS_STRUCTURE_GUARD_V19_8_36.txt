@@ -1,0 +1,17 @@
+Noelle Tabs Structure Guard V19.8.36
+
+Este patch corrige a logica atual de abas quando paginas ficam sobrepostas.
+Pelo print, Chat IA virou ativo, mas os cards/tema de outra pagina continuam visiveis.
+Isso indica que a troca de aba ate muda o estado, mas nao esconde com forca todas as paginas antigas.
+
+O guard faz:
+- normaliza botoes data-target/data-tab/role=tab
+- normaliza paginas .page[data-page], .tab-page, section/div dentro de main
+- aplica hidden, aria-hidden, inert, display none/block e pointer-events
+- usa captura de clique antes de listeners antigos quebrarem o fluxo
+- usa MutationObserver para reparar paginas criadas depois do boot, como Stream
+- guarda ultima aba em localStorage
+
+Teste esperado:
+Principal -> Chat IA -> Stream -> Principal
+Nao pode ficar card de tema, Stream ou Chat por cima da pagina errada.
