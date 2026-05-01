@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.28-status-assets-split-2026",
+  "version": "19.8.30a-stream-mic-diagfix-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -33,7 +33,16 @@
     "diagnostico:v19.8.27d-diag-regex-fix": "node scripts/diagnostico_v19_8_27d_diag_regex_fix_2026.cjs",
     "repair:v19.8.28-status-assets-split": "node scripts/repair_v19_8_28_status_assets_split_2026.cjs",
     "diagnostico:v19.8.28-status-assets-split": "node scripts/diagnostico_v19_8_28_status_assets_split_2026.cjs",
-    "auto:v19.8.28-status-assets-split": "node scripts/apply_v19_8_28_auto_2026.cjs"
+    "auto:v19.8.28-status-assets-split": "node scripts/apply_v19_8_28_auto_2026.cjs",
+    "repair:v19.8.29-stream-tab": "node scripts/repair_v19_8_29_stream_tab_skeleton_2026.cjs",
+    "diagnostico:v19.8.29-stream-tab": "node scripts/diagnostico_v19_8_29_stream_tab_skeleton_2026.cjs",
+    "auto:v19.8.29-stream-tab": "node scripts/apply_v19_8_29_auto_2026.cjs",
+    "repair:v19.8.30-stream-mic": "node scripts/repair_v19_8_30_stream_mic_button_2026.cjs",
+    "diagnostico:v19.8.30-stream-mic": "node scripts/diagnostico_v19_8_30_stream_mic_button_2026.cjs",
+    "auto:v19.8.30-stream-mic": "node scripts/apply_v19_8_30_auto_2026.cjs",
+    "repair:v19.8.30a-stream-mic-diagfix": "node scripts/repair_v19_8_30a_stream_mic_diagfix_2026.cjs",
+    "diagnostico:v19.8.30a-stream-mic-diagfix": "node scripts/diagnostico_v19_8_30a_stream_mic_diagfix_2026.cjs",
+    "auto:v19.8.30a-stream-mic-diagfix": "node scripts/apply_v19_8_30a_auto_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

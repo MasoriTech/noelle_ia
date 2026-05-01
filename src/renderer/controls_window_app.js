@@ -1,4 +1,4 @@
-"use strict"; /* NOELLE_V19_8_28_STATUS_ASSETS_SPLIT */ /* NOELLE_V19_8_27_CONTROLS_CORE_SPLIT */ /* NOELLE_V19_8_27B_CONTROLS_SYNTAX_FIX */ /* NOELLE_V19_8_27C_UPDATE_ASSET_SUMMARY_HARDFIX */
+"use strict"; /* NOELLE_V19_8_29_STREAM_TAB_SKELETON */ /* NOELLE_V19_8_28_STATUS_ASSETS_SPLIT */ /* NOELLE_V19_8_27_CONTROLS_CORE_SPLIT */ /* NOELLE_V19_8_27B_CONTROLS_SYNTAX_FIX */ /* NOELLE_V19_8_27C_UPDATE_ASSET_SUMMARY_HARDFIX */
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -30,12 +30,12 @@ function setPage(page) {
   appState.page = page;
   $$(".page").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
   $$(".nav-item").forEach((el) => el.classList.toggle("active", el.dataset.target === page));
-  const titles = { home: "Principal", avatar: "Avatar", chat: "Chat IA", emotes: "Emotes", inventory: "Inventário", settings: "Configurações", about: "Sobre" };
+  const titles = { home: "Principal", avatar: "Avatar", chat: "Chat IA", emotes: "Emotes", inventory: "Inventário", settings: "Configurações", stream: "Stream IA", about: "Sobre" };
   const title = $("#topTitle");
   const subtitle = $("#topSubtitle");
   if (title) title.textContent = titles[page] || "Noelle";
   if (subtitle) subtitle.textContent = `${titles[page] || "Noelle"} · Noelle Companion 2026`;
-  if (page === "chat") scrollChatToBottom(); if (page === "avatar") window.NoelleAvatarTabV1982?.render?.();
+  if (page === "chat") scrollChatToBottom(); if (page === "avatar") window.NoelleAvatarTabV1982?.render?.(); if (page === "stream") window.NoelleStreamPageV19829?.render?.();
 }
 
 function setGlobalStatus(text, type = "warn") { return window.NoelleRendererCoreV19827?.setGlobalStatus?.(text, type); }

@@ -5,20 +5,20 @@ cd /d "%~dp0"
 :MENU
 cls
 echo ================================================================
-echo  Noelle/Yoru Companion 2026 - V19.8.28
+echo  Noelle/Yoru Companion 2026 - V19.8.30a Diagfix
 echo ================================================================
 echo.
 echo  [1] Iniciar programa agora
-echo  [2] Aplicar V19.8.28 Status Assets Split
-echo  [3] Rodar diagnostico V19.8.28
+echo  [2] Aplicar V19.8.30a Stream Mic Diagfix
+echo  [3] Rodar diagnostico V19.8.30a
 echo  [4] Git salvar e enviar tudo
 echo  [0] Sair
 echo.
 set /p OP=Escolha uma opcao: 
 
 if "%OP%"=="1" goto START_ONLY
-if "%OP%"=="2" goto AUTO_28
-if "%OP%"=="3" goto DIAG_28
+if "%OP%"=="2" goto AUTO_30A
+if "%OP%"=="3" goto DIAG_30A
 if "%OP%"=="4" goto GIT_ALL
 if "%OP%"=="0" goto END
 
@@ -75,28 +75,28 @@ echo [INFO] Programa encerrado com codigo %ERRORLEVEL%.
 pause
 goto MENU
 
-:AUTO_28
+:AUTO_30A
 cls
 call :CHECK_ROOT
 if errorlevel 1 pause & goto MENU
 call :CHECK_NODE
 if errorlevel 1 pause & goto MENU
-if exist scripts\apply_v19_8_28_auto_2026.cjs (
-  node scripts\apply_v19_8_28_auto_2026.cjs
+if exist scripts\apply_v19_8_30a_auto_2026.cjs (
+  node scripts\apply_v19_8_30a_auto_2026.cjs
 ) else (
-  node scripts\repair_v19_8_28_status_assets_split_2026.cjs
-  node scripts\diagnostico_v19_8_28_status_assets_split_2026.cjs
+  node scripts\repair_v19_8_30a_stream_mic_diagfix_2026.cjs
+  node scripts\diagnostico_v19_8_30a_stream_mic_diagfix_2026.cjs
 )
 pause
 goto MENU
 
-:DIAG_28
+:DIAG_30A
 cls
 call :CHECK_ROOT
 if errorlevel 1 pause & goto MENU
 call :CHECK_NODE
 if errorlevel 1 pause & goto MENU
-node scripts\diagnostico_v19_8_28_status_assets_split_2026.cjs
+node scripts\diagnostico_v19_8_30a_stream_mic_diagfix_2026.cjs
 pause
 goto MENU
 
@@ -107,7 +107,7 @@ if errorlevel 1 pause & goto MENU
 call :CHECK_GIT
 if errorlevel 1 pause & goto MENU
 
-set MSG=V19.8.28 separa status e assets do renderer controls
+set MSG=V19.8.30a corrige diagnostico do microfone Stream
 echo Mensagem padrao:
 echo %MSG%
 echo.

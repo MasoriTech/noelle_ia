@@ -1434,3 +1434,33 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Move `refreshStatus` e `loadAssets` para o módulo status/assets.
 - Mantém renderização de cards/assets no arquivo original por enquanto.
 - Não mexe no Avatar renderer, Chat, Room, main, preload ou renderer_dist.
+
+
+## V19.8.29 — Stream Tab Skeleton
+
+- Cria a aba **Stream** como Fase 1 da IA em tempo real.
+- A aba Stream nesta fase é apenas visual: não liga microfone, não transcreve, não chama Ollama e não chama TTS.
+- Regra inicial do projeto: o microfone nunca liga automaticamente; só poderá ligar quando o usuário apertar "Iniciar escuta" em fase futura.
+- Regra principal StreamGuard: Noelle/Yoru só responde se a fala for uma pergunta direcionada a ela.
+- Wake words obrigatórias por padrão: Noelle, Yoru, Ei Noelle, Ei Yoru.
+- Exemplo: "Como faço isso?" não responde. "Noelle, como faço isso?" responde.
+- Nunca deixar conversa contínua como padrão.
+
+
+## V19.8.30 — Stream Mic Button
+
+- Fase 2 da aba Stream.
+- O microfone só liga quando o usuário aperta **Iniciar escuta**.
+- O botão **Parar escuta** desliga todas as tracks do microfone.
+- Se a janela ficar oculta ou fechar, o microfone é desligado.
+- Mostra volume real no medidor da aba Stream.
+- Não faz STT, não chama Ollama e não chama TTS nesta fase.
+- A regra StreamGuard continua: Noelle/Yoru só responde pergunta direcionada a ela, em fases futuras.
+
+
+## V19.8.30a — Stream Mic diagfix
+
+- Corrige falso positivo do diagnóstico V19.8.30.
+- O módulo de microfone continha as palavras STT/Ollama/TTS apenas em comentários, mas o diagnóstico interpretava como código real.
+- O diagnóstico V19.8.30a remove comentários e strings antes de procurar chamadas indevidas.
+- A fase continua sendo apenas microfone por botão + medidor de volume real.

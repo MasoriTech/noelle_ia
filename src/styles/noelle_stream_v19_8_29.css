@@ -1,0 +1,191 @@
+/* Noelle/Yoru V19.8.29 — Stream Tab Skeleton */
+
+.stream-v19829-shell {
+  display: grid;
+  gap: 16px;
+}
+
+.stream-v19829-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 16px;
+  align-items: stretch;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 122, 26, .22);
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 26, .16), transparent 32%),
+    rgba(10, 10, 16, .76);
+}
+
+.stream-v19829-hero h2 {
+  margin: 4px 0 8px;
+  font-size: clamp(22px, 2.4vw, 34px);
+}
+
+.stream-v19829-state-card,
+.stream-v19829-card {
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background: rgba(0, 0, 0, .28);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .18);
+}
+
+.stream-v19829-state-card {
+  padding: 14px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+}
+
+.stream-v19829-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stream-v19829-card {
+  padding: 16px;
+}
+
+.stream-v19829-card h3 {
+  margin: 0 0 12px;
+}
+
+.stream-v19829-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.stream-v19829-actions button,
+.stream-v19829-select {
+  border: 1px solid rgba(255, 122, 26, .38);
+  border-radius: 16px;
+  min-height: 42px;
+  padding: 9px 13px;
+  color: #fff3e8;
+  background: rgba(255, 122, 26, .10);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.stream-v19829-actions button.primary {
+  background: linear-gradient(135deg, #ff7a1a, #e13b1a);
+}
+
+.stream-v19829-select {
+  width: 100%;
+  margin-top: 6px;
+  background: rgba(0, 0, 0, .36);
+}
+
+.stream-v19829-label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 800;
+}
+
+.stream-v19829-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 122, 26, .38);
+  font-weight: 900;
+  color: #fff3e8;
+  background: rgba(255, 122, 26, .12);
+}
+
+.stream-v19829-pill[data-state="listening"],
+.stream-v19829-pill[data-state="ready_to_answer"] {
+  border-color: rgba(126, 255, 180, .38);
+  color: #adffc7;
+}
+
+.stream-v19829-pill[data-state="blocked"],
+.stream-v19829-pill[data-state="error"] {
+  border-color: rgba(255, 80, 80, .42);
+  color: #ffb2b2;
+}
+
+.stream-v19829-meter {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 14px;
+  background: rgba(255, 255, 255, .08);
+}
+
+#streamFakeMeterBar {
+  height: 100%;
+  width: 8%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff7a1a, #ffe2b8);
+  transition: width .25s ease;
+}
+
+#streamFakeMeterBar.is-active {
+  animation: stream-v19829-pulse 1.15s ease-in-out infinite;
+}
+
+@keyframes stream-v19829-pulse {
+  0% { width: 12%; }
+  40% { width: 64%; }
+  100% { width: 22%; }
+}
+
+.stream-v19829-textarea,
+.stream-v19829-box,
+.stream-v19829-log {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background: rgba(0, 0, 0, .30);
+  color: #fff3e8;
+  box-sizing: border-box;
+}
+
+.stream-v19829-textarea {
+  padding: 12px;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.stream-v19829-box {
+  min-height: 110px;
+  padding: 14px;
+  white-space: pre-wrap;
+}
+
+.stream-v19829-log {
+  max-height: 220px;
+  overflow: auto;
+  padding: 10px;
+}
+
+.stream-v19829-log-item {
+  display: grid;
+  grid-template-columns: 58px 80px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.stream-v19829-log-item p {
+  margin: 0;
+}
+
+.stream-v19829-note,
+.stream-v19829-shell .muted {
+  color: rgba(255, 243, 232, .72);
+}
+
+@media (max-width: 900px) {
+  .stream-v19829-hero,
+  .stream-v19829-grid {
+    grid-template-columns: 1fr;
+  }
+}
