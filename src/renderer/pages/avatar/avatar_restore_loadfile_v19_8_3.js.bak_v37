@@ -1,0 +1,241 @@
+(() => {
+  "use strict";
+
+  const PAGE_SELECTOR = '[data-page="avatar"]';
+  const ROOT_ID = "avatarLoadfileWorkingV1983";
+  const FRAME_ID = "avatarLoadfileWorkingFrameV1983";
+  const PREVIEW_URL = "./avatar_loadfile_preview_v19_8_3.html?embed=1&source=working_restore";
+
+  const BLOCK_NODE_IDS = [
+    "avatarPageV31",
+    "avatarLoadfileSimpleV32",
+    "avatarUnifiedWindow",
+    "avatarMountV30",
+    "avatarMount",
+    "noelleAvatarV1982"
+  ];
+
+  const BLOCK_SCRIPT_PARTS = [
+    "noelle_avatar_tab_v19_8_2.js",
+    "avatar_legacy_blocker_v27.js",
+    "avatar_renderer_restore_v27_1.js",
+    "restore_avatar_carousel_runtime_v28.js",
+    "avatar_window_unified_v29.js",
+    "avatar_page_v30.js",
+    "avatar_page_v31.js",
+    "avatar_loadfile_page_v32.js",
+    "avatar_carousel_mount_v31.js",
+    "avatar_assets_bridge_v31_2.js"
+  ];
+
+  function log(...args) {
+    console.log("[avatar-loadfile-v19.8.3-restore]", ...args);
+  }
+
+  function page() {
+    return document.querySelector(PAGE_SELECTOR);
+  }
+
+  function disableOldGlobals() {
+    try {
+      window.__NOELLE_AVATAR_TAB_V1978_LEGACY_REDIRECT__ = false;
+      window.__AVATAR_CAROUSEL_ACTIVE__ = false;
+      window.__YORU_AVATAR_CAROUSEL_V31_ACTIVE__ = false;
+      window.__YORU_AVATAR_CAROUSEL_DIRECT_V31_1_ACTIVE__ = false;
+      window.__YORU_AVATAR_CAROUSEL_DIRECT_V31_2_ACTIVE__ = false;
+      window.__YORU_AVATAR_CAROUSEL_DIRECT_V31_3_ACTIVE__ = false;
+      window.__YORU_AVATAR_MODE__ = "loadfile-preview-v19.8.3";
+    } catch {}
+  }
+
+  function removeOldScripts() {
+    document.querySelectorAll("script[src]").forEach((script) => {
+      const src = script.getAttribute("src") || "";
+      if (BLOCK_SCRIPT_PARTS.some((part) => src.includes(part))) {
+        script.remove();
+        log("script antigo removido:", src);
+      }
+    });
+  }
+
+  function removeOldAvatarNodes() {
+    BLOCK_NODE_IDS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.remove();
+        log("node antigo removido:", id);
+      }
+    });
+
+    document.querySelectorAll("#errorBox, .error-box").forEach((el) => {
+      const text = el.textContent || "";
+      if (
+        text.includes("avatar_carousel") ||
+        text.includes("renderer_dist") ||
+        text.includes("bundle.js")
+      ) {
+        el.remove();
+      }
+    });
+  }
+
+  function forceLayout(host) {
+    host.style.display = "block";
+    host.style.width = "100%";
+    host.style.maxWidth = "none";
+    host.style.gridTemplateColumns = "none";
+    host.style.gridAutoColumns = "unset";
+    host.style.alignItems = "stretch";
+    host.style.overflow = "visible";
+  }
+
+  function hideOtherAvatarChildren(host) {
+    [...host.children].forEach((child) => {
+      if (child.id === ROOT_ID) {
+        child.hidden = false;
+        child.style.display = "block";
+        return;
+      }
+      if (child.tagName === "SCRIPT") return;
+      child.hidden = true;
+      child.style.display = "none";
+      child.dataset.hiddenByAvatarLoadfileRestore = "true";
+    });
+  }
+
+  function buildRoot() {
+    const root = document.createElement("section");
+    root.id = ROOT_ID;
+    root.dataset.avatarRuntime = "loadfile-preview-v19-8-3-working";
+    root.style.display = "block";
+    root.style.width = "100%";
+    root.style.maxWidth = "none";
+    root.style.gridColumn = "1 / -1";
+    root.style.position = "relative";
+    root.style.boxSizing = "border-box";
+
+    root.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 14px;">
+        <div>
+          <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#e7b7ff;font-weight:900;">Avatar VRM</div>
+          <h1 style="margin:8px 0 4px;font-size:34px;line-height:1.05;letter-spacing:-.04em;">Avatar Loadfile</h1>
+          <p style="margin:0;color:rgba(255,255,255,.72);font-size:16px;">Restaurado para a janela funcional v19.8.3. Sem carousel, sem bundle antigo.</p>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+          <button id="avatarLoadfileReloadWorking" type="button"
+            style="padding:10px 14px;border:1px solid rgba(255,122,200,.28);border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-weight:800;cursor:pointer;">
+            Recarregar
+          </button>
+          <div id="avatarLoadfileStatusWorking"
+            style="padding:10px 14px;border:1px solid rgba(255,122,200,.28);border-radius:999px;color:#f6c2e5;background:rgba(255,255,255,.04);font-weight:800;white-space:nowrap;">
+            v19.8.3 ativo
+          </div>
+        </div>
+      </div>
+
+      <div id="avatarLoadfileShellWorking" style="
+        width:100%;
+        height:min(78vh, 780px);
+        min-height:650px;
+        position:relative;
+        border-radius:22px;
+        overflow:hidden;
+        background:#080810;
+        border:1px solid rgba(255,122,200,.22);
+        box-shadow:0 20px 60px rgba(0,0,0,.25);
+        box-sizing:border-box;
+      ">
+        <iframe
+          id="${FRAME_ID}"
+          title="Avatar Loadfile Preview v19.8.3"
+          src="${PREVIEW_URL}"
+          style="width:100%;height:100%;border:0;display:block;background:#080810;"
+          allow="fullscreen">
+        </iframe>
+      </div>
+
+      <div id="avatarLoadfileNoteWorking" style="
+        margin-top:12px;
+        border:1px solid rgba(255,122,200,.14);
+        border-radius:16px;
+        padding:12px 14px;
+        color:rgba(255,255,255,.70);
+        background:rgba(255,255,255,.035);
+        font-size:13px;
+        line-height:1.45;
+      ">
+        Fonte restaurada: <code>src/avatar_loadfile_preview_v19_8_3.html</code>.
+      </div>
+    `;
+
+    return root;
+  }
+
+  function ensureRoot() {
+    const host = page();
+    if (!host) return;
+
+    disableOldGlobals();
+    removeOldScripts();
+    removeOldAvatarNodes();
+    forceLayout(host);
+
+    let root = document.getElementById(ROOT_ID);
+    if (!root) {
+      root = buildRoot();
+      host.prepend(root);
+    }
+
+    hideOtherAvatarChildren(host);
+
+    const frame = document.getElementById(FRAME_ID);
+    const status = document.getElementById("avatarLoadfileStatusWorking");
+    const reload = document.getElementById("avatarLoadfileReloadWorking");
+
+    if (frame && !frame.dataset.bound) {
+      frame.dataset.bound = "true";
+      frame.addEventListener("load", () => {
+        if (status) status.textContent = "preview carregado";
+      });
+    }
+
+    if (reload && frame && !reload.dataset.bound) {
+      reload.dataset.bound = "true";
+      reload.addEventListener("click", () => {
+        if (status) status.textContent = "recarregando...";
+        frame.src = PREVIEW_URL + "&t=" + Date.now();
+      });
+    }
+  }
+
+  function installGuard() {
+    const host = page();
+    if (!host || host.__avatarLoadfileWorkingGuard) return;
+    host.__avatarLoadfileWorkingGuard = true;
+
+    const observer = new MutationObserver(() => {
+      ensureRoot();
+    });
+
+    observer.observe(host, { childList: true });
+  }
+
+  function boot() {
+    ensureRoot();
+    installGuard();
+
+    document.addEventListener("click", (event) => {
+      const btn = event.target.closest?.("[data-target='avatar'], [data-tab='avatar']");
+      if (btn) setTimeout(ensureRoot, 50);
+    });
+
+    log("boot completo");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();

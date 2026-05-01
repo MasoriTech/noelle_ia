@@ -1,0 +1,161 @@
+/*
+  Avatar Loadfile Fixed Sizes V36
+  Escopo: somente aba Avatar usando Loadfile v19.8.3.
+*/
+
+[data-page="avatar"] {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  display: block !important;
+  overflow: hidden !important;
+  padding: 12px 18px 14px !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileWorkingV1983 {
+  width: 100% !important;
+  max-width: none !important;
+  height: calc(100vh - 150px) !important;
+  min-height: 540px !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-rows: 58px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+#avatarLoadfileWorkingV1983 > div:first-child {
+  width: 100% !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileWorkingV1983 > div:first-child > div:first-child {
+  min-width: 0 !important;
+  max-width: calc(100% - 280px) !important;
+}
+
+#avatarLoadfileWorkingV1983 > div:first-child > div:first-child > div:first-child {
+  height: 13px !important;
+  font-size: 11px !important;
+  line-height: 13px !important;
+  letter-spacing: 0.18em !important;
+  margin: 0 0 4px !important;
+}
+
+#avatarLoadfileWorkingV1983 h1 {
+  height: 32px !important;
+  font-size: 30px !important;
+  line-height: 32px !important;
+  margin: 0 !important;
+  letter-spacing: -0.04em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#avatarLoadfileWorkingV1983 p {
+  display: none !important;
+}
+
+#avatarLoadfileWorkingV1983 > div:first-child > div:last-child {
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 0 0 auto !important;
+}
+
+#avatarLoadfileReloadWorking,
+#avatarLoadfileStatusWorking {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  line-height: 40px !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileShellWorking {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileWorkingFrameV1983 {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  display: block !important;
+  background: #080810 !important;
+}
+
+#avatarLoadfileNoteWorking {
+  display: none !important;
+}
+
+/* Ajuste quando a janela estiver baixa. */
+@media (max-height: 780px) {
+  [data-page="avatar"] {
+    padding: 10px 16px 12px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 {
+    height: calc(100vh - 132px) !important;
+    min-height: 500px !important;
+    grid-template-rows: 48px minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 > div:first-child {
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 > div:first-child > div:first-child > div:first-child {
+    display: none !important;
+  }
+
+  #avatarLoadfileWorkingV1983 h1 {
+    height: 30px !important;
+    font-size: 28px !important;
+    line-height: 30px !important;
+  }
+
+  #avatarLoadfileReloadWorking,
+  #avatarLoadfileStatusWorking {
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    line-height: 36px !important;
+  }
+}

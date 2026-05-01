@@ -1,0 +1,205 @@
+/*
+  Global Layout Runtime V35
+  Objetivo: resolver resolução/altura/scroll do app sem trocar renderer de página.
+  Regra: layout global controla tamanho; cada página declara contrato.
+*/
+
+:root {
+  --yoru-sidebar-width: 320px;
+  --yoru-topbar-height: 96px;
+  --yoru-page-padding-x: 22px;
+  --yoru-page-padding-y: 18px;
+  --yoru-content-max-width: 1480px;
+  --yoru-radius-xl: 22px;
+  --yoru-gap: 16px;
+  --yoru-safe-bottom: 0px;
+  --yoru-ui-scale: 1;
+}
+
+/* Base global */
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 980px;
+  min-height: 620px;
+}
+
+/* O runtime marca estes nós sem depender do HTML original. */
+.yoru-layout-v35-root {
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.yoru-layout-v35-sidebar {
+  width: var(--yoru-sidebar-width) !important;
+  max-width: var(--yoru-sidebar-width) !important;
+  min-width: var(--yoru-sidebar-width) !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.yoru-layout-v35-main {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.yoru-layout-v35-topbar {
+  min-height: var(--yoru-topbar-height) !important;
+  height: var(--yoru-topbar-height) !important;
+  overflow: hidden !important;
+}
+
+.yoru-layout-v35-page-area {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: calc(100vh - var(--yoru-topbar-height)) !important;
+  overflow: hidden !important;
+}
+
+/* Contrato de páginas */
+.page[data-page],
+[data-page].page,
+section[data-page] {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  padding: var(--yoru-page-padding-y) var(--yoru-page-padding-x) !important;
+}
+
+.page[data-page]:not(.active),
+section[data-page]:not(.active) {
+  display: none;
+}
+
+.page[data-page].active,
+section[data-page].active {
+  display: block;
+}
+
+/* Páginas de scroll normal */
+.page[data-page="home"],
+.page[data-page="settings"],
+.page[data-page="inventory"],
+.page[data-page="emotes"],
+.page[data-page="about"],
+section[data-page="home"],
+section[data-page="settings"],
+section[data-page="inventory"],
+section[data-page="emotes"],
+section[data-page="about"] {
+  overflow: auto !important;
+}
+
+/* Páginas que devem preencher tela */
+.page[data-page="avatar"],
+.page[data-page="chat"],
+.page[data-page="stream"],
+section[data-page="avatar"],
+section[data-page="chat"],
+section[data-page="stream"] {
+  overflow: hidden !important;
+}
+
+/* Avatar: contrato global, sem alterar renderer. */
+[data-page="avatar"] #avatarLoadfileWorkingV1983 {
+  width: 100% !important;
+  max-width: var(--yoru-content-max-width) !important;
+  margin: 0 auto !important;
+  height: calc(100vh - var(--yoru-topbar-height) - 42px) !important;
+  min-height: 520px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+}
+
+[data-page="avatar"] #avatarLoadfileShellWorking {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  overflow: hidden !important;
+}
+
+[data-page="avatar"] #avatarLoadfileWorkingFrameV1983 {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  border: 0 !important;
+}
+
+/* Chat: lista rola, input fica embaixo. */
+[data-page="chat"],
+.chat-page {
+  min-height: 0 !important;
+}
+
+[data-page="chat"] .chat-log,
+.chat-page .chat-log,
+#chatLog {
+  max-height: calc(100vh - var(--yoru-topbar-height) - 210px) !important;
+  overflow: auto !important;
+  min-height: 260px !important;
+}
+
+/* Stream: logs internos rolam, não a página toda. */
+[data-page="stream"] .stream-v19829-log,
+[data-page="stream"] #streamLog,
+#streamLog {
+  max-height: min(34vh, 320px) !important;
+  overflow: auto !important;
+}
+
+/* Imagens/canvas/iframes não podem estourar o layout. */
+canvas,
+iframe,
+video {
+  max-width: 100% !important;
+}
+
+iframe {
+  background: transparent;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 1180px) {
+  :root {
+    --yoru-sidebar-width: 286px;
+    --yoru-page-padding-x: 16px;
+    --yoru-topbar-height: 88px;
+  }
+}
+
+@media (max-height: 760px) {
+  :root {
+    --yoru-topbar-height: 82px;
+    --yoru-page-padding-y: 12px;
+  }
+
+  [data-page="avatar"] #avatarLoadfileWorkingV1983 {
+    height: calc(100vh - var(--yoru-topbar-height) - 30px) !important;
+    min-height: 480px !important;
+  }
+
+  [data-page="avatar"] #avatarLoadfileNoteWorking {
+    display: none !important;
+  }
+}

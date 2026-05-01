@@ -7,59 +7,79 @@
   const STATUS_ID = "avatarStatusV31";
 
   function log(...args) {
-    console.log("[avatar-page-v31]", ...args);
+    console.log("[avatar-page-v31.3]", ...args);
   }
 
   function getPage() {
     return document.querySelector(PAGE_SELECTOR);
   }
 
-  function hideExistingAvatarChildren(page) {
+  function forcePageLayout(page) {
+    page.style.display = "block";
+    page.style.gridTemplateColumns = "none";
+    page.style.gridAutoColumns = "unset";
+    page.style.alignItems = "stretch";
+    page.style.width = "100%";
+    page.style.maxWidth = "none";
+    page.style.overflow = "visible";
+  }
+
+  function hideEverythingExceptRoot(page) {
     [...page.children].forEach((child) => {
       if (child.id === ROOT_ID) return;
+      if (child.tagName === "SCRIPT") return;
       child.hidden = true;
+      child.style.display = "none";
       child.dataset.avatarV31Hidden = "true";
     });
+  }
+
+  function installMutationGuard(page) {
+    if (page.__avatarV313MutationGuard) return;
+    page.__avatarV313MutationGuard = true;
+
+    const observer = new MutationObserver(() => {
+      hideEverythingExceptRoot(page);
+    });
+
+    observer.observe(page, { childList: true });
   }
 
   function buildLayout(agentName) {
     const root = document.createElement("section");
     root.id = ROOT_ID;
-    root.dataset.avatarRuntime = "v31";
+    root.dataset.avatarRuntime = "v31.3-simple-carousel";
+    root.style.display = "block";
+    root.style.width = "100%";
+    root.style.maxWidth = "none";
+    root.style.gridColumn = "1 / -1";
+    root.style.position = "relative";
+    root.style.boxSizing = "border-box";
+
     root.innerHTML = `
-      <div class="avatar-v31-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:8px 0 16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 14px;">
         <div>
-          <div style="font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:#e7b7ff;font-weight:800;">Avatar VRM</div>
-          <h1 style="margin:8px 0 4px;font-size:32px;line-height:1.1;">Avatar da ${agentName}</h1>
-          <p style="margin:0;color:rgba(255,255,255,.72);font-size:16px;">Carousel oficial com setas para trocar personagem. Sem loader legado.</p>
+          <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#e7b7ff;font-weight:900;">Avatar VRM</div>
+          <h1 style="margin:8px 0 4px;font-size:34px;line-height:1.05;letter-spacing:-.04em;">Avatar da ${agentName}</h1>
+          <p style="margin:0;color:rgba(255,255,255,.72);font-size:16px;">Carousel limpo com setas embaixo. Widget e controles ficam separados.</p>
         </div>
-        <div id="${STATUS_ID}" style="padding:10px 14px;border:1px solid rgba(255,122,200,.28);border-radius:999px;color:#f6c2e5;background:rgba(255,255,255,.04);font-weight:700;">avatar runtime v31</div>
+        <div id="${STATUS_ID}" style="padding:10px 14px;border:1px solid rgba(255,122,200,.28);border-radius:999px;color:#f6c2e5;background:rgba(255,255,255,.04);font-weight:800;white-space:nowrap;">carousel limpo</div>
       </div>
 
       <div id="${MOUNT_ID}" style="
         width:100%;
-        height:560px;
-        min-height:460px;
+        height:min(72vh, 720px);
+        min-height:560px;
         position:relative;
         border-radius:22px;
         overflow:hidden;
         background:#080810;
         border:1px solid rgba(255,122,200,.22);
         box-shadow:0 20px 60px rgba(0,0,0,.25);
+        box-sizing:border-box;
       "></div>
-
-      <div class="avatar-v31-notes" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;">
-        <div style="border:1px solid rgba(255,122,200,.16);border-radius:16px;padding:12px;background:rgba(255,255,255,.035);">
-          <strong>Renderer</strong><br><span style="color:rgba(255,255,255,.72);">avatar carousel v19.7.6</span>
-        </div>
-        <div style="border:1px solid rgba(255,122,200,.16);border-radius:16px;padding:12px;background:rgba(255,255,255,.035);">
-          <strong>Mount único</strong><br><span style="color:rgba(255,255,255,.72);">#avatarMount</span>
-        </div>
-        <div style="border:1px solid rgba(255,122,200,.16);border-radius:16px;padding:12px;background:rgba(255,255,255,.035);">
-          <strong>Legacy</strong><br><span style="color:rgba(255,255,255,.72);">bloqueado</span>
-        </div>
-      </div>
     `;
+
     return root;
   }
 
@@ -71,19 +91,31 @@
       return;
     }
 
+    forcePageLayout(page);
     window.AvatarLegacyBlockerV31?.run?.();
 
-    const state = await window.AvatarConfigV31?.loadState?.() || { active_avatar: "yoru" };
+    let state = { active_avatar: "yoru" };
+    try {
+      state = await window.AvatarConfigV31?.loadState?.() || state;
+    } catch {}
+
     const agentName = String(state.active_avatar || "yoru")
       .replace(/(^|[-_\\s])([a-z])/g, (_, sep, ch) => sep + ch.toUpperCase());
+
+    hideEverythingExceptRoot(page);
 
     let root = document.getElementById(ROOT_ID);
 
     if (!root) {
-      hideExistingAvatarChildren(page);
       root = buildLayout(agentName);
       page.prepend(root);
+    } else {
+      root.hidden = false;
+      root.style.display = "block";
     }
+
+    hideEverythingExceptRoot(page);
+    installMutationGuard(page);
 
     const mount = document.getElementById(MOUNT_ID);
 

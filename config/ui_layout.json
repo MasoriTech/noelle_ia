@@ -1,0 +1,18 @@
+{
+  "scale": 1,
+  "sidebarWidth": 320,
+  "topbarHeight": 96,
+  "pagePaddingX": 22,
+  "pagePaddingY": 18,
+  "contentMaxWidth": 1480,
+  "contracts": {
+    "home": "scroll",
+    "avatar": "fill",
+    "chat": "fill",
+    "stream": "fill",
+    "settings": "scroll",
+    "inventory": "scroll",
+    "emotes": "scroll",
+    "about": "scroll"
+  }
+}

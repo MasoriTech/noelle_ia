@@ -1,0 +1,119 @@
+/*
+  Avatar Loadfile Layout Polish V33
+  Mantém o renderer v19.8.3 funcionando.
+  Corrige apenas tamanho, proporção e organização visual.
+*/
+
+[data-page="avatar"] {
+  display: block !important;
+  grid-template-columns: none !important;
+  grid-auto-columns: unset !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 18px 22px 22px !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileWorkingV1983 {
+  width: 100% !important;
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(420px, 1fr) auto !important;
+  gap: 12px !important;
+  min-height: calc(100vh - 190px) !important;
+  max-height: calc(100vh - 150px) !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileWorkingV1983 > div:first-child {
+  margin: 0 !important;
+  min-height: 58px !important;
+  align-items: center !important;
+}
+
+#avatarLoadfileWorkingV1983 h1 {
+  font-size: clamp(26px, 2.2vw, 36px) !important;
+  line-height: 1.05 !important;
+  margin: 5px 0 3px !important;
+  letter-spacing: -0.04em !important;
+}
+
+#avatarLoadfileWorkingV1983 p {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+  max-width: 760px !important;
+}
+
+#avatarLoadfileReloadWorking,
+#avatarLoadfileStatusWorking {
+  min-height: 42px !important;
+  padding: 8px 13px !important;
+  font-size: 14px !important;
+}
+
+#avatarLoadfileShellWorking {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: 16 / 9 !important;
+  max-width: 100% !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+#avatarLoadfileWorkingFrameV1983 {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: block !important;
+  border: 0 !important;
+}
+
+#avatarLoadfileNoteWorking {
+  margin-top: 0 !important;
+  font-size: 12px !important;
+  padding: 9px 12px !important;
+  opacity: 0.82 !important;
+}
+
+/* Quando a janela for mais baixa, prioriza o preview e reduz textos. */
+@media (max-height: 780px) {
+  [data-page="avatar"] {
+    padding: 12px 18px 16px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 {
+    min-height: calc(100vh - 160px) !important;
+    max-height: calc(100vh - 135px) !important;
+    gap: 8px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 > div:first-child {
+    min-height: 48px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 h1 {
+    font-size: 28px !important;
+  }
+
+  #avatarLoadfileWorkingV1983 p {
+    font-size: 13px !important;
+  }
+
+  #avatarLoadfileNoteWorking {
+    display: none !important;
+  }
+}
+
+/* Em telas muito largas, não deixa o avatar ficar exagerado. */
+@media (min-width: 1500px) {
+  #avatarLoadfileWorkingV1983 {
+    max-width: 1360px !important;
+  }
+}

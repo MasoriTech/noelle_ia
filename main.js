@@ -1,3 +1,4 @@
+try { require("./src/main/avatar_assets_bridge_v31_2.cjs").registerAvatarAssetsBridgeV312(); } catch (err) { console.warn("[avatar-assets-v31.2] bridge failed:", err && err.message ? err.message : err); }
 "use strict";
 
 const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require("electron");

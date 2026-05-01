@@ -102,3 +102,14 @@ try {
   console.warn("[Noelle V19.8.24] preload import avatar indisponível:", err && err.message ? err.message : err);
 }
 // NOELLE_V19_8_24_IMPORT_AVATAR_PRELOAD_END
+
+
+;try {
+  const { contextBridge, ipcRenderer } = require("electron");
+  contextBridge.exposeInMainWorld("yoruAvatarAssets", {
+    list: () => ipcRenderer.invoke("yoru:avatars:list"),
+    default: () => ipcRenderer.invoke("yoru:avatars:default")
+  });
+} catch (err) {
+  console.warn("[avatar-assets-v31.2] preload bridge unavailable:", err && err.message ? err.message : err);
+}
