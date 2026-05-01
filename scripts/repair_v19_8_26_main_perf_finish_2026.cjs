@@ -3,7 +3,7 @@
 
 /*
   Noelle/Yoru V19.8.26 — finaliza performance do main.js
-  Corrige pontos que ficaram incompletos:
+  Corrige:
   - writeJson usa writeJsonAtomic
   - ollamaRequest usa OLLAMA_HTTP_AGENT
   - loadState/saveState usam cache curto
@@ -133,14 +133,14 @@ function patchImports(code) {
     out = ensureImport(out, REQ_AGENT);
     ok("Import OLLAMA_HTTP_AGENT adicionado.");
   } else {
-    ok("Import OLLAMA_HTTP_AGENT já existe.");
+    ok("Import OLLAMA_HTTP_AGENT ja existe.");
   }
 
   if (!out.includes("safe_json_v19_8_22.cjs")) {
     out = ensureImport(out, REQ_SAFE_JSON);
     ok("Import writeJsonAtomic adicionado.");
   } else {
-    ok("Import writeJsonAtomic já existe.");
+    ok("Import writeJsonAtomic ja existe.");
   }
 
   return out;
@@ -151,144 +151,122 @@ function patchWriteJson(code) {
 
   const range = findFunctionRange(code, "writeJson");
   if (!range) {
-    warn("writeJson não encontrado.");
+    warn("writeJson nao encontrado.");
     return code;
   }
 
   if (range.text.includes("writeJsonAtomic(file, value)")) {
-    ok("writeJson já usa writeJsonAtomic.");
+    ok("writeJson ja usa writeJsonAtomic.");
     return code;
   }
 
   if (range.text.includes("writeFileSync")) {
-    ok("writeJson antigo encontrado e substituído por escrita atômica.");
+    ok("writeJson antigo encontrado e substituido por escrita atomica.");
     return code.slice(0, range.start) + wanted + code.slice(range.end);
   }
 
-  warn("writeJson existe, mas não parece usar writeFileSync. Não substituí.");
+  warn("writeJson existe, mas nao parece usar writeFileSync. Nao substitui.");
   return code;
 }
 
 function patchCacheDecl(code) {
   if (code.includes("__NOELLE_V19_8_26_STATE_CACHE")) {
-    ok("Cache V19.8.26 já declarado.");
+    ok("Cache V19.8.26 ja declarado.");
     return code;
   }
 
   const range = findFunctionRange(code, "writeJson");
   if (range) {
-    ok("Declaração de cache V19.8.26 adicionada após writeJson.");
+    ok("Declaracao de cache V19.8.26 adicionada apos writeJson.");
     return code.slice(0, range.end) + " " + CACHE_DECL + code.slice(range.end);
   }
 
-  warn("Não achei writeJson para inserir cache; colocando perto de runtime.");
-  const marker = "const runtime = {";
-  if (code.includes(marker)) return code.replace(marker, CACHE_DECL + " " + marker);
+  warn("Nao achei writeJson para inserir cache; colocando no topo.");
   return CACHE_DECL + " " + code;
 }
 
 function patchLoadState(code) {
   const range = findFunctionRange(code, "loadState");
   if (!range) {
-    warn("loadState não encontrado.");
+    warn("loadState nao encontrado.");
     return code;
   }
 
   if (range.text.includes("__NOELLE_V19_8_26_STATE_CACHE")) {
-    ok("loadState já usa cache V19.8.26.");
+    ok("loadState ja usa cache V19.8.26.");
     return code;
-  }
-
-  const oldStart = "function loadState() { const saved = readJson(stateFile(), {}); return {";
-  const newStart = "function loadState() { const now = Date.now(); const file = stateFile(); let saved; if (__NOELLE_V19_8_26_STATE_CACHE && __NOELLE_V19_8_26_STATE_CACHE.file === file && now - __NOELLE_V19_8_26_STATE_CACHE.at < 1000) { saved = __NOELLE_V19_8_26_STATE_CACHE.value; } else { saved = readJson(file, {}); __NOELLE_V19_8_26_STATE_CACHE = { file, at: now, value: saved }; } return {";
-
-  if (range.text.includes(oldStart)) {
-    ok("loadState substituído por versão com cache curto.");
-    return code.slice(0, range.start) + range.text.replace(oldStart, newStart) + code.slice(range.end);
   }
 
   const compactRegex = /function\s+loadState\s*\(\)\s*\{\s*const\s+saved\s*=\s*readJson\(stateFile\(\),\s*\{\}\);\s*return\s*\{/;
   if (compactRegex.test(range.text)) {
-    ok("loadState substituído por versão com cache curto por regex.");
+    ok("loadState substituido por versao com cache curto.");
     const replacement = "function loadState() { const now = Date.now(); const file = stateFile(); let saved; if (__NOELLE_V19_8_26_STATE_CACHE && __NOELLE_V19_8_26_STATE_CACHE.file === file && now - __NOELLE_V19_8_26_STATE_CACHE.at < 1000) { saved = __NOELLE_V19_8_26_STATE_CACHE.value; } else { saved = readJson(file, {}); __NOELLE_V19_8_26_STATE_CACHE = { file, at: now, value: saved }; } return {";
     return code.slice(0, range.start) + range.text.replace(compactRegex, replacement) + code.slice(range.end);
   }
 
-  warn("loadState existe, mas formato inesperado. Cache não aplicado.");
+  warn("loadState existe, mas formato inesperado. Cache nao aplicado.");
   return code;
 }
 
 function patchSaveState(code) {
   const range = findFunctionRange(code, "saveState");
   if (!range) {
-    warn("saveState não encontrado.");
+    warn("saveState nao encontrado.");
     return code;
   }
 
   if (range.text.includes("__NOELLE_V19_8_26_STATE_CACHE = { file, at: Date.now(), value: next }")) {
-    ok("saveState já atualiza cache V19.8.26.");
+    ok("saveState ja atualiza cache V19.8.26.");
     return code;
   }
 
   const wanted = "function saveState(patch) { const current = loadState(); const next = { ...current, ...patch }; const file = stateFile(); writeJson(file, next); __NOELLE_V19_8_26_STATE_CACHE = { file, at: Date.now(), value: next }; return next; }";
 
   if (range.text.includes("writeJson(stateFile(), next)") || range.text.includes("const next =")) {
-    ok("saveState substituído por versão que atualiza cache.");
+    ok("saveState substituido por versao que atualiza cache.");
     return code.slice(0, range.start) + wanted + code.slice(range.end);
   }
 
-  warn("saveState existe, mas formato inesperado. Cache de gravação não aplicado.");
+  warn("saveState existe, mas formato inesperado. Cache de gravacao nao aplicado.");
   return code;
 }
 
 function patchOllamaAgent(code) {
   if (code.includes("agent: OLLAMA_HTTP_AGENT")) {
-    ok("ollamaRequest já usa OLLAMA_HTTP_AGENT.");
+    ok("ollamaRequest ja usa OLLAMA_HTTP_AGENT.");
     return code;
   }
 
   const range = findFunctionRange(code, "ollamaRequest");
   if (!range) {
-    warn("ollamaRequest não encontrado.");
+    warn("ollamaRequest nao encontrado.");
     return code;
   }
 
   let text = range.text;
 
-  const patterns = [
-    {
-      old: "{ hostname: OLLAMA_HOST, port: OLLAMA_PORT, path: apiPath, method, headers:",
-      neu: "{ hostname: OLLAMA_HOST, port: OLLAMA_PORT, path: apiPath, method, agent: OLLAMA_HTTP_AGENT, headers:"
-    },
-    {
-      old: "{hostname: OLLAMA_HOST, port: OLLAMA_PORT, path: apiPath, method, headers:",
-      neu: "{hostname: OLLAMA_HOST, port: OLLAMA_PORT, path: apiPath, method, agent: OLLAMA_HTTP_AGENT, headers:"
-    }
-  ];
-
-  for (const p of patterns) {
-    if (text.includes(p.old)) {
-      ok("Ollama HTTP keep-alive agent aplicado.");
-      text = text.replace(p.old, p.neu);
-      return code.slice(0, range.start) + text + code.slice(range.end);
-    }
-  }
-
   const regex = /(\{\s*hostname:\s*OLLAMA_HOST,\s*port:\s*OLLAMA_PORT,\s*path:\s*apiPath,\s*method\s*,)\s*headers:/;
   if (regex.test(text)) {
-    ok("Ollama HTTP keep-alive agent aplicado por regex.");
+    ok("Ollama HTTP keep-alive agent aplicado.");
     text = text.replace(regex, "$1 agent: OLLAMA_HTTP_AGENT, headers:");
     return code.slice(0, range.start) + text + code.slice(range.end);
   }
 
-  warn("Não achei objeto http.request no formato esperado. Agent não aplicado.");
+  const genericRegex = /(http\.request\s*\(\s*\{\s*[^}]*method\s*,)\s*headers:/;
+  if (genericRegex.test(text)) {
+    ok("Ollama HTTP keep-alive agent aplicado por fallback.");
+    text = text.replace(genericRegex, "$1 agent: OLLAMA_HTTP_AGENT, headers:");
+    return code.slice(0, range.start) + text + code.slice(range.end);
+  }
+
+  warn("Nao achei objeto http.request no formato esperado. Agent nao aplicado.");
   return code;
 }
 
 function patchPackageJson() {
   const rel = "package.json";
   if (!exists(rel)) {
-    warn("package.json não encontrado.");
+    warn("package.json nao encontrado.");
     return;
   }
 
@@ -297,7 +275,7 @@ function patchPackageJson() {
   try {
     pkg = JSON.parse(read(rel));
   } catch (err) {
-    fail("package.json inválido: " + err.message);
+    fail("package.json invalido: " + err.message);
     return;
   }
 
@@ -305,6 +283,7 @@ function patchPackageJson() {
   pkg.scripts = pkg.scripts || {};
   pkg.scripts["repair:v19.8.26-main-perf-finish"] = "node scripts/repair_v19_8_26_main_perf_finish_2026.cjs";
   pkg.scripts["diagnostico:v19.8.26-main-perf-finish"] = "node scripts/diagnostico_v19_8_26_main_perf_finish_2026.cjs";
+  pkg.scripts["auto:v19.8.26-main-perf-finish"] = "node scripts/apply_v19_8_26_auto_2026.cjs";
 
   write(rel, JSON.stringify(pkg, null, 2) + "\n");
   ok("package.json atualizado para " + VERSION + ".");
@@ -317,18 +296,18 @@ function patchMemory() {
   backup(rel);
   let md = read(rel);
   if (!md.includes("V19.8.26 — Main performance finish")) {
-    md += "\n\n## V19.8.26 — Main performance finish\n\n- Fecha pontos incompletos da performance do `main.js`.\n- `writeJson` passa a usar `writeJsonAtomic`.\n- `ollamaRequest` passa a usar `agent: OLLAMA_HTTP_AGENT`.\n- `loadState`/`saveState` recebem cache curto V19.8.26.\n- Não mexe em UI, Avatar, Chat, Room, renderer, preload ou assets.\n";
+    md += "\n\n## V19.8.26 — Main performance finish\n\n- Fecha pontos incompletos da performance do `main.js`.\n- `writeJson` passa a usar `writeJsonAtomic`.\n- `ollamaRequest` passa a usar `agent: OLLAMA_HTTP_AGENT`.\n- `loadState`/`saveState` recebem cache curto V19.8.26.\n- Nao mexe em UI, Avatar, Chat, Room, renderer, preload ou assets.\n";
     write(rel, md);
     ok("MEMORIA_GPT_NOELLE.md atualizado.");
   } else {
-    ok("MEMORIA_GPT_NOELLE.md já contém nota V19.8.26.");
+    ok("MEMORIA_GPT_NOELLE.md ja contem nota V19.8.26.");
   }
 }
 
 function patchMainJs() {
   const rel = "main.js";
   if (!exists(rel)) {
-    fail("main.js não encontrado.");
+    fail("main.js nao encontrado.");
     return;
   }
 
@@ -358,7 +337,7 @@ function main() {
     "src/main/performance/safe_json_v19_8_22.cjs"
   ].forEach((rel) => {
     if (exists(rel)) ok(rel + " existe");
-    else fail(rel + " não encontrado. Copie o pack inteiro para a raiz.");
+    else fail(rel + " nao encontrado. Copie o pack inteiro para a raiz.");
   });
 
   patchMainJs();
@@ -368,8 +347,8 @@ function main() {
   if (process.exitCode) {
     fail("Reparo V19.8.26 terminou com problemas.");
   } else {
-    ok("Reparo V19.8.26 concluído. Backup: " + path.relative(ROOT, BACKUP_DIR));
-    log("[INFO] Rode o diagnóstico V19.8.26.");
+    ok("Reparo V19.8.26 concluido. Backup: " + path.relative(ROOT, BACKUP_DIR));
+    log("[INFO] Rode o diagnostico V19.8.26.");
   }
 }
 

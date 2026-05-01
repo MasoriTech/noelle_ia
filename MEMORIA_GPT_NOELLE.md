@@ -1375,3 +1375,12 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Mantém apenas `iniciar.bat` como arquivo `.bat` principal da raiz.
 - Arquivos movidos nesta execução: 6.
 - Não mexe em UI, Avatar, Chat, Room, renderer, preload ou assets.
+
+
+## V19.8.26 — Main performance finish
+
+- Fecha pontos incompletos da performance do `main.js`.
+- `writeJson` passa a usar `writeJsonAtomic`.
+- `ollamaRequest` passa a usar `agent: OLLAMA_HTTP_AGENT`.
+- `loadState`/`saveState` recebem cache curto V19.8.26.
+- Nao mexe em UI, Avatar, Chat, Room, renderer, preload ou assets.

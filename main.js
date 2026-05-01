@@ -128,14 +128,9 @@ function readJson(file, fallback) {
   }
 }
 
-function writeJson(file, value) {
-  ensureDir(path.dirname(file));
-  fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8");
-}
+function writeJson(file, value) { writeJsonAtomic(file, value); } let __NOELLE_V19_8_26_STATE_CACHE = null;
 
-function loadState() {
-  const saved = readJson(stateFile(), {});
-  return {
+function loadState() { const now = Date.now(); const file = stateFile(); let saved; if (__NOELLE_V19_8_26_STATE_CACHE && __NOELLE_V19_8_26_STATE_CACHE.file === file && now - __NOELLE_V19_8_26_STATE_CACHE.at < 1000) { saved = __NOELLE_V19_8_26_STATE_CACHE.value; } else { saved = readJson(file, {}); __NOELLE_V19_8_26_STATE_CACHE = { file, at: now, value: saved }; } return {
     model: MODEL_OPTIONS[saved.model] ? saved.model : CORE_DEFAULTS.model,
     profile: PROFILE_OPTIONS[saved.profile] ? saved.profile : CORE_DEFAULTS.profile,
     persona: PERSONA_OPTIONS[saved.persona] ? saved.persona : CORE_DEFAULTS.persona,
@@ -146,12 +141,7 @@ function loadState() {
   };
 }
 
-function saveState(patch) {
-  const current = loadState();
-  const next = { ...current, ...patch };
-  writeJson(stateFile(), next);
-  return next;
-}
+function saveState(patch) { const current = loadState(); const next = { ...current, ...patch }; const file = stateFile(); writeJson(file, next); __NOELLE_V19_8_26_STATE_CACHE = { file, at: Date.now(), value: next }; return next; }
 
 function trimErr(value, max = 700) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
@@ -165,8 +155,7 @@ function ollamaRequest(method, apiPath, payload = null, timeoutMs = 30000) {
         hostname: OLLAMA_HOST,
         port: OLLAMA_PORT,
         path: apiPath,
-        method,
-        headers: body ? { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) } : {},
+        method, agent: OLLAMA_HTTP_AGENT, headers: body ? { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) } : {},
         timeout: Math.max(3000, Number(timeoutMs || 30000))
       },
       (res) => {
