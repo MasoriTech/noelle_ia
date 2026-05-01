@@ -1,0 +1,27 @@
+NODE --CHECK
+[OK] src/renderer/modules/noelle_stream_turn_history_runtime_v19_8_36.js
+[OK] scripts/apply_stream_v19_8_36.js
+[OK] scripts/checkup_stream_v19_8_36.js
+[OK] scripts/rollback_stream_v19_8_36.js
+[OK] scripts/selftest_stream_v19_8_36.js
+
+SELFTEST
+Selftest Stream V19.8.36
+========================
+[OK] existe src/renderer/modules/noelle_stream_turn_history_runtime_v19_8_36.js
+[OK] existe scripts/apply_stream_v19_8_36.js
+[OK] existe scripts/checkup_stream_v19_8_36.js
+[OK] existe scripts/rollback_stream_v19_8_36.js
+[OK] node --check src/renderer/modules/noelle_stream_turn_history_runtime_v19_8_36.js
+[OK] node --check scripts/apply_stream_v19_8_36.js
+[OK] node --check scripts/checkup_stream_v19_8_36.js
+[OK] node --check scripts/rollback_stream_v19_8_36.js
+[OK] painel histórico
+[OK] localStorage
+[OK] evento resposta IA
+[OK] evento turno salvo
+[OK] copiar histórico
+[OK] exportar
+[OK] bloqueia placeholders
+
+SELFTEST_EXIT=0
