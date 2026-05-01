@@ -1,4 +1,5 @@
 "use strict";
+// NOELLE_V19_8_32_STREAM_SEGMENT_RECORDER
 // NOELLE_V19_8_31_STREAM_VAD_SIMPLE
 // NOELLE_V19_8_30D_STREAM_TEXT_CLEANUP
 // NOELLE_V19_8_30C_STREAM_TAB_RECOVER_READY
@@ -182,7 +183,7 @@
             </div>
 
             <p class="stream-v19829-note">
-              Fase 3: VAD simples ativo. A aba detecta fala e silêncio; transcrição, resposta da IA e voz entram em fases futuras.
+              Fase 4: gravação de trecho em memória ativa. Transcrição, resposta da IA e voz entram em fases futuras.
             </p>
           </article>
 

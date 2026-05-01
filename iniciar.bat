@@ -5,20 +5,20 @@ cd /d "%~dp0"
 :MENU
 cls
 echo ================================================================
-echo  Noelle/Yoru Companion 2026 - V19.8.31 Stream VAD
+echo  Noelle/Yoru Companion 2026 - V19.8.32 Segment Recorder
 echo ================================================================
 echo.
 echo  [1] Iniciar programa agora
-echo  [2] Aplicar V19.8.31 Stream VAD Simple
-echo  [3] Rodar diagnostico V19.8.31
+echo  [2] Aplicar V19.8.32 Segment Recorder
+echo  [3] Rodar diagnostico V19.8.32
 echo  [4] Git salvar e enviar tudo
 echo  [0] Sair
 echo.
 set /p OP=Escolha uma opcao: 
 
 if "%OP%"=="1" goto START_ONLY
-if "%OP%"=="2" goto AUTO_31
-if "%OP%"=="3" goto DIAG_31
+if "%OP%"=="2" goto AUTO_32
+if "%OP%"=="3" goto DIAG_32
 if "%OP%"=="4" goto GIT_ALL
 if "%OP%"=="0" goto END
 
@@ -75,23 +75,23 @@ echo [INFO] Programa encerrado com codigo %ERRORLEVEL%.
 pause
 goto MENU
 
-:AUTO_31
+:AUTO_32
 cls
 call :CHECK_ROOT
 if errorlevel 1 pause & goto MENU
 call :CHECK_NODE
 if errorlevel 1 pause & goto MENU
-node scripts\apply_v19_8_31_auto_2026.cjs
+node scripts\apply_v19_8_32_auto_2026.cjs
 pause
 goto MENU
 
-:DIAG_31
+:DIAG_32
 cls
 call :CHECK_ROOT
 if errorlevel 1 pause & goto MENU
 call :CHECK_NODE
 if errorlevel 1 pause & goto MENU
-node scripts\diagnostico_v19_8_31_stream_vad_simple_2026.cjs
+node scripts\diagnostico_v19_8_32_stream_segment_recorder_2026.cjs
 pause
 goto MENU
 
@@ -102,7 +102,7 @@ if errorlevel 1 pause & goto MENU
 call :CHECK_GIT
 if errorlevel 1 pause & goto MENU
 
-set MSG=V19.8.31 adiciona VAD simples na Stream
+set MSG=V19.8.32 grava trechos de audio da Stream em memoria
 echo Mensagem padrao:
 echo %MSG%
 echo.

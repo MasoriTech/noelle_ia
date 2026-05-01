@@ -1491,3 +1491,13 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - Não grava áudio, não transcreve, não chama Ollama e não gera voz.
 - O microfone continua ligando somente por botão.
 - Próxima fase recomendada: preparar gravação de trecho para STT, ainda com StreamGuard obrigatório.
+
+
+## V19.8.32 — Stream Segment Recorder
+
+- Fase 4 da aba Stream.
+- Cria `src/renderer/modules/noelle_stream_segment_recorder_v19_8_32.js`.
+- Grava em memória o trecho entre `noelle-stream-vad-start-v19831` e `noelle-stream-vad-finish-v19831`.
+- Expõe evento `noelle-stream-segment-ready-v19832` com Blob/URL/duração/tamanho.
+- Não salva em disco, não transcreve, não chama IA e não gera voz.
+- O microfone continua ligando somente por botão.

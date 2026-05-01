@@ -1,4 +1,5 @@
 "use strict";
+// NOELLE_V19_8_32_SEGMENT_RECORDER_EVENTS
 
 /*
   Noelle/Yoru V19.8.30 — Stream Mic Button
@@ -163,6 +164,9 @@
 
       setPill("Escutando", "Microfone ligado por botão. Fase 2: somente medidor de volume.");
       addLog("mic", "Microfone ligado. Nenhum processamento de fala será feito nesta fase.");
+      window.dispatchEvent(new CustomEvent("noelle-stream-mic-start-v19832", {
+        detail: { stream, version: "19.8.32-stream-segment-recorder-2026" }
+      }));
 
       loop();
 
@@ -172,6 +176,8 @@
       state.lastError = message;
       state.active = false;
       setMeter(0);
+
+    window.dispatchEvent(new CustomEvent("noelle-stream-mic-stop-v19832", { detail: { version: "19.8.32-stream-segment-recorder-2026", reason } }));
       setPill("Erro no microfone", message);
       addLog("mic", "Falha ao ligar microfone: " + message);
       return { ok: false, error: message };
@@ -253,6 +259,8 @@
     });
   }
 
+  function getInternalStream() { return state.stream; }
+
   function getState() {
     return {
       active: state.active,
@@ -266,7 +274,8 @@
     version: VERSION,
     start,
     stop,
-    getState
+    getState,
+    getInternalStream
   });
 
   if (document.readyState === "loading") {
