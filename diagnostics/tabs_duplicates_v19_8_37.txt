@@ -1,0 +1,289 @@
+Noelle Companion - Diagnostico de abas duplicadas V19.8.37
+Raiz: C:\Users\Administrator\Downloads\chat\noelle_ia
+Arquivos analisados em src: 106
+
+REGRA: cada aba deve ter 1 botao no menu e 1 pagina/container real. Mais que isso indica duplicacao ou versao antiga montada junto.
+
+## BOTOES DE ABA
+
+[DUPLICADO] avatar: 2
+  - src\controls.html:37 :: <button class="nav-item" data-target="avatar">
+  - src\controls.html:265 :: <button class="nav-item" data-target="avatar">
+
+[DUPLICADO] chat: 2
+  - src\controls.html:38 :: <button class="nav-item" data-target="chat">
+  - src\controls.html:266 :: <button class="nav-item" data-target="chat">
+
+[DUPLICADO] configuracoes: 2
+  - src\controls.html:41 :: <button class="nav-item" data-target="settings">
+  - src\controls.html:269 :: <button class="nav-item" data-target="settings">
+
+[DUPLICADO] emotes: 2
+  - src\controls.html:39 :: <button class="nav-item" data-target="emotes">
+  - src\controls.html:267 :: <button class="nav-item" data-target="emotes">
+
+[DUPLICADO] inventario: 2
+  - src\controls.html:40 :: <button class="nav-item" data-target="inventory">
+  - src\controls.html:268 :: <button class="nav-item" data-target="inventory">
+
+[DUPLICADO] principal: 2
+  - src\controls.html:36 :: <button class="nav-item active" data-target="home">
+  - src\controls.html:264 :: <button class="nav-item active" data-target="home">
+
+[OK] sobre: 1
+  - src\controls.html:42 :: <button class="nav-item" data-target="about">
+
+## PAGINAS/CONTAINERS DE ABA
+
+[OK] avatar: 1
+  - src\controls.html:97 :: <section class="page" data-page="avatar">
+
+[OK] avatarchrome: 1
+  - src\avatar_view.html:293 :: <div id="avatarChrome">
+
+[OK] avatarfallback: 1
+  - src\avatar.html:21 :: <div class="avatar-fallback" id="avatarFallback">
+
+[OK] avatarfile: 1
+  - src\avatar_carousel_v19_7_6.html:95 :: <div id="avatarFile" class="avatar-file">
+
+[OK] avatarmodulenote: 1
+  - src\avatar_view.html:309 :: <div id="avatarModuleNote" style="position:fixed; left:14px; right:14px; bottom:62px; z-index:41; font-size:10px; color:rgba(255,255,255,.60); text-align:center;">
+
+[OK] avatarname: 1
+  - src\avatar_carousel_v19_7_6.html:94 :: <div id="avatarName" class="avatar-name">
+
+[OK] avatarpreview: 1
+  - src\controls.html:109 :: <div class="avatar-preview" id="avatarPreview">
+
+[OK] avatarroster: 1
+  - src\launcher_view.html:320 :: <div class="party-grid" id="avatarRoster">
+
+[DUPLICADO] avatarshell: 2
+  - src\avatar.html:11 :: <div class="avatar-shell" id="avatarShell">
+  - src\avatar_view.html:293 :: <div id="avatarShell">
+
+[OK] avatarsourcenote: 1
+  - src\avatar_view.html:308 :: <div id="avatarSourceNote">
+
+[OK] chat: 1
+  - src\controls.html:134 :: <section class="page chat-page" data-page="chat">
+
+[OK] chatlog: 1
+  - src\controls.html:145 :: <div class="chat-log" id="chatLog" aria-live="polite">
+
+[OK] configuracoes: 1
+  - src\controls.html:219 :: <section class="page" data-page="settings">
+
+[OK] emotes: 1
+  - src\controls.html:186 :: <section class="page" data-page="emotes">
+
+[OK] inventario: 1
+  - src\controls.html:208 :: <section class="page" data-page="inventory">
+
+[OK] inventorygrid: 1
+  - src\index.html:207 :: <div id="inventoryGrid">
+
+[OK] inventorysummary: 1
+  - src\index.html:188 :: <div class="badge" id="inventorySummary">
+
+[OK] noelleavatarv1982: 1
+  - src\renderer\noelle_avatar_tab_v19_8_2.js:242 :: <div id="noelleAvatarV1982" class="noelle-avatar-v1982" data-version="${VERSION}">
+
+[OK] principal: 1
+  - src\controls.html:63 :: <section class="page active" data-page="home">
+
+[OK] sobre: 1
+  - src\controls.html:248 :: <section class="page" data-page="about">
+
+[DUPLICADO] streamfakemeterbar: 2
+  - src\renderer\modules\noelle_stream_tab_recover_v19_8_30c.js:102 :: <div id="streamFakeMeterBar">
+  - src\renderer\pages\noelle_stream_page_v19_8_29.js:133 :: <div id="streamFakeMeterBar" class="stream-v19829-meter-bar">
+
+[OK] streamfutureanswer: 1
+  - src\renderer\modules\noelle_stream_tab_recover_v19_8_30c.js:121 :: <div id="streamFutureAnswer" class="stream-v19829-box">
+
+[OK] streamlasttranscript: 1
+  - src\renderer\modules\noelle_stream_tab_recover_v19_8_30c.js:117 :: <div id="streamLastTranscript" class="stream-v19829-box">
+
+[DUPLICADO] streamlog: 2
+  - src\renderer\modules\noelle_stream_tab_recover_v19_8_30c.js:126 :: <div id="streamLog" class="stream-v19829-log">
+  - src\renderer\pages\noelle_stream_page_v19_8_29.js:161 :: <div id="streamLog">
+
+## ALVOS DE RENDER/QUERYSELECTOR
+
+[OK] avatar-actions: 1
+  - src\renderer\avatar_mode_router_v19_7.js:193 :: ter")?.parentElement; if (!avatarSelect) return; const oldActions = avatarSelect.querySelector(".avatar-actions"); if (oldActions) oldActions.classList.add("noelle-v19-7-actions"); const oldOpen = $("openAvatarBt
+
+[OK] avatar-card-active: 1
+  - src\renderer\avatar_mode_router_v19_7.js:35 :: TCH_ID}] ${message}`); } function selectedAvatarInfo() { const active = document.querySelector(".avatar-card.active"); const name = active?.querySelector?.(".avatar-card-name")?.textContent?.trim() || "avatar selecion
+
+[OK] avatar-select: 1
+  - src\renderer\avatar_mode_router_v19_7.js:190 :: dePanel() { if ($("noelleAvatarModePanel")) return; const avatarSelect = document.querySelector(".avatar-select") || $("avatarRoster")?.parentElement; if (!avatarSelect) return; const oldActions = avatarSelect.que
+
+[OK] avatarcanvas: 2
+  - src\renderer\avatar_lab_v19_6_app.js:41 :: 9_8_14_AVATAR_FIX_END */ (() => { "use strict"; const els = { canvas: document.getElementById("avatarCanvas"), statusPill: document.getElementById("statusPill"), overlay: document.getElementById("overlayPills"),
+  - src\renderer_dist\avatar_lab_v19_6.bundle.js:38528 :: rotateVRM0; // src/renderer/avatar_lab_v19_6_app.js var els = { canvas: document.getElementById("avatarCanvas"), statusPill: document.getElementById("statusPill"), countPill: document.getElementById("countPill"),
+
+[OK] avatarfile: 2
+  - src\renderer\avatar_lab_v19_6_app.js:45 :: yPills"), avatarName: document.getElementById("avatarName"), avatarFile: document.getElementById("avatarFile"), avatarSelect: document.getElementById("avatarSelect"), localFile: document.getElementById("localFile")
+  - src\renderer_dist\avatar_lab_v19_6.bundle.js:38542 :: mRange"), avatarName: document.getElementById("avatarName"), avatarFile: document.getElementById("avatarFile"), bigName: document.getElementById("bigName"), debug: document.getElementById("debugBox") }; var DEF
+
+[OK] avatarname: 3
+  - src\renderer\avatar_lab_v19_6_app.js:44 :: tusPill"), overlay: document.getElementById("overlayPills"), avatarName: document.getElementById("avatarName"), avatarFile: document.getElementById("avatarFile"), avatarSelect: document.getElementById("avatarSelect
+  - src\renderer\avatar_loadfile_preview_v19_8_3_app.mjs:41 :: rror"); const pathInfo = document.getElementById("pathInfo"); const avatarName = document.getElementById("avatarName"); let renderer; let camera; let scene; let controls; let currentObject; let animationId = 0; function setStatu
+  - src\renderer_dist\avatar_lab_v19_6.bundle.js:38541 :: etCamera"), zoomRange: document.getElementById("zoomRange"), avatarName: document.getElementById("avatarName"), avatarFile: document.getElementById("avatarFile"), bigName: document.getElementById("bigName"), de
+
+[OK] avatarpathlabel: 1
+  - src\renderer\modules\noelle_status_assets_v19_8_28.js:80 :: {}); const noelle = result.assets?.avatars?.[0]; const label = document.querySelector("#avatarPathLabel"); if (label) label.textContent = noelle?.rel || "Nenhum VRM encontrado em src/assets."; re
+
+[OK] avatarselect: 2
+  - src\renderer\avatar_lab_v19_6_app.js:46 :: Name"), avatarFile: document.getElementById("avatarFile"), avatarSelect: document.getElementById("avatarSelect"), localFile: document.getElementById("localFile"), prevAvatar: document.getElementById("prevAvatar"),
+  - src\renderer_dist\avatar_lab_v19_6.bundle.js:38531 :: usPill"), countPill: document.getElementById("countPill"), avatarSelect: document.getElementById("avatarSelect"), localFile: document.getElementById("localFile"), btnPrev: document.getElementById("btnPrev"), bt
+
+[OK] avatarsourcenote: 1
+  - src\avatar_view.html:320 :: avatarInfo; window.__NOELLE_VRM_URL__ = avatarInfo.url; const note = document.getElementById("avatarSourceNote"); if (note) note.textContent = `Avatar: ${avatarInfo.name || "Noelle"} • ${avatarInfo.kind || "vrm"}
+
+[OK] h1-h2-page-title: 1
+  - src\renderer\modules\noelle_tabs_structure_guard_v19_8_36.js:73 :: urn canonical(data.page || data.tab || data.view || data.route || fromId || safeText(page.querySelector("h1,h2,.page-title"))); } function isLikelyNavButton(el) { if (!(el instanceof HTMLElement)) return false; if (el
+
+[OK] nextavatar: 1
+  - src\renderer\avatar_lab_v19_6_app.js:49 :: alFile"), prevAvatar: document.getElementById("prevAvatar"), nextAvatar: document.getElementById("nextAvatar"), btnRoom: document.getElementById("btnRoom"), btnWidget: document.getElementById("btnWidget"), btnP
+
+[OK] noelle-add-avatar-button-v19821: 1
+  - src\renderer\noelle_add_avatar_button_v19_8_21.js:126 :: <div id="${STATUS_ID}" class="noelle-add-avatar-status-v19821"></div> `; row.querySelector(".noelle-add-avatar-button-v19821")?.addEventListener("click", addAvatar); const reload = findButtonByText(["recarregar l
+
+[OK] noelle-avatar-activate-btn-v19820: 1
+  - src\renderer\noelle_avatar_compact_import_v19_8_20.js:219 :: tor(".noelle-avatar-import-btn-v19820")?.addEventListener("click", importAvatar); row.querySelector(".noelle-avatar-activate-btn-v19820")?.addEventListener("click", activateAvatarHere); panel.appendChild(row); panel.a
+
+[OK] noelle-avatar-import-btn-v19820: 1
+  - src\renderer\noelle_avatar_compact_import_v19_8_20.js:218 :: s.className = "noelle-avatar-import-status-v19820"; status.textContent = ""; row.querySelector(".noelle-avatar-import-btn-v19820")?.addEventListener("click", importAvatar); row.querySelector(".noelle-avatar-activate-b
+
+[OK] noelle-avatar-tab-v1978-runtime-script: 1
+  - src\renderer\avatar_v19_5_panel_bootstrap.js:6 :: ELLE_AVATAR_TAB_V1978_LEGACY_REDIRECT__ = true; const inject = () => { if (document.getElementById('noelle-avatar-tab-v1978-runtime-script')) return; const script = document.createElement('script'); script.id = 'noel
+
+[OK] noelle-avatar-v19-8-6-close: 2
+  - src\renderer\noelle_overlay_killer_v19_8_6.js:196 :: ion addSafeCloseToAvatarTab(route) { if (route !== 'avatar') return; if (document.getElementById('noelle-avatar-v19-8-6-close')) return; const host = findAvatarRoots()[0] || document.querySelector('main') || document.
+  - src\renderer\noelle_overlay_killer_v19_8_6.js:249 :: oute = currentRoute(); if (route === 'avatar') { const close = document.getElementById('noelle-avatar-v19-8-6-close'); if (close) close.click(); } killLegacyFloatingLaunchers(); }
+
+[OK] prevavatar: 1
+  - src\renderer\avatar_lab_v19_6_app.js:48 :: arSelect"), localFile: document.getElementById("localFile"), prevAvatar: document.getElementById("prevAvatar"), nextAvatar: document.getElementById("nextAvatar"), btnRoom: document.getElementById("btnRoom"), bt
+
+## SCRIPTS INJETADOS EM HTML
+
+[OK] renderer-app-js: 1
+  - src\index.html:241 :: <script type="module" src="./renderer/app.js">
+
+[OK] renderer-avatar_lab_launcher_v19_6-js: 1
+  - src\controls.html:281 :: <script src="./renderer/avatar_lab_launcher_v19_6.js">
+
+[OK] renderer-avatar_loadfile_preview_v19_8_3_app-mjs: 1
+  - src\avatar_loadfile_preview_v19_8_3.html:59 :: <script type="module" src="./renderer/avatar_loadfile_preview_v19_8_3_app.mjs">
+
+[OK] renderer-avatar_manifest_runtime_v19_7_5-js: 1
+  - src\avatar_lab_v19_6.html:136 :: <script src="./renderer/avatar_manifest_runtime_v19_7_5.js">
+
+[OK] renderer-avatar_room_sync_bridge_v19_5-js: 1
+  - src\room.html:108 :: <script src="./renderer/avatar_room_sync_bridge_v19_5.js">
+
+[OK] renderer-avatar_v19_5_panel_bootstrap-js: 2
+  - src\avatar.html:32 :: <script src="./renderer/avatar_v19_5_panel_bootstrap.js">
+  - src\avatar_view.html:332 :: <script src="./renderer/avatar_v19_5_panel_bootstrap.js">
+
+[OK] renderer-avatar_window_app-mjs: 1
+  - src\avatar.html:31 :: <script type="module" src="renderer/avatar_window_app.mjs">
+
+[OK] renderer-controls_window_app-js: 1
+  - src\controls.html:279 :: <script src="renderer/controls_window_app.js">
+
+[OK] renderer-modules-noelle_renderer_core_v19_8_27-js: 1
+  - src\controls.html:273 :: <script src="./renderer/modules/noelle_renderer_core_v19_8_27.js" defer data-noelle-core-v19-8-27="true">
+
+[OK] renderer-modules-noelle_status_assets_v19_8_28-js: 1
+  - src\controls.html:274 :: <script src="./renderer/modules/noelle_status_assets_v19_8_28.js" defer data-noelle-status-assets-v19-8-28="true">
+
+[OK] renderer-modules-noelle_stream_audio_capture_v19_8_30-js: 1
+  - src\controls.html:276 :: <script src="./renderer/modules/noelle_stream_audio_capture_v19_8_30.js" defer data-noelle-stream-mic-v19-8-30="true">
+
+[OK] renderer-modules-noelle_stream_segment_recorder_v19_8_32-js: 1
+  - src\controls.html:278 :: <script src="./renderer/modules/noelle_stream_segment_recorder_v19_8_32.js" defer data-noelle-stream-segment-v19-8-32="true">
+
+[OK] renderer-modules-noelle_stream_tab_recover_v19_8_30c-js: 1
+  - src\controls.html:280 :: <script src="./renderer/modules/noelle_stream_tab_recover_v19_8_30c.js" defer data-noelle-stream-recover-v19-8-30c="true">
+
+[OK] renderer-modules-noelle_stream_vad_v19_8_31-js: 1
+  - src\controls.html:277 :: <script src="./renderer/modules/noelle_stream_vad_v19_8_31.js" defer data-noelle-stream-vad-v19-8-31="true">
+
+[OK] renderer-modules-noelle_tab_router_v19_8_34-js: 1
+  - src\index.html:259 :: <script defer src="./renderer/modules/noelle_tab_router_v19_8_34.js">
+
+[OK] renderer-modules-noelle_tabs_structure_guard_v19_8_36-js: 1
+  - src\controls.html:292 :: <script src="./renderer/modules/noelle_tabs_structure_guard_v19_8_36.js" defer>
+
+[OK] renderer-noelle_add_avatar_button_v19_8_21-js: 1
+  - src\controls.html:291 :: <script src="./renderer/noelle_add_avatar_button_v19_8_21.js" defer data-noelle-add-avatar-v19-8-21="true">
+
+[OK] renderer-noelle_avatar_clean_tab_v19_7_6-js: 2
+  - src\controls.html:282 :: <script id="noelle-v19-7-6-avatar-clean-tab-direct" src="./renderer/noelle_avatar_clean_tab_v19_7_6.js" defer>
+  - src\launcher_view.html:345 :: <script id="noelle-v19-7-6-avatar-clean-tab-direct" src="./renderer/noelle_avatar_clean_tab_v19_7_6.js" defer>
+
+[OK] renderer-noelle_avatar_compact_import_v19_8_20-js: 1
+  - src\controls.html:290 :: <script src="./renderer/noelle_avatar_compact_import_v19_8_20.js" defer data-noelle-avatar-compact-import-v19-8-20="true">
+
+[OK] renderer-noelle_avatar_fit_viewport_v19_8_18-js: 1
+  - src\controls.html:289 :: <script src="./renderer/noelle_avatar_fit_viewport_v19_8_18.js" defer data-noelle-avatar-fit-v19-8-18="true">
+
+[OK] renderer-noelle_avatar_tab_v19_8_2-js: 1
+  - src\controls.html:283 :: <script src="./renderer/noelle_avatar_tab_v19_8_2.js" defer>
+
+[OK] renderer-noelle_avatar_target_guard_v19_8_17-js: 1
+  - src\controls.html:288 :: <script src="./renderer/noelle_avatar_target_guard_v19_8_17.js" defer data-noelle-avatar-target-v19-8-17="true">
+
+[OK] renderer-noelle_theme_manager_v19_8_10-js: 1
+  - src\controls.html:287 :: <script src="./renderer/noelle_theme_manager_v19_8_10.js" defer data-noelle-theme-v19-8-10="true">
+
+[OK] renderer-noelle_ui_polish_v19_8_9a-js: 1
+  - src\controls.html:286 :: <script defer src="./renderer/noelle_ui_polish_v19_8_9a.js">
+
+[OK] renderer-pages-noelle_stream_page_v19_8_29-js: 1
+  - src\controls.html:275 :: <script src="./renderer/pages/noelle_stream_page_v19_8_29.js" defer data-noelle-stream-v19-8-29="true">
+
+[OK] renderer-room_sync_bridge_v19_6-js: 1
+  - src\room.html:109 :: <script src="./renderer/room_sync_bridge_v19_6.js">
+
+[OK] renderer_dist-avatar-bundle-js: 1
+  - src\avatar_view.html:331 :: <script type="module" src="./renderer_dist/avatar.bundle.js">
+
+[OK] renderer_dist-avatar_carousel_preview_v19_7_8-bundle-js: 1
+  - src\avatar_carousel_preview_v19_7_8.html:18 :: <script src="./renderer_dist/avatar_carousel_preview_v19_7_8.bundle.js">
+
+[OK] renderer_dist-avatar_carousel_preview_v19_8_2-bundle-js: 1
+  - src\avatar_carousel_preview_v19_8_2.html:22 :: <script src="./renderer_dist/avatar_carousel_preview_v19_8_2.bundle.js">
+
+[OK] renderer_dist-avatar_carousel_v19_7_6-bundle-js: 1
+  - src\avatar_carousel_v19_7_6.html:126 :: <script src="./renderer_dist/avatar_carousel_v19_7_6.bundle.js">
+
+[OK] renderer_dist-avatar_lab_v19_6-bundle-js: 1
+  - src\avatar_lab_v19_6.html:137 :: <script src="./renderer_dist/avatar_lab_v19_6.bundle.js">
+
+[OK] renderer_dist-launcher-bundle-js: 1
+  - src\launcher_view.html:344 :: <script type="module" src="./renderer_dist/launcher.bundle.js">
+
+[OK] renderer_dist-room-bundle-js: 1
+  - src\room.html:107 :: <script src="./renderer_dist/room.bundle.js">
+
+## SUSPEITAS DE AVATAR ANTIGO/LEGACY
+  - src\avatar_lab_v19_6.html
+  - src\renderer\avatar_lab_launcher_v19_6.js
+  - src\renderer\avatar_lab_v19_6_app.js
+  - src\renderer_dist\avatar_lab_v19_6.bundle.js
+
+## RESUMO RAPIDO
+principal      botoes= 2 paginas= 1  <-- VERIFICAR
+avatar         botoes= 2 paginas= 1  <-- VERIFICAR
+chat           botoes= 2 paginas= 1  <-- VERIFICAR
+emotes         botoes= 2 paginas= 1  <-- VERIFICAR
+inventario     botoes= 2 paginas= 1  <-- VERIFICAR
+configuracoes  botoes= 2 paginas= 1  <-- VERIFICAR
+stream         botoes= 0 paginas= 0 
+sobre          botoes= 1 paginas= 1 

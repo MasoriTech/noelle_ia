@@ -1,0 +1,3 @@
+Este pack nao corrige e nao altera nada.
+Ele apenas conta botoes, paginas/containers e scripts relacionados as abas.
+Use para descobrir exatamente quantas abas estao duplicadas e quais arquivos trouxeram versao antiga, principalmente Avatar.
