@@ -1,4 +1,4 @@
-"use strict"; /* NOELLE_V19_8_27_CONTROLS_CORE_SPLIT */ /* NOELLE_V19_8_27B_CONTROLS_SYNTAX_FIX */ /* NOELLE_V19_8_27C_UPDATE_ASSET_SUMMARY_HARDFIX */
+"use strict"; /* NOELLE_V19_8_28_STATUS_ASSETS_SPLIT */ /* NOELLE_V19_8_27_CONTROLS_CORE_SPLIT */ /* NOELLE_V19_8_27B_CONTROLS_SYNTAX_FIX */ /* NOELLE_V19_8_27C_UPDATE_ASSET_SUMMARY_HARDFIX */
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -127,49 +127,12 @@ function syncControlsFromState() {
 
 function applyTheme(theme) { return window.NoelleRendererCoreV19827?.applyTheme?.(appState, theme); }
 
-async function refreshStatus({ quiet = false } = {}) {
-  if (!window.noelleAPI?.status) {
-    setGlobalStatus("API indisponível", "bad");
-    setChatStatus("IA indisponível", "preload não carregou");
-    return null;
-  }
-  try {
-    const status = await window.noelleAPI.status();
-    const online = !!status?.ollama?.ok;
-    const counts = status?.assets?.counts || {};
-    setGlobalStatus(online ? "Ollama online" : "Ollama offline", online ? "ok" : "bad");
-    setChatStatus(online ? `IA online · ${appState.profile}` : "IA offline", online ? "Pronto." : "Abra o Ollama em 127.0.0.1:11434");
-    updateAssetSummary(counts);
-    if (!quiet) showToast(online ? `Ollama online. Assets: ${counts.expressions || 0} expressões, ${counts.motions || 0} motions.` : status?.ollama?.error || "Ollama offline.");
-    return status;
-  } catch (err) {
-    setGlobalStatus("Erro no status", "bad");
-    setChatStatus("Erro", String(err.message || err));
-    if (!quiet) showToast("Erro ao consultar status.");
-    return null;
-  }
-}
+async function refreshStatus({ quiet = false } = {}) { return window.NoelleStatusAssetsV19828?.refreshStatus?.({ appState, setGlobalStatus, setChatStatus, updateAssetSummary, showToast }, { quiet }) ?? null; }
 
 function updateAssetSummary(counts = {}) { return window.NoelleRendererCoreV19827?.updateAssetSummary?.(counts); }
 
 
-async function loadAssets() {
-  if (!window.noelleAPI?.assets) return;
-  try {
-    const result = await window.noelleAPI.assets();
-    if (result?.ok) {
-      appState.assets = result.assets;
-      renderAssets(result.assets);
-      updateAssetSummary(result.assets.counts);
-      const noelle = result.assets.avatars?.[0];
-      const label = $("#avatarPathLabel");
-      if (label) label.textContent = noelle?.rel || "Nenhum VRM encontrado em src/assets.";
-    }
-  } catch (err) {
-    console.warn("Falha ao carregar assets:", err);
-    showToast("Falha ao carregar assets.");
-  }
-}
+async function loadAssets() { return window.NoelleStatusAssetsV19828?.loadAssets?.({ appState, renderAssets, updateAssetSummary, showToast }) ?? null; }
 
 function renderAssets(assets) {
   renderExpressionCards(assets?.expressions || []);

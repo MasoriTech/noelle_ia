@@ -1425,3 +1425,12 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - `node --check` já passava, mas a regex do diagnóstico era ampla demais e acusava `updateAssetSummary` quebrado mesmo com sintaxe válida.
 - O diagnóstico agora procura apenas o padrão literal quebrado `}) {` da linha antiga.
 - Não mexe em Avatar, Chat, Room, main, preload ou renderer_dist.
+
+
+## V19.8.28 — Status/Assets split
+
+- Segunda quebra segura do `src/renderer/controls_window_app.js`.
+- Cria `src/renderer/modules/noelle_status_assets_v19_8_28.js`.
+- Move `refreshStatus` e `loadAssets` para o módulo status/assets.
+- Mantém renderização de cards/assets no arquivo original por enquanto.
+- Não mexe no Avatar renderer, Chat, Room, main, preload ou renderer_dist.
