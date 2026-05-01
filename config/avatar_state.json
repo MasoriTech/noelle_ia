@@ -1,0 +1,10 @@
+{
+  "schema": "avatar_state_v31",
+  "active_avatar": "yoru",
+  "active_vrm": "src/assets/avatars/yoru.vrm",
+  "fallback_vrm": "src/assets/Noelle.vrm",
+  "last_selected_index": 0,
+  "view_mode": "carousel",
+  "renderer": "avatar_carousel_v19_7_6",
+  "legacy_allowed": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "avatar_manifest_v31",
+  "avatars": [
+    {
+      "id": "yoru",
+      "name": "Yoru",
+      "file": "src/assets/avatars/yoru.vrm",
+      "icon": "src/assets/icons/yoru.png",
+      "enabled": true
+    },
+    {
+      "id": "noelle",
+      "name": "Noelle",
+      "file": "src/assets/Noelle.vrm",
+      "icon": "src/assets/icons/noelle.png",
+      "enabled": true
+    }
+  ]
+}

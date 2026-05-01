@@ -1,0 +1,19 @@
+{
+  "schema": "avatar_legacy_blocklist_v31",
+  "blocked_scripts": [
+    "noelle_avatar_tab_v19_8_2.js",
+    "avatar_v19_5_panel_bootstrap.js",
+    "avatar_renderer_restore_v27_1.js",
+    "restore_avatar_carousel_runtime_v28.js",
+    "avatar_window_unified_v29.js",
+    "avatar_page_v30.js"
+  ],
+  "blocked_nodes": [
+    "noelleAvatarV1982",
+    "avatarUnifiedWindow",
+    "avatarMountV30"
+  ],
+  "blocked_labels": [
+    "Avatar da Noelle"
+  ]
+}

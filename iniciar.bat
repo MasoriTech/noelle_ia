@@ -1,16 +1,16 @@
 @echo off
-title Yoru Renderer Restructure V30
+title Yoru Avatar Runtime V31.1
 
 echo ========================================
-echo  Yoru Renderer Restructure V30
+echo  Yoru Avatar Runtime V31.1 Direct Carousel
 echo ========================================
 echo.
 
-node scripts\apply_renderer_restructure_v30.js
+node scripts\apply_avatar_runtime_v31_1.js
 
 echo.
-echo [diagnostico renderer]
-node scripts\diagnose_renderer_structure_v30.js
+echo [diagnostico avatar]
+node scripts\diagnose_avatar_runtime_v31_1.js
 
 echo.
 echo Iniciando aplicativo...
