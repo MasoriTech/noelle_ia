@@ -1481,3 +1481,13 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - A interface passa a indicar corretamente: Fase 2, microfone por botão ativo.
 - Não altera a lógica do microfone.
 - Não adiciona transcrição, resposta da IA ou voz.
+
+
+## V19.8.31 — Stream VAD Simple
+
+- Fase 3 da aba Stream.
+- Cria `src/renderer/modules/noelle_stream_vad_v19_8_31.js`.
+- Detecta fala iniciada e trecho finalizado usando eventos de nível de áudio do módulo V19.8.30.
+- Não grava áudio, não transcreve, não chama Ollama e não gera voz.
+- O microfone continua ligando somente por botão.
+- Próxima fase recomendada: preparar gravação de trecho para STT, ainda com StreamGuard obrigatório.

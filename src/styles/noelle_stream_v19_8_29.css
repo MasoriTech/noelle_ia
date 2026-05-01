@@ -189,3 +189,34 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Noelle/Yoru V19.8.31 — VAD Simple */
+.stream-v19831-vad-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.stream-v19831-vad-stats {
+  display: grid;
+  gap: 6px;
+  min-width: 180px;
+  color: rgba(255, 243, 232, .78);
+}
+
+.stream-v19831-vad-stats span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .06);
+}
+
+@media (max-width: 900px) {
+  .stream-v19831-vad-grid {
+    grid-template-columns: 1fr;
+  }
+}
