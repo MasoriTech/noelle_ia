@@ -1,23 +1,14 @@
 "use strict";
 // NOELLE_V19_8_32_STREAM_SEGMENT_RECORDER
-// NOELLE_V19_8_31_STREAM_VAD_SIMPLE
-// NOELLE_V19_8_30D_STREAM_TEXT_CLEANUP
-// NOELLE_V19_8_30C_STREAM_TAB_RECOVER_READY
-
 /*
-  Noelle/Yoru V19.8.29 — Stream Tab Skeleton
-  Fase 1:
-  - cria aba Stream IA;
-  - cria layout, estados e botões;
-  - NÃO liga microfone;
-  - NÃO chama STT;
-  - NÃO chama Ollama;
-  - NÃO chama TTS.
+ Noelle/Yoru V19.8.33 — Stream Page Recovery
+ - mantém a aba Stream IA;
+ - microfone só liga por botão;
+ - NÃO chama STT/Ollama/TTS;
+ - regra: só responder quando for pergunta direcionada a Noelle/Yoru.
 */
-
 (() => {
-  const VERSION = "19.8.29-stream-tab-skeleton-2026";
-
+  const VERSION = "19.8.33-stream-page-recovery-2026";
   const state = {
     status: "idle",
     mode: "wake_question",
@@ -38,49 +29,14 @@
     error: "Erro"
   };
 
-  function $(selector, root = document) {
-    return root.querySelector(selector);
-  }
-
-  function text(value) {
-    return String(value ?? "");
-  }
-
+  function qs(selector, root = document) { return root.querySelector(selector); }
+  function qsa(selector, root = document) { return Array.from(root.querySelectorAll(selector)); }
+  function text(value) { return String(value ?? ""); }
+  function now() { return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }); }
   function escapeText(value) {
     const div = document.createElement("div");
     div.textContent = text(value);
     return div.innerHTML;
-  }
-
-  function now() {
-    return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-  }
-
-  function setStatus(status, detail = "") {
-    state.status = status;
-    state.lastDecision = detail || STATUS_LABELS[status] || status;
-
-    const pill = $("#streamStatePill");
-    const detailEl = $("#streamStateDetail");
-
-    if (pill) {
-      pill.textContent = STATUS_LABELS[status] || status;
-      pill.dataset.state = status;
-    }
-
-    if (detailEl) detailEl.textContent = state.lastDecision;
-
-    render();
-  }
-
-  function addLog(kind, message) {
-    state.logs.unshift({
-      at: now(),
-      kind,
-      message
-    });
-    state.logs = state.logs.slice(0, 30);
-    renderLog();
   }
 
   function normalizeTranscript(value) {
@@ -89,226 +45,224 @@
 
   function shouldRespond(rawText) {
     const t = normalizeTranscript(rawText);
+    const hasWakeWord = /\b(noelle|yoru)\b/i.test(t) || /\bei (noelle|yoru)\b/i.test(t);
+    const looksQuestion = /\?/.test(rawText || "") || /\b(como|por que|porque|o que|qual|quando|onde|quem|pode|consegue|devo|faco|fazer|explica|me ajuda|ajuda)\b/i.test(t);
+    if (!hasWakeWord) return { ok: false, reason: "bloqueado: não chamou Noelle/Yoru" };
+    if (!looksQuestion) return { ok: false, reason: "bloqueado: não parece pergunta" };
+    return { ok: true, reason: "aprovado: pergunta direcionada" };
+  }
 
-    const hasWakeWord =
-      /\bnoelle\b/i.test(t) ||
-      /\byoru\b/i.test(t) ||
-      /\bei noelle\b/i.test(t) ||
-      /\bei yoru\b/i.test(t);
-
-    const looksQuestion =
-      /\?/.test(rawText || "") ||
-      /\b(como|por que|porque|o que|qual|quando|onde|quem|pode|consegue|devo|faco|fazer|explica|me ajuda)\b/i.test(t);
-
-    if (!hasWakeWord) {
-      return {
-        ok: false,
-        reason: "bloqueado: não chamou Noelle/Yoru"
-      };
+  function setStatus(status, detail = "") {
+    state.status = status;
+    state.lastDecision = detail || STATUS_LABELS[status] || status;
+    const pill = qs("#streamStatePill");
+    const detailEl = qs("#streamStateDetail");
+    if (pill) {
+      pill.textContent = STATUS_LABELS[status] || status;
+      pill.dataset.state = status;
     }
+    if (detailEl) detailEl.textContent = state.lastDecision;
+    render();
+  }
 
-    if (!looksQuestion) {
-      return {
-        ok: false,
-        reason: "bloqueado: não parece pergunta"
-      };
-    }
+  function addLog(kind, message) {
+    state.logs.unshift({ at: now(), kind, message });
+    state.logs = state.logs.slice(0, 40);
+    renderLog();
+  }
 
-    return {
-      ok: true,
-      reason: "aprovado: pergunta direcionada"
-    };
+  function findNavParent() {
+    const existing = qs('[data-target="stream"]');
+    if (existing?.parentElement) return existing.parentElement;
+    const known = qs('[data-target="avatar"]') || qs('[data-target="chat"]') || qs('[data-target="settings"]') || qs('[data-target="about"]');
+    if (known?.parentElement) return known.parentElement;
+    return qs(".side-nav") || qs(".nav") || qs("nav") || null;
   }
 
   function ensureNav() {
-    if (document.querySelector('[data-target="stream"]')) return;
-
-    const navParent =
-      document.querySelector('[data-target="about"]')?.parentElement ||
-      document.querySelector('[data-target="settings"]')?.parentElement ||
-      document.querySelector(".side-nav") ||
-      document.querySelector(".nav") ||
-      document.querySelector("nav");
-
-    if (!navParent) return;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "nav-item";
+    let btn = qs('[data-target="stream"]');
+    if (btn) return btn;
+    const parent = findNavParent();
+    if (!parent) return null;
+    const ref = qs('[data-target="about"]') || qs('[data-target="settings"]') || qs('[data-target="chat"]') || qs('[data-target]');
+    btn = document.createElement(ref?.tagName?.toLowerCase() === "a" ? "a" : "button");
+    btn.className = ref?.className || "nav-item";
+    if (btn.tagName.toLowerCase() === "button") btn.type = "button";
+    else btn.href = "#stream";
     btn.dataset.target = "stream";
-    btn.innerHTML = '<span>◌</span><span>Stream</span>';
-
-    const about = navParent.querySelector('[data-target="about"]');
-    if (about) navParent.insertBefore(btn, about);
-    else navParent.appendChild(btn);
+    btn.setAttribute("data-noelle-stream-tab", VERSION);
+    btn.textContent = "◌ Stream";
+    const about = parent.querySelector('[data-target="about"]');
+    if (about) parent.insertBefore(btn, about);
+    else parent.appendChild(btn);
+    return btn;
   }
 
   function streamPageHtml() {
     return `
       <div class="stream-v19829-shell">
-        <section class="stream-v19829-hero">
+        <header class="stream-v19829-header">
           <div>
-            <p class="eyebrow">Stream IA · Fase 2</p>
+            <p class="eyebrow">Stream IA · V19.8.33</p>
             <h2>Escuta em tempo real controlada</h2>
-            <p class="muted">
-              Microfone por botão ativo. A escuta só começa quando você aperta Iniciar escuta.
-              A regra oficial já fica pronta: só responder pergunta direcionada a Noelle/Yoru.
-            </p>
+            <p class="muted">Microfone por botão. A Noelle/Yoru só deve responder quando for pergunta direcionada a ela.</p>
           </div>
-          <div class="stream-v19829-state-card">
+          <div class="stream-v19829-state">
             <span id="streamStatePill" class="stream-v19829-pill" data-state="idle">Parado</span>
-            <small id="streamStateDetail">Microfone desligado. Aperte Iniciar escuta para ativar o medidor real.</small>
+            <small id="streamStateDetail">Microfone desligado. Aperte Iniciar escuta.</small>
           </div>
-        </section>
+        </header>
 
-        <section class="stream-v19829-grid">
-          <article class="stream-v19829-card">
-            <h3>Controle</h3>
-            <div class="stream-v19829-actions">
-              <button id="streamStartBtn" type="button" class="primary">Iniciar escuta</button>
-              <button id="streamStopBtn" type="button">Parar escuta</button>
-              <button id="streamMuteBtn" type="button">Mute voz: não</button>
-              <button id="streamClearBtn" type="button">Limpar</button>
-            </div>
-
-            <label class="stream-v19829-label" for="streamModeSelect">Modo inicial</label>
-            <select id="streamModeSelect" class="stream-v19829-select">
+        <section class="stream-v19829-card">
+          <h3>Controle</h3>
+          <div class="stream-v19829-actions">
+            <button id="streamStartBtn" type="button">Iniciar escuta</button>
+            <button id="streamStopBtn" type="button">Parar escuta</button>
+            <button id="streamMuteBtn" type="button">Mute voz: não</button>
+            <button id="streamClearBtn" type="button">Limpar</button>
+          </div>
+          <label class="stream-v19829-field">
+            <span>Modo inicial</span>
+            <select id="streamModeSelect">
               <option value="wake_question">Wake word + pergunta</option>
               <option value="manual">Manual</option>
-              <option value="disabled">Só transcrever</option>
+              <option value="transcribe_only">Só transcrever</option>
             </select>
+          </label>
+          <div class="stream-v19829-meter" aria-label="Volume do microfone">
+            <div id="streamFakeMeterBar" class="stream-v19829-meter-bar"></div>
+          </div>
+          <p class="muted">Fase atual: medidor, VAD e gravação de trecho em memória. STT/Ollama/TTS ficam para próximas fases.</p>
+        </section>
 
-            <div class="stream-v19829-meter" aria-label="Medidor visual de microfone">
-              <div id="streamFakeMeterBar"></div>
-            </div>
-
-            <p class="stream-v19829-note">
-              Fase 4: gravação de trecho em memória ativa. Transcrição, resposta da IA e voz entram em fases futuras.
-            </p>
-          </article>
-
-          <article class="stream-v19829-card">
-            <h3>Teste da StreamGuard</h3>
-            <p class="muted">
-              Digite uma fala simulada para testar a regra: só responde se for pergunta direcionada a Noelle/Yoru.
-            </p>
-            <textarea id="streamManualTranscript" class="stream-v19829-textarea" rows="4" placeholder="Ex.: Noelle, qual é o próximo passo?"></textarea>
-            <div class="stream-v19829-actions">
-              <button id="streamCheckGuardBtn" type="button" class="primary">Testar regra</button>
-              <button id="streamUseExampleBtn" type="button">Exemplo</button>
-            </div>
-          </article>
+        <section class="stream-v19829-card">
+          <h3>Teste da StreamGuard</h3>
+          <p class="muted">Digite uma fala simulada para testar a regra: só responder se for pergunta direcionada a Noelle/Yoru.</p>
+          <textarea id="streamManualTranscript" rows="3" placeholder="Ex.: Noelle, qual é o próximo passo?"></textarea>
+          <div class="stream-v19829-actions">
+            <button id="streamCheckGuardBtn" type="button">Testar regra</button>
+            <button id="streamUseExampleBtn" type="button">Exemplo</button>
+          </div>
         </section>
 
         <section class="stream-v19829-grid">
-          <article class="stream-v19829-card">
+          <div class="stream-v19829-card">
             <h3>Você disse</h3>
-            <div id="streamLastTranscript" class="stream-v19829-box">Nenhuma fala ainda.</div>
-          </article>
-
-          <article class="stream-v19829-card">
+            <p id="streamLastTranscript">Nenhuma fala ainda.</p>
+          </div>
+          <div class="stream-v19829-card">
             <h3>Resposta futura</h3>
-            <div id="streamFutureAnswer" class="stream-v19829-box">
-              A IA ainda não responde nesta fase. Aqui vai entrar Ollama streaming depois.
-            </div>
-          </article>
+            <p id="streamFutureAnswer" class="muted">A IA ainda não responde nesta fase. Aqui entrará Ollama streaming depois.</p>
+          </div>
         </section>
 
         <section class="stream-v19829-card">
           <h3>Log da Stream</h3>
-          <div id="streamLog" class="stream-v19829-log"></div>
+          <div id="streamLog"><p class="muted">Nenhum evento ainda.</p></div>
         </section>
-      </div>
-    `;
+      </div>`;
+  }
+
+  function findPagesRoot() {
+    const known = qs('.page[data-page="stream"]') || qs('.page[data-page="avatar"]') || qs('.page[data-page="chat"]') || qs('.page[data-page="settings"]') || qs('.page[data-page="about"]');
+    if (known?.parentElement) return known.parentElement;
+    return qs("main") || qs(".content") || document.body;
   }
 
   function ensurePage() {
-    if (document.querySelector('.page[data-page="stream"]')) return;
-
-    const pagesRoot =
-      document.querySelector('.page[data-page="about"]')?.parentElement ||
-      document.querySelector('.page[data-page="settings"]')?.parentElement ||
-      document.querySelector("main") ||
-      document.body;
-
-    const page = document.createElement("section");
+    let page = qs('.page[data-page="stream"]');
+    if (page) {
+      if (!qs("#streamStatePill", page) || !qs("#streamStartBtn", page)) page.innerHTML = streamPageHtml();
+      return page;
+    }
+    const root = findPagesRoot();
+    page = document.createElement("section");
     page.className = "page";
     page.dataset.page = "stream";
     page.id = "streamPageV19829";
     page.innerHTML = streamPageHtml();
+    const about = root.querySelector('.page[data-page="about"]');
+    if (about) root.insertBefore(page, about);
+    else root.appendChild(page);
+    return page;
+  }
 
-    const about = pagesRoot.querySelector('.page[data-page="about"]');
-    if (about) pagesRoot.insertBefore(page, about);
-    else pagesRoot.appendChild(page);
+  function showStreamPage() {
+    ensure();
+    qsa(".page").forEach((page) => {
+      const active = page.dataset.page === "stream";
+      page.classList.toggle("active", active);
+      page.classList.toggle("is-active", active);
+      page.hidden = !active;
+      page.style.display = active ? "" : "none";
+    });
+    qsa("[data-target]").forEach((btn) => {
+      const active = btn.dataset.target === "stream";
+      btn.classList.toggle("active", active);
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+    });
   }
 
   function bindOnce() {
-    if (window.__NOELLE_STREAM_V19829_BOUND__) return;
-    window.__NOELLE_STREAM_V19829_BOUND__ = true;
-
+    if (window.__NOELLE_STREAM_V19833_BOUND__) return;
+    window.__NOELLE_STREAM_V19833_BOUND__ = true;
     document.addEventListener("click", (event) => {
-      const target = event.target;
-
-      if (!(target instanceof HTMLElement)) return;
-
-      if (target.id === "streamStartBtn") {
-        setStatus("listening", "Microfone ligado. Microfone real entra na próxima fase.");
-        addLog("status", "Escuta iniciada por botão. Somente medidor de volume ativo.");
-        pulseMeter(true);
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      const nav = target?.closest?.('[data-target="stream"]');
+      if (nav) {
+        event.preventDefault();
+        showStreamPage();
+        return;
       }
-
-      if (target.id === "streamStopBtn") {
+      if (!target) return;
+      if (target.id === "streamStartBtn") {
+        setStatus("listening", "Microfone ligado pelo botão. Somente medidor/VAD/trecho local.");
+        addLog("status", "Escuta iniciada por botão.");
+        pulseMeter(true);
+      } else if (target.id === "streamStopBtn") {
         setStatus("idle", "Escuta parada.");
         addLog("status", "Escuta parada.");
         pulseMeter(false);
-      }
-
-      if (target.id === "streamMuteBtn") {
+      } else if (target.id === "streamMuteBtn") {
         state.muted = !state.muted;
         target.textContent = `Mute voz: ${state.muted ? "sim" : "não"}`;
         addLog("voz", state.muted ? "Voz futura silenciada." : "Voz futura ativada.");
-      }
-
-      if (target.id === "streamClearBtn") {
+      } else if (target.id === "streamClearBtn") {
         state.lastTranscript = "";
         state.logs = [];
         state.lastDecision = "Aguardando fala.";
-        $("#streamManualTranscript") && ($("#streamManualTranscript").value = "");
+        const input = qs("#streamManualTranscript");
+        if (input) input.value = "";
+        const answer = qs("#streamFutureAnswer");
+        if (answer) answer.textContent = "A IA ainda não responde nesta fase. Aqui entrará Ollama streaming depois.";
         setStatus("idle", "Stream limpa.");
         render();
-      }
-
-      if (target.id === "streamUseExampleBtn") {
-        const input = $("#streamManualTranscript");
+      } else if (target.id === "streamUseExampleBtn") {
+        const input = qs("#streamManualTranscript");
         if (input) input.value = "Noelle, qual é o próximo passo?";
-      }
-
-      if (target.id === "streamCheckGuardBtn") {
-        const input = $("#streamManualTranscript");
+      } else if (target.id === "streamCheckGuardBtn") {
+        const input = qs("#streamManualTranscript");
         const value = input?.value || "";
         state.lastTranscript = value;
-
         const decision = shouldRespond(value);
-
+        const answer = qs("#streamFutureAnswer");
         if (decision.ok) {
           setStatus("ready_to_answer", decision.reason);
-          $("#streamFutureAnswer") && ($("#streamFutureAnswer").textContent = "Pergunta aprovada. Na fase futura, isto será enviado ao Ollama.");
+          if (answer) answer.textContent = "Pergunta aprovada. Na fase futura, isto será enviado ao Ollama.";
           addLog("guard", `Aprovado: ${value}`);
         } else {
           setStatus("blocked", decision.reason);
-          $("#streamFutureAnswer") && ($("#streamFutureAnswer").textContent = "Bloqueado. A IA não responderia.");
+          if (answer) answer.textContent = "Bloqueado. A IA não responderia.";
           addLog("guard", `${decision.reason}: ${value || "(vazio)"}`);
         }
-
         render();
       }
-    });
+    }, true);
 
     document.addEventListener("change", (event) => {
       const target = event.target;
-      if (!(target instanceof HTMLSelectElement)) return;
-
-      if (target.id === "streamModeSelect") {
+      if (target instanceof HTMLSelectElement && target.id === "streamModeSelect") {
         state.mode = target.value;
         addLog("modo", `Modo alterado para: ${target.value}`);
       }
@@ -316,45 +270,38 @@
   }
 
   function pulseMeter(active) {
-    const bar = $("#streamFakeMeterBar");
+    const bar = qs("#streamFakeMeterBar");
     if (!bar) return;
     bar.classList.toggle("is-active", !!active);
+    if (!active) bar.style.width = "0%";
   }
 
   function renderLog() {
-    const log = $("#streamLog");
+    const log = qs("#streamLog");
     if (!log) return;
-
     if (!state.logs.length) {
       log.innerHTML = '<p class="muted">Nenhum evento ainda.</p>';
       return;
     }
-
     log.innerHTML = state.logs.map((item) => `
       <div class="stream-v19829-log-item">
-        <span>${escapeText(item.at)}</span>
-        <strong>${escapeText(item.kind)}</strong>
-        <p>${escapeText(item.message)}</p>
-      </div>
-    `).join("");
+        <strong>${escapeText(item.at)} ${escapeText(item.kind)}</strong>
+        <span>${escapeText(item.message)}</span>
+      </div>`).join("");
   }
 
   function render() {
-    const transcript = $("#streamLastTranscript");
+    const transcript = qs("#streamLastTranscript");
     if (transcript) transcript.textContent = state.lastTranscript || "Nenhuma fala ainda.";
-
-    const mode = $("#streamModeSelect");
+    const mode = qs("#streamModeSelect");
     if (mode && mode.value !== state.mode) mode.value = state.mode;
-
-    const pill = $("#streamStatePill");
+    const pill = qs("#streamStatePill");
     if (pill) {
       pill.textContent = STATUS_LABELS[state.status] || state.status;
       pill.dataset.state = state.status;
     }
-
-    const detail = $("#streamStateDetail");
+    const detail = qs("#streamStateDetail");
     if (detail) detail.textContent = state.lastDecision || "Aguardando fala.";
-
     renderLog();
   }
 
@@ -371,17 +318,7 @@
     setTimeout(ensure, 300);
   }
 
-  window.NoelleStreamPageV19829 = Object.freeze({
-    version: VERSION,
-    ensure,
-    render,
-    shouldRespond,
-    getState: () => ({ ...state })
-  });
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once: true });
-  } else {
-    boot();
-  }
+  window.NoelleStreamPageV19829 = Object.freeze({ version: VERSION, ensure, render, showStreamPage, shouldRespond, getState: () => ({ ...state }) });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
 })();
