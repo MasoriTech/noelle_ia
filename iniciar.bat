@@ -1,16 +1,16 @@
 @echo off
-title Avatar Owner Width V38.1
+title Avatar Megapack Design V39.2 Robust
 
 echo ========================================
-echo  Avatar Owner Width V38.1
+echo  Avatar Megapack Design V39.2 Robust
 echo ========================================
 echo.
 
-node scripts\apply_avatar_owner_width_v38_1.js
+node scripts\apply_avatar_megapack_design_v39_2.js
 
 echo.
-echo [diagnostico avatar width]
-node scripts\diagnose_avatar_owner_width_v38_1.js
+echo [diagnostico avatar v39.2]
+node scripts\diagnose_avatar_megapack_design_v39_2.js
 
 echo.
 echo Iniciando aplicativo...

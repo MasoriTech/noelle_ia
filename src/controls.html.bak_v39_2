@@ -303,7 +303,6 @@
 <!-- disabled global_layout_runtime_v35.js by layout_revert_v35_1 -->
 <script src="./renderer/services/layout/layout_revert_v35_1.js"></script>
 <!-- disabled avatar_loadfile_fixed_sizes_v36.js by avatar_single_render_owner_v38 -->
-<!-- disabled avatar_render_owner_v38.js by avatar_megapack_design_v39_2 -->
-<script src="./renderer/pages/avatar/avatar_design_owner_v39_2.js"></script>
+<script src="./renderer/pages/avatar/avatar_render_owner_v38.js"></script>
 </body>
 </html>

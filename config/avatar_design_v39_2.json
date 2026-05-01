@@ -1,0 +1,22 @@
+{
+  "version": "avatar_megapack_design_v39_2",
+  "owner": "src/renderer/pages/avatar/avatar_design_owner_v39_2.js",
+  "renderer": "src/avatar_loadfile_preview_v19_8_3.html",
+  "layout": {
+    "rootHeight": "calc(100vh - 138px)",
+    "minHeight": "600px",
+    "previewMinWidth": "620px",
+    "sideWidth": "390px",
+    "gap": "16px",
+    "headerHeight": "64px",
+    "previewToolbarHeight": "46px"
+  },
+  "safety": {
+    "singleOwner": true,
+    "iframeFallback": true,
+    "mutationDebounce": true,
+    "touchesInternalRenderer": false,
+    "touchesCamera": false,
+    "touchesWebGL": false
+  }
+}
