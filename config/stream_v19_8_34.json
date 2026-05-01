@@ -1,0 +1,16 @@
+{
+  "version": "stream_v19_8_34_guard_to_ollama_existing_only",
+  "scope": "existing_stream_only",
+  "touchesAvatar": false,
+  "touchesLoadfile": false,
+  "touchesViewers": false,
+  "adds": [
+    "src/renderer/modules/noelle_stream_ai_reply_runtime_v19_8_34.js"
+  ],
+  "dependsOn": [
+    "src/renderer/pages/noelle_stream_page_v19_8_29.js",
+    "src/renderer/modules/noelle_stream_finalize_v19_8_33.js",
+    "preload.js exposes noelleAPI.chat"
+  ],
+  "tts": false
+}

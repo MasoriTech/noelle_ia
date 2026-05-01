@@ -1,27 +1,17 @@
 @echo off
-title Avatar V41.2 Scene Room Scale Fix
+title Stream V19.8.35 TTS Existing Only
 
 echo ========================================
-echo  Avatar V41.2 Scene Room Scale Fix
+echo  Stream V19.8.35 TTS Existing Only
 echo ========================================
 echo.
 
-echo [1/2] Aplicando ajuste de escala do cenario...
-node scripts\apply_avatar_v41_2_scene_scale.js
-if errorlevel 1 goto :fail
+node scripts\apply_stream_v19_8_35.js
 
 echo.
-echo [2/2] Checkup...
-node scripts\checkup_avatar_v41_2_scene_scale.js
+echo [checkup stream v19.8.35]
+node scripts\checkup_stream_v19_8_35.js
 
 echo.
 echo Iniciando aplicativo...
 npm start
-goto :end
-
-:fail
-echo.
-echo Falha ao aplicar o patch v41.2.
-pause
-
-:end

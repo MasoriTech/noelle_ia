@@ -1,0 +1,39 @@
+NODE --CHECK
+[OK] src/renderer/modules/noelle_stream_finalize_v19_8_33.js
+[OK] src/renderer/modules/noelle_stream_stt_selector_v21.js
+[OK] src/renderer/modules/noelle_stream_stt_status_v22.js
+[OK] src/renderer/modules/noelle_stream_transcribe_button_runtime_v20.js
+[OK] scripts/patch_stream_audio_capture_v19_8_33.js
+[OK] scripts/patch_stream_existing_v19_8_33.js
+[OK] scripts/checkup_stream_v19_8_33.js
+[OK] scripts/apply_stream_v19_8_33.js
+[OK] scripts/rollback_stream_v19_8_33.js
+[OK] scripts/selftest_stream_v19_8_33.js
+
+SELFTEST
+Selftest Stream V19.8.33
+========================
+[OK] existe src/renderer/modules/noelle_stream_finalize_v19_8_33.js
+[OK] existe src/renderer/modules/noelle_stream_stt_selector_v21.js
+[OK] existe src/renderer/modules/noelle_stream_stt_status_v22.js
+[OK] existe src/renderer/modules/noelle_stream_transcribe_button_runtime_v20.js
+[OK] existe scripts/patch_stream_audio_capture_v19_8_33.js
+[OK] existe scripts/patch_stream_existing_v19_8_33.js
+[OK] existe scripts/apply_stream_v19_8_33.js
+[OK] existe scripts/checkup_stream_v19_8_33.js
+[OK] existe scripts/rollback_stream_v19_8_33.js
+[OK] node --check src/renderer/modules/noelle_stream_finalize_v19_8_33.js
+[OK] node --check src/renderer/modules/noelle_stream_stt_selector_v21.js
+[OK] node --check src/renderer/modules/noelle_stream_stt_status_v22.js
+[OK] node --check src/renderer/modules/noelle_stream_transcribe_button_runtime_v20.js
+[OK] node --check scripts/patch_stream_audio_capture_v19_8_33.js
+[OK] node --check scripts/patch_stream_existing_v19_8_33.js
+[OK] node --check scripts/apply_stream_v19_8_33.js
+[OK] node --check scripts/checkup_stream_v19_8_33.js
+[OK] node --check scripts/rollback_stream_v19_8_33.js
+[OK] ouve segmento pronto
+[OK] função transcribeLastSegment
+[OK] StreamGuard final
+[OK] escopo protegido documentado
+
+SELFTEST_EXIT=0

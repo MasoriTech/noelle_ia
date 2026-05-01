@@ -1,0 +1,26 @@
+{
+  "version": "stream_v19_8_33_finish_existing_only",
+  "scope": "existing Stream only",
+  "does_not_touch": [
+    "avatar",
+    "loadfile",
+    "viewers",
+    "assets/avatars",
+    "assets/scenes"
+  ],
+  "base_files": [
+    "src/renderer/pages/noelle_stream_page_v19_8_29.js",
+    "src/renderer/modules/noelle_stream_audio_capture_v19_8_30.js",
+    "src/renderer/modules/noelle_stream_vad_v19_8_31.js",
+    "src/renderer/modules/noelle_stream_segment_recorder_v19_8_32.js"
+  ],
+  "added": [
+    "src/renderer/modules/noelle_stream_finalize_v19_8_33.js"
+  ],
+  "patched": [
+    "src/renderer/modules/noelle_stream_audio_capture_v19_8_30.js",
+    "src/renderer/modules/noelle_stream_stt_selector_v21.js",
+    "src/renderer/modules/noelle_stream_stt_status_v22.js",
+    "src/renderer/modules/noelle_stream_transcribe_button_runtime_v20.js"
+  ]
+}

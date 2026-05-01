@@ -1,0 +1,18 @@
+{
+  "version": "stream_v19_8_35_tts_existing_only",
+  "touches": [
+    "src/renderer/modules/noelle_stream_tts_runtime_v19_8_35.js",
+    "src/controls.html via script injection"
+  ],
+  "does_not_touch": [
+    "Avatar",
+    "Loadfile",
+    "Viewers 3D",
+    "Stream page replacement"
+  ],
+  "requires": [
+    "window.noelleAPI.speak from preload",
+    "existing Stream page/module structure"
+  ],
+  "autoVoiceDefault": false
+}

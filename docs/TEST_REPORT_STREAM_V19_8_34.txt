@@ -1,0 +1,26 @@
+NODE --CHECK
+[OK] src/renderer/modules/noelle_stream_ai_reply_runtime_v19_8_34.js
+[OK] scripts/patch_stream_existing_v19_8_34.js
+[OK] scripts/checkup_stream_v19_8_34.js
+[OK] scripts/apply_stream_v19_8_34.js
+[OK] scripts/rollback_stream_v19_8_34.js
+[OK] scripts/selftest_stream_v19_8_34.js
+
+SELFTEST
+Selftest Stream V19.8.34
+=========================
+[OK] existe src/renderer/modules/noelle_stream_ai_reply_runtime_v19_8_34.js
+[OK] existe scripts/patch_stream_existing_v19_8_34.js
+[OK] existe scripts/checkup_stream_v19_8_34.js
+[OK] existe scripts/apply_stream_v19_8_34.js
+[OK] existe scripts/rollback_stream_v19_8_34.js
+[OK] node --check src/renderer/modules/noelle_stream_ai_reply_runtime_v19_8_34.js
+[OK] node --check scripts/patch_stream_existing_v19_8_34.js
+[OK] node --check scripts/checkup_stream_v19_8_34.js
+[OK] node --check scripts/apply_stream_v19_8_34.js
+[OK] node --check scripts/rollback_stream_v19_8_34.js
+[OK] escuta transcript-ready v19.8.33
+[OK] usa noelleAPI.chat
+[OK] StreamGuard antes da IA
+[OK] sem TTS nesta fase
+SELFTEST_EXIT=0

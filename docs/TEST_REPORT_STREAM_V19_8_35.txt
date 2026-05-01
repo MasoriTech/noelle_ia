@@ -1,0 +1,25 @@
+NODE --CHECK
+[OK] src/renderer/modules/noelle_stream_tts_runtime_v19_8_35.js
+[OK] scripts/apply_stream_v19_8_35.js
+[OK] scripts/checkup_stream_v19_8_35.js
+[OK] scripts/rollback_stream_v19_8_35.js
+[OK] scripts/selftest_stream_v19_8_35.js
+
+SELFTEST
+Selftest Stream V19.8.35
+========================
+[OK] existe src/renderer/modules/noelle_stream_tts_runtime_v19_8_35.js
+[OK] existe scripts/apply_stream_v19_8_35.js
+[OK] existe scripts/checkup_stream_v19_8_35.js
+[OK] existe scripts/rollback_stream_v19_8_35.js
+[OK] node --check src/renderer/modules/noelle_stream_tts_runtime_v19_8_35.js
+[OK] node --check scripts/apply_stream_v19_8_35.js
+[OK] node --check scripts/checkup_stream_v19_8_35.js
+[OK] node --check scripts/rollback_stream_v19_8_35.js
+[OK] usa noelleAPI.speak
+[OK] painel TTS
+[OK] auto voz
+[OK] StreamGuard para voz
+[OK] bloqueia placeholder
+
+SELFTEST_EXIT=0

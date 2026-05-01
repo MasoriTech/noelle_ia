@@ -292,7 +292,7 @@
   <script src="./renderer/noelle_avatar_compact_import_v19_8_20.js" defer data-noelle-avatar-compact-import-v19-8-20="true"></script>
   <script src="./renderer/noelle_add_avatar_button_v19_8_21.js" defer data-noelle-add-avatar-v19-8-21="true"></script>
   <script src="./renderer/modules/noelle_tabs_structure_guard_v19_8_36.js" defer></script>
-<script src="./renderer/modules/noelle_stream_segment_exporter_v20.js"></script>`n`n<!-- disabled avatar_legacy_blocker_v27.js by restore_loadfile_v19_8_3_working -->
+<script src="./renderer/modules/noelle_stream_segment_exporter_v20.js"></script>`n<script src="./renderer/modules/noelle_stream_transcribe_button_runtime_v20.js"></script>`n<!-- disabled avatar_legacy_blocker_v27.js by restore_loadfile_v19_8_3_working -->
 <!-- disabled avatar_renderer_restore_v27_1.js by avatar_runtime_v31 -->
 <script src="./renderer/services/config/avatar_config_service_v31.js"></script>
 <script src="./renderer/modules/avatar/avatar_legacy_blocker_v31.js"></script>
@@ -317,12 +317,5 @@
 <!-- disabled avatar_page_owner_v41.js by avatar_v41_1 -->
 <script src="./renderer/pages/avatar/model_manifest_v41_1.js"></script>
 <script src="./renderer/pages/avatar/avatar_page_owner_v41_1.js"></script>
-<script src="./renderer/modules/noelle_stream_stt_status_v22.js"></script>
-<script src="./renderer/modules/noelle_stream_stt_selector_v21.js"></script>
-<script src="./renderer/modules/noelle_stream_transcribe_button_runtime_v20.js"></script>
-<script src="./renderer/modules/noelle_stream_finalize_v19_8_33.js"></script>
-<script src="./renderer/modules/noelle_stream_ai_reply_runtime_v19_8_34.js"></script>
-<!-- disabled noelle_stream_tts_runtime_v19_8_35.js by stream_v19_8_35 -->
-<script src="./renderer/modules/noelle_stream_tts_runtime_v19_8_35.js"></script>
 </body>
 </html>
