@@ -1,16 +1,16 @@
 @echo off
-title Avatar Megapack Design V39.2 Robust
+title Avatar Design V39.4 Hardened
 
 echo ========================================
-echo  Avatar Megapack Design V39.2 Robust
+echo  Avatar Design V39.4 Hardened
 echo ========================================
 echo.
 
-node scripts\apply_avatar_megapack_design_v39_2.js
+node scripts\apply_avatar_design_v39_4.js
 
 echo.
-echo [diagnostico avatar v39.2]
-node scripts\diagnose_avatar_megapack_design_v39_2.js
+echo [diagnostico avatar v39.4]
+node scripts\diagnose_avatar_design_v39_4.js
 
 echo.
 echo Iniciando aplicativo...

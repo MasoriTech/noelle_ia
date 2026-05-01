@@ -21,7 +21,6 @@
   <link rel="stylesheet" href="./styles/noelle_add_avatar_button_v19_8_21.css" data-noelle-add-avatar-v19-8-21="true">
   <link rel="stylesheet" href="./styles/noelle_stream_v19_8_29.css" data-noelle-stream-v19-8-29="true">
 <!-- disabled global_layout_v35.css by layout_revert_v35_1 -->
-<link rel="stylesheet" href="./renderer/pages/avatar/avatar_design_v39_4.css">
 </head>
 <body class="theme-noelle">
   <div class="app-shell">
@@ -305,7 +304,6 @@
 <script src="./renderer/services/layout/layout_revert_v35_1.js"></script>
 <!-- disabled avatar_loadfile_fixed_sizes_v36.js by avatar_single_render_owner_v38 -->
 <!-- disabled avatar_render_owner_v38.js by avatar_megapack_design_v39_2 -->
-<!-- disabled avatar_design_owner_v39_2.js by avatar_design_v39_4 -->
-<script src="./renderer/pages/avatar/avatar_design_owner_v39_4.js"></script>
+<script src="./renderer/pages/avatar/avatar_design_owner_v39_2.js"></script>
 </body>
 </html>
