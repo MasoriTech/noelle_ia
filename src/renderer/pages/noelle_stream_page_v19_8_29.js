@@ -1,8 +1,10 @@
 "use strict";
+// NOELLE_V19_8_30D_STREAM_TEXT_CLEANUP
+// NOELLE_V19_8_30C_STREAM_TAB_RECOVER_READY
 
 /*
   Noelle/Yoru V19.8.29 — Stream Tab Skeleton
-  Fase 1: /* NOELLE_V19_8_30_MIC_BUTTON_READY */
+  Fase 1:
   - cria aba Stream IA;
   - cria layout, estados e botões;
   - NÃO liga microfone;
@@ -25,7 +27,7 @@
 
   const STATUS_LABELS = {
     idle: "Parado",
-    listening: "Escuta visual ligada",
+    listening: "Microfone ligado",
     waiting_trigger: "Aguardando pergunta direcionada",
     blocked: "Bloqueado pela StreamGuard",
     ready_to_answer: "Pergunta aprovada",
@@ -144,16 +146,16 @@
       <div class="stream-v19829-shell">
         <section class="stream-v19829-hero">
           <div>
-            <p class="eyebrow">Stream IA · Fase 1</p>
+            <p class="eyebrow">Stream IA · Fase 2</p>
             <h2>Escuta em tempo real controlada</h2>
             <p class="muted">
-              Skeleton visual da aba Stream. Nesta fase o microfone ainda não é ativado.
+              Microfone por botão ativo. A escuta só começa quando você aperta Iniciar escuta.
               A regra oficial já fica pronta: só responder pergunta direcionada a Noelle/Yoru.
             </p>
           </div>
           <div class="stream-v19829-state-card">
             <span id="streamStatePill" class="stream-v19829-pill" data-state="idle">Parado</span>
-            <small id="streamStateDetail">Microfone desligado. Aperte iniciar quando quiser testar o fluxo visual.</small>
+            <small id="streamStateDetail">Microfone desligado. Aperte Iniciar escuta para ativar o medidor real.</small>
           </div>
         </section>
 
@@ -179,7 +181,7 @@
             </div>
 
             <p class="stream-v19829-note">
-              Fase 1: botão liga apenas o estado visual. Microfone real entra na V19.8.30.
+              Fase 2: microfone por botão ativo. Transcrição, resposta da IA e voz entram em fases futuras.
             </p>
           </article>
 
@@ -248,13 +250,13 @@
       if (!(target instanceof HTMLElement)) return;
 
       if (target.id === "streamStartBtn") {
-        setStatus("listening", "Escuta visual ligada. Microfone real entra na próxima fase.");
-        addLog("status", "Escuta visual iniciada. Nenhum áudio foi capturado.");
+        setStatus("listening", "Microfone ligado. Microfone real entra na próxima fase.");
+        addLog("status", "Escuta iniciada por botão. Somente medidor de volume ativo.");
         pulseMeter(true);
       }
 
       if (target.id === "streamStopBtn") {
-        setStatus("idle", "Escuta visual parada.");
+        setStatus("idle", "Escuta parada.");
         addLog("status", "Escuta parada.");
         pulseMeter(false);
       }

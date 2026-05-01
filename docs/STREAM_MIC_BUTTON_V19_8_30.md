@@ -31,3 +31,13 @@ V19.8.31:
 - VAD simples;
 - detectar fala/silêncio;
 - fechar trecho depois de 800ms a 1200ms de silêncio.
+
+
+## V19.8.30d — Ajuste de textos
+
+A aba Stream agora deve mostrar textos compatíveis com a fase atual:
+
+- Fase 2: microfone por botão ativo;
+- transcrição fica para fase futura;
+- resposta da IA fica para fase futura;
+- voz fica para fase futura.

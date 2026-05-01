@@ -1464,3 +1464,20 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - O módulo de microfone continha as palavras STT/Ollama/TTS apenas em comentários, mas o diagnóstico interpretava como código real.
 - O diagnóstico V19.8.30a remove comentários e strings antes de procurar chamadas indevidas.
 - A fase continua sendo apenas microfone por botão + medidor de volume real.
+
+
+## V19.8.30c — Stream Tab Recover
+
+- Corrige aba Stream sumida após V19.8.30b.
+- Cria `src/renderer/modules/noelle_stream_tab_recover_v19_8_30c.js`.
+- Recovery garante botão/menu Stream e página Stream depois que `controls_window_app.js` carrega.
+- Não liga microfone sozinho.
+- Não chama STT, Ollama ou TTS.
+
+
+## V19.8.30d — Stream text cleanup
+
+- Atualiza textos antigos da aba Stream que ainda diziam "Fase 1" ou "microfone real entra na V19.8.30".
+- A interface passa a indicar corretamente: Fase 2, microfone por botão ativo.
+- Não altera a lógica do microfone.
+- Não adiciona transcrição, resposta da IA ou voz.
