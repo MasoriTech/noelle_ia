@@ -1384,3 +1384,44 @@ Regra aplicada: a aba Avatar deve ser um seletor visual limpo de personagens VRM
 - `ollamaRequest` passa a usar `agent: OLLAMA_HTTP_AGENT`.
 - `loadState`/`saveState` recebem cache curto V19.8.26.
 - Nao mexe em UI, Avatar, Chat, Room, renderer, preload ou assets.
+
+
+## V19.8.27 — Controls core split
+
+- Primeira quebra segura do `src/renderer/controls_window_app.js`.
+- Cria `src/renderer/modules/noelle_renderer_core_v19_8_27.js`.
+- Move helpers simples de UI/DOM/status/tema para o módulo core.
+- `controls_window_app.js` mantém stubs compatíveis chamando o módulo, reduzindo acoplamento sem reescrever a janela.
+- Não mexe no Avatar renderer, Chat, Room, preload, main ou renderer_dist.
+
+
+## V19.8.27a — Core diagfix
+
+- Corrige falso positivo do diagnóstico V19.8.27 no módulo core.
+- `classList.remove` não remove elemento do DOM, mas o diagnóstico antigo interpretava como remoção de DOM.
+- O módulo core passa a usar `classList.toggle(..., false)`.
+- Não mexe no Avatar renderer, Chat, Room, main, preload ou renderer_dist.
+
+
+## V19.8.27b — Controls syntax fix
+
+- Corrige erro de sintaxe em `src/renderer/controls_window_app.js` causado pela extração de `updateAssetSummary(counts = {})` no V19.8.27.
+- A causa foi o scanner antigo confundir o `{}` do parâmetro padrão com o corpo da função.
+- `updateAssetSummary` agora fica como stub correto chamando `NoelleRendererCoreV19827.updateAssetSummary`.
+- Não mexe no Avatar renderer, Chat, Room, main, preload ou renderer_dist.
+
+
+## V19.8.27c — updateAssetSummary hardfix
+
+- Corrige definitivamente o erro `function updateAssetSummary(counts = {}) ... }) {` em `controls_window_app.js`.
+- O V19.8.27b detectou o padrão, mas não removeu todos os resíduos do corpo antigo.
+- O hardfix neutraliza a linha quebrada, remove o corpo antigo quando possível e valida com `node --check`.
+- Não mexe no Avatar renderer, Chat, Room, main, preload ou renderer_dist.
+
+
+## V19.8.27d — Diagnostic regex fix
+
+- Corrige falso positivo do diagnóstico V19.8.27c.
+- `node --check` já passava, mas a regex do diagnóstico era ampla demais e acusava `updateAssetSummary` quebrado mesmo com sintaxe válida.
+- O diagnóstico agora procura apenas o padrão literal quebrado `}) {` da linha antiga.
+- Não mexe em Avatar, Chat, Room, main, preload ou renderer_dist.

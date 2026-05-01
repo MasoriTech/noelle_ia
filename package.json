@@ -1,6 +1,6 @@
 {
   "name": "noelle-companion-v16-restore",
-  "version": "19.8.26-main-perf-finish-2026",
+  "version": "19.8.27d-diagnostic-regex-fix-2026",
   "description": "Noelle Companion 2026 - boot coeso, Chat IA, avatar/widget, emotes VRMA, expressões PNG, inventário GLB e TTS/STT preparados.",
   "main": "main.js",
   "author": "MasoriTech / Noelle Companion",
@@ -20,7 +20,17 @@
     "diagnostico:v19.8.25-root-bat-cleanup": "node scripts/diagnostico_v19_8_25_root_bat_cleanup_2026.cjs",
     "repair:v19.8.26-main-perf-finish": "node scripts/repair_v19_8_26_main_perf_finish_2026.cjs",
     "diagnostico:v19.8.26-main-perf-finish": "node scripts/diagnostico_v19_8_26_main_perf_finish_2026.cjs",
-    "auto:v19.8.26-main-perf-finish": "node scripts/apply_v19_8_26_auto_2026.cjs"
+    "auto:v19.8.26-main-perf-finish": "node scripts/apply_v19_8_26_auto_2026.cjs",
+    "repair:v19.8.27-controls-core-split": "node scripts/repair_v19_8_27_controls_core_split_2026.cjs",
+    "diagnostico:v19.8.27-controls-core-split": "node scripts/diagnostico_v19_8_27_controls_core_split_2026.cjs",
+    "repair:v19.8.27a-core-diagfix": "node scripts/repair_v19_8_27a_core_diagfix_2026.cjs",
+    "diagnostico:v19.8.27a-core-diagfix": "node scripts/diagnostico_v19_8_27a_core_diagfix_2026.cjs",
+    "repair:v19.8.27b-controls-syntax-fix": "node scripts/repair_v19_8_27b_controls_syntax_fix_2026.cjs",
+    "diagnostico:v19.8.27b-controls-syntax-fix": "node scripts/diagnostico_v19_8_27b_controls_syntax_fix_2026.cjs",
+    "repair:v19.8.27c-update-asset-summary-hardfix": "node scripts/repair_v19_8_27c_update_asset_summary_hardfix_2026.cjs",
+    "diagnostico:v19.8.27c-update-asset-summary-hardfix": "node scripts/diagnostico_v19_8_27c_update_asset_summary_hardfix_2026.cjs",
+    "repair:v19.8.27d-diag-regex-fix": "node scripts/repair_v19_8_27d_diag_regex_fix_2026.cjs",
+    "diagnostico:v19.8.27d-diag-regex-fix": "node scripts/diagnostico_v19_8_27d_diag_regex_fix_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",

@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; /* NOELLE_V19_8_27_CONTROLS_CORE_SPLIT */ /* NOELLE_V19_8_27B_CONTROLS_SYNTAX_FIX */ /* NOELLE_V19_8_27C_UPDATE_ASSET_SUMMARY_HARDFIX */
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -18,28 +18,13 @@ const appState = {
   avatarAlwaysOnTop: false
 };
 
-function nowTime() {
-  return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-}
+function nowTime() { return window.NoelleRendererCoreV19827 ? window.NoelleRendererCoreV19827.nowTime() : new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }); }
 
-function showToast(text) {
-  const toast = $("#toast");
-  if (!toast) return;
-  toast.textContent = text;
-  toast.classList.add("show");
-  clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => toast.classList.remove("show"), 3000);
-}
+function showToast(text) { return window.NoelleRendererCoreV19827?.showToast?.(text); }
 
-function escapeText(value) {
-  const div = document.createElement("div");
-  div.textContent = String(value ?? "");
-  return div.innerHTML;
-}
+function escapeText(value) { if (window.NoelleRendererCoreV19827?.escapeText) return window.NoelleRendererCoreV19827.escapeText(value); const div = document.createElement("div"); div.textContent = String(value ?? ""); return div.innerHTML; }
 
-function selectHasValue(select, value) {
-  return !!select && Array.from(select.options).some((opt) => opt.value === value);
-}
+function selectHasValue(select, value) { return window.NoelleRendererCoreV19827?.selectHasValue ? window.NoelleRendererCoreV19827.selectHasValue(select, value) : (!!select && Array.from(select.options || []).some((opt) => opt.value === value)); }
 
 function setPage(page) {
   appState.page = page;
@@ -53,29 +38,11 @@ function setPage(page) {
   if (page === "chat") scrollChatToBottom(); if (page === "avatar") window.NoelleAvatarTabV1982?.render?.();
 }
 
-function setGlobalStatus(text, type = "warn") {
-  const label = $("#globalStatus");
-  const dot = $("#globalStatusDot");
-  if (label) label.textContent = text;
-  if (dot) {
-    dot.classList.remove("ok", "bad");
-    if (type === "ok") dot.classList.add("ok");
-    if (type === "bad") dot.classList.add("bad");
-  }
-}
+function setGlobalStatus(text, type = "warn") { return window.NoelleRendererCoreV19827?.setGlobalStatus?.(text, type); }
 
-function setChatStatus(text, detail = "") {
-  const pill = $("#chatStatusPill");
-  const detailEl = $("#chatDetailStatus");
-  if (pill) pill.textContent = text;
-  if (detailEl) detailEl.textContent = detail;
-}
+function setChatStatus(text, detail = "") { return window.NoelleRendererCoreV19827?.setChatStatus?.(text, detail); }
 
-function autosizeTextarea(textarea) {
-  if (!textarea) return;
-  textarea.style.height = "auto";
-  textarea.style.height = Math.min(textarea.scrollHeight, 130) + "px";
-}
+function autosizeTextarea(textarea) { return window.NoelleRendererCoreV19827?.autosizeTextarea?.(textarea); }
 
 function renderMessages() {
   const log = $("#chatLog");
@@ -103,11 +70,7 @@ function renderMessages() {
   scrollChatToBottom();
 }
 
-function scrollChatToBottom() {
-  const log = $("#chatLog");
-  if (!log) return;
-  requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
-}
+function scrollChatToBottom() { return window.NoelleRendererCoreV19827?.scrollChatToBottom?.(); }
 
 async function loadSavedState() {
   if (!window.noelleAPI?.loadState) return;
@@ -162,11 +125,7 @@ function syncControlsFromState() {
   applyTheme(themeSelect?.value || appState.theme);
 }
 
-function applyTheme(theme) {
-  appState.theme = theme || "noelle";
-  document.body.classList.remove("theme-noelle", "theme-pbv", "theme-dark", "theme-light");
-  document.body.classList.add(`theme-${appState.theme}`);
-}
+function applyTheme(theme) { return window.NoelleRendererCoreV19827?.applyTheme?.(appState, theme); }
 
 async function refreshStatus({ quiet = false } = {}) {
   if (!window.noelleAPI?.status) {
@@ -191,16 +150,8 @@ async function refreshStatus({ quiet = false } = {}) {
   }
 }
 
-function updateAssetSummary(counts = {}) {
-  const box = $("#assetSummary");
-  if (!box) return;
-  box.innerHTML = `
-    <span>Expressões: <strong>${Number(counts.expressions || 0)}</strong></span>
-    <span>Motions VRMA: <strong>${Number(counts.motions || 0)}</strong></span>
-    <span>Itens GLB: <strong>${Number(counts.items || 0)}</strong></span>
-    <span>Avatares VRM: <strong>${Number(counts.avatars || 0)}</strong></span>
-  `;
-}
+function updateAssetSummary(counts = {}) { return window.NoelleRendererCoreV19827?.updateAssetSummary?.(counts); }
+
 
 async function loadAssets() {
   if (!window.noelleAPI?.assets) return;
