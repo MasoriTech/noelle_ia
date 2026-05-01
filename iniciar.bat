@@ -1,17 +1,27 @@
 @echo off
-title Avatar Design V39.4 Hardened
+title Avatar V41.2 Scene Room Scale Fix
 
 echo ========================================
-echo  Avatar Design V39.4 Hardened
+echo  Avatar V41.2 Scene Room Scale Fix
 echo ========================================
 echo.
 
-node scripts\apply_avatar_design_v39_4.js
+echo [1/2] Aplicando ajuste de escala do cenario...
+node scripts\apply_avatar_v41_2_scene_scale.js
+if errorlevel 1 goto :fail
 
 echo.
-echo [diagnostico avatar v39.4]
-node scripts\diagnose_avatar_design_v39_4.js
+echo [2/2] Checkup...
+node scripts\checkup_avatar_v41_2_scene_scale.js
 
 echo.
 echo Iniciando aplicativo...
 npm start
+goto :end
+
+:fail
+echo.
+echo Falha ao aplicar o patch v41.2.
+pause
+
+:end

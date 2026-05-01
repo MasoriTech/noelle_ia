@@ -1,0 +1,23 @@
+NODE --CHECK
+[OK] src/renderer/loadfile/loadfile_runtime_bridge_v40.js
+[OK] scripts/organize_loadfile_assets_v40.js
+[OK] scripts/build_loadfile_manifests_v40.js
+[OK] scripts/patch_loadfile_html_bridge_v40.js
+[OK] scripts/patch_loadfile_app_query_v40.js
+[OK] scripts/apply_loadfile_v40.js
+[OK] scripts/checkup_loadfile_v40.js
+[OK] scripts/rollback_loadfile_v40.js
+[OK] scripts/selftest_loadfile_v40.js
+
+SELFTEST
+[OK] existe src/renderer/loadfile/loadfile_runtime_bridge_v40.js
+[OK] existe config/loadfile_runtime_policy_v40.json
+[OK] existe scripts/apply_loadfile_v40.js
+[OK] node --check src/renderer/loadfile/loadfile_runtime_bridge_v40.js
+[OK] node --check scripts/apply_loadfile_v40.js
+[OK] node --check scripts/checkup_loadfile_v40.js
+[OK] node --check scripts/rollback_loadfile_v40.js
+[OK] bridge global
+[OK] GLB avatar bloqueado
+
+SELFTEST_EXIT=0

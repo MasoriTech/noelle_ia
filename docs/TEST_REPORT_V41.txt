@@ -1,0 +1,43 @@
+NODE --CHECK
+[OK] src/renderer/pages/avatar/avatar_page_owner_v41.js
+[OK] src/renderer/viewers/model_viewer_v41_app.mjs
+[OK] scripts/restore_fast_loadfile_v41.js
+[OK] scripts/organize_avatar_assets_v41.js
+[OK] scripts/build_model_manifest_v41.js
+[OK] scripts/patch_controls_avatar_v41.js
+[OK] scripts/checkup_avatar_v41.js
+[OK] scripts/apply_avatar_v41.js
+[OK] scripts/rollback_avatar_v41.js
+[OK] scripts/selftest_avatar_v41.js
+
+SELFTEST
+Selftest Avatar V41
+===================
+[OK] existe src/renderer/pages/avatar/avatar_page_owner_v41.js
+[OK] existe src/renderer/pages/avatar/avatar_page_v41.css
+[OK] existe src/renderer/viewers/vrm_viewer_v41.html
+[OK] existe src/renderer/viewers/glb_viewer_v41.html
+[OK] existe src/renderer/viewers/scene_viewer_v41.html
+[OK] existe src/renderer/viewers/model_viewer_v41_app.mjs
+[OK] existe scripts/restore_fast_loadfile_v41.js
+[OK] existe scripts/organize_avatar_assets_v41.js
+[OK] existe scripts/build_model_manifest_v41.js
+[OK] existe scripts/patch_controls_avatar_v41.js
+[OK] existe scripts/apply_avatar_v41.js
+[OK] existe scripts/checkup_avatar_v41.js
+[OK] existe scripts/rollback_avatar_v41.js
+[OK] node --check src/renderer/pages/avatar/avatar_page_owner_v41.js
+[OK] node --check src/renderer/viewers/model_viewer_v41_app.mjs
+[OK] node --check scripts/restore_fast_loadfile_v41.js
+[OK] node --check scripts/organize_avatar_assets_v41.js
+[OK] node --check scripts/build_model_manifest_v41.js
+[OK] node --check scripts/patch_controls_avatar_v41.js
+[OK] node --check scripts/apply_avatar_v41.js
+[OK] node --check scripts/checkup_avatar_v41.js
+[OK] node --check scripts/rollback_avatar_v41.js
+[OK] Loadfile sem query
+[OK] viewer VRM separado
+[OK] viewer de cenário separado
+[OK] viewer usa GLTFLoader
+
+SELFTEST_EXIT=0

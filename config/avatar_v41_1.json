@@ -1,0 +1,14 @@
+{
+  "version": "avatar_v41_1_manifest_js_asset_finder",
+  "fixes": [
+    "manifest JS bridge injected before owner",
+    "does not rely only on local JSON fetch",
+    "shows expected missing assets instead of hiding them",
+    "asset finder copies Yoru/Nezuko/Naruto to expected folders when found",
+    "fast Loadfile remains query-free"
+  ],
+  "included_assets": [
+    "src/assets/avatars/nezuko_kamado.glb",
+    "src/assets/scenes/naruto_sala_examen_chunnin.glb"
+  ]
+}

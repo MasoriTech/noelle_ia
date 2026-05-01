@@ -1,0 +1,31 @@
+NODE --CHECK
+[OK] src/renderer/pages/avatar/avatar_design_owner_v39_7.js
+[OK] scripts/patch_avatar_preview_query_v39_7.js
+[OK] scripts/apply_avatar_design_v39_7.js
+[OK] scripts/diagnose_avatar_design_v39_7.js
+[OK] scripts/rollback_avatar_design_v39_7.js
+[OK] scripts/selftest_avatar_design_v39_7.js
+
+SELFTEST
+Selftest Avatar Design V39.7
+============================
+[OK] existe src/renderer/pages/avatar/avatar_design_owner_v39_7.js
+[OK] existe src/renderer/pages/avatar/avatar_design_v39_7.css
+[OK] existe src/assets/avatars/avatar_manifest_v39_7.json
+[OK] existe scripts/apply_avatar_design_v39_7.js
+[OK] existe scripts/diagnose_avatar_design_v39_7.js
+[OK] existe scripts/rollback_avatar_design_v39_7.js
+[OK] existe scripts/patch_avatar_preview_query_v39_7.js
+[OK] node --check src/renderer/pages/avatar/avatar_design_owner_v39_7.js
+[OK] node --check scripts/apply_avatar_design_v39_7.js
+[OK] node --check scripts/diagnose_avatar_design_v39_7.js
+[OK] node --check scripts/rollback_avatar_design_v39_7.js
+[OK] node --check scripts/patch_avatar_preview_query_v39_7.js
+[OK] selectAvatar
+[OK] postToFrame
+[OK] manifest loader
+[OK] iframe id
+[OK] CSS lista avatar
+[OK] manifest com avatares
+
+SELFTEST_EXIT=0

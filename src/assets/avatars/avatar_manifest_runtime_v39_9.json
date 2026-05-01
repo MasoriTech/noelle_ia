@@ -1,0 +1,50 @@
+{
+  "version": "v39.9-compat-from-loadfile-v40",
+  "generatedAt": "2026-05-01T15:48:36.843Z",
+  "avatars": [
+    {
+      "name": "Noelle",
+      "path": "assets/Noelle.vrm",
+      "type": "vrm",
+      "kind": "avatar",
+      "fallback": true,
+      "exists": true,
+      "renderable": true,
+      "enabled": true,
+      "reason": ""
+    },
+    {
+      "name": "Yoru",
+      "path": "assets/avatars/Yoru.vrm",
+      "type": "vrm",
+      "kind": "avatar",
+      "fallback": false,
+      "exists": true,
+      "renderable": true,
+      "enabled": true,
+      "reason": ""
+    },
+    {
+      "name": "Arisa",
+      "path": "assets/avatars/arisa.vrm",
+      "type": "vrm",
+      "kind": "avatar",
+      "fallback": false,
+      "exists": true,
+      "renderable": true,
+      "enabled": true,
+      "reason": ""
+    },
+    {
+      "name": "Nezuko Kamado",
+      "path": "assets/avatars/nezuko_kamado.glb",
+      "type": "glb",
+      "kind": "avatar",
+      "fallback": false,
+      "exists": true,
+      "renderable": false,
+      "enabled": false,
+      "reason": "não suportado pelo Loadfile VRM"
+    }
+  ]
+}

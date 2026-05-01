@@ -1,0 +1,21 @@
+{
+  "version": "avatar_design_v39_7_controls_avatar_switch",
+  "owner": "src/renderer/pages/avatar/avatar_design_owner_v39_7.js",
+  "css": "src/renderer/pages/avatar/avatar_design_v39_7.css",
+  "manifest": "src/assets/avatars/avatar_manifest_v39_7.json",
+  "renderer": "src/avatar_loadfile_preview_v19_8_3.html",
+  "included_assets": [
+    "nezuko_kamado.glb",
+    "naruto_sala_examen_chunnin.glb"
+  ],
+  "features": {
+    "shadowDOM": true,
+    "avatarSwitch": true,
+    "manifest": true,
+    "fitResetButtons": true,
+    "postMessageControls": true,
+    "previewQueryPatch": true,
+    "touchesCamera": false,
+    "touchesWebGL": false
+  }
+}

@@ -1,0 +1,27 @@
+NODE --CHECK
+[OK] src/renderer/pages/avatar/avatar_design_owner_v39_6.js
+[OK] scripts/apply_avatar_design_v39_6.js
+[OK] scripts/diagnose_avatar_design_v39_6.js
+[OK] scripts/rollback_avatar_design_v39_6.js
+[OK] scripts/selftest_avatar_design_v39_6.js
+
+SELFTEST
+Selftest Avatar Design V39.6
+============================
+[OK] existe src/renderer/pages/avatar/avatar_design_owner_v39_6.js
+[OK] existe src/renderer/pages/avatar/avatar_design_v39_6.css
+[OK] existe scripts/apply_avatar_design_v39_6.js
+[OK] existe scripts/diagnose_avatar_design_v39_6.js
+[OK] existe scripts/rollback_avatar_design_v39_6.js
+[OK] node --check src/renderer/pages/avatar/avatar_design_owner_v39_6.js
+[OK] node --check scripts/apply_avatar_design_v39_6.js
+[OK] node --check scripts/diagnose_avatar_design_v39_6.js
+[OK] node --check scripts/rollback_avatar_design_v39_6.js
+[OK] Shadow DOM
+[OK] iframe id
+[OK] healthCheck
+[OK] CSS preview
+[OK] CSS side
+[OK] grid areas
+
+SELFTEST_EXIT=0

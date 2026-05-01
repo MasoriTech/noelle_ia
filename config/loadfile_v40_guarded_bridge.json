@@ -1,0 +1,11 @@
+{
+  "version": "loadfile_v40_guarded_bridge",
+  "included_scenario_files": false,
+  "features": [
+    "bridge",
+    "safe patch",
+    "manifest",
+    "scene separation",
+    "rollback"
+  ]
+}

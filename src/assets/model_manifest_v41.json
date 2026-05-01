@@ -1,0 +1,47 @@
+{
+  "version": "v41",
+  "generatedAt": "2026-05-01T16:01:56.150Z",
+  "rule": "Noelle usa Loadfile rápido. Outros modelos usam viewers separados.",
+  "avatars": [
+    {
+      "name": "Noelle",
+      "path": "assets/Noelle.vrm",
+      "type": "vrm",
+      "kind": "avatar",
+      "default": true,
+      "mode": "fast",
+      "exists": true
+    },
+    {
+      "name": "Yoru",
+      "path": "assets/avatars/Yoru.vrm",
+      "type": "vrm",
+      "kind": "avatar",
+      "exists": true
+    },
+    {
+      "name": "Arisa",
+      "path": "assets/avatars/arisa.vrm",
+      "type": "vrm",
+      "kind": "avatar",
+      "exists": true
+    },
+    {
+      "name": "Nezuko Kamado",
+      "path": "assets/avatars/nezuko_kamado.glb",
+      "type": "glb",
+      "kind": "avatar",
+      "exists": true
+    }
+  ],
+  "scenes": [
+    {
+      "name": "Arena Chunin",
+      "path": "assets/scenes/naruto_sala_examen_chunnin.glb",
+      "type": "glb",
+      "kind": "scene",
+      "exists": true,
+      "label": "Naruto Sala Examen Chunnin"
+    }
+  ]
+}

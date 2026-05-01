@@ -1,0 +1,13 @@
+const fs=require("fs"), path=require("path"), cp=require("child_process");
+const ROOT=process.cwd();
+const exists=(f)=>fs.existsSync(path.join(ROOT,f));
+const read=(f)=>{try{return fs.readFileSync(path.join(ROOT,f),"utf8")}catch{return""}};
+const check=(f)=>{try{cp.execFileSync("node",["--check",f],{cwd:ROOT,stdio:"pipe"});return true}catch{return false}};
+console.log("Loadfile V40 Checkup\n====================");
+["src/avatar_loadfile_preview_v19_8_3.html","src/renderer/avatar_loadfile_preview_v19_8_3_app.mjs","src/renderer/loadfile/loadfile_runtime_bridge_v40.js","config/loadfile_runtime_policy_v40.json","src/assets/avatars/avatar_manifest_runtime_v40.json","src/assets/scenes/scene_manifest_runtime_v40.json"].forEach(f=>console.log((exists(f)?"[OK] ":"[MISSING] ")+f));
+console.log("\nnode --check:");
+["src/renderer/loadfile/loadfile_runtime_bridge_v40.js","scripts/organize_loadfile_assets_v40.js","scripts/build_loadfile_manifests_v40.js","scripts/patch_loadfile_html_bridge_v40.js","scripts/patch_loadfile_app_query_v40.js","scripts/apply_loadfile_v40.js","scripts/checkup_loadfile_v40.js","scripts/rollback_loadfile_v40.js","scripts/selftest_loadfile_v40.js"].forEach(f=>console.log((check(f)?"[OK] ":"[ERRO] ")+f));
+const html=read("src/avatar_loadfile_preview_v19_8_3.html");
+console.log("\nHTML bridge:"); console.log(html.includes("loadfile_runtime_bridge_v40.js")?"[OK] bridge injetado":"[WARN] bridge não encontrado");
+const app=read("src/renderer/avatar_loadfile_preview_v19_8_3_app.mjs");
+console.log("\nApp patch:"); console.log(app.includes("NOELLE_LOADFILE_V40_PATCH")?"[OK] app com patch v40":"[INFO] app sem patch v40");

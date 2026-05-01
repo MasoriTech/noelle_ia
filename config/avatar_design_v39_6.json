@@ -1,0 +1,24 @@
+{
+  "version": "avatar_design_v39_6_shadow_hardened",
+  "owner": "src/renderer/pages/avatar/avatar_design_owner_v39_6.js",
+  "css": "src/renderer/pages/avatar/avatar_design_v39_6.css",
+  "renderer": "src/avatar_loadfile_preview_v19_8_3.html",
+  "architecture": {
+    "shadowDOM": true,
+    "singleOwner": true,
+    "previewFirst": true,
+    "sideSecond": true,
+    "touchesRendererInternals": false,
+    "touchesCamera": false,
+    "touchesWebGL": false
+  },
+  "layout": {
+    "rootHeight": "calc(100vh - 148px)",
+    "minHeight": "620px",
+    "previewMinWidth": "640px",
+    "sideWidth": "380px",
+    "headerHeight": "56px",
+    "previewToolbarHeight": "44px",
+    "previewFooterHeight": "38px"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "version": "v39.7",
+  "avatars": [
+    {
+      "name": "Noelle",
+      "path": "assets/Noelle.vrm",
+      "type": "vrm",
+      "enabled": true
+    },
+    {
+      "name": "Yoru",
+      "path": "assets/avatars/Yoru.vrm",
+      "type": "vrm",
+      "enabled": true
+    },
+    {
+      "name": "Nezuko Kamado",
+      "path": "assets/avatars/nezuko_kamado.glb",
+      "type": "glb",
+      "enabled": true
+    },
+    {
+      "name": "Naruto Sala Examen",
+      "path": "assets/avatars/naruto_sala_examen_chunnin.glb",
+      "type": "glb",
+      "enabled": true
+    }
+  ],
+  "notes": [
+    "VRM deve funcionar no preview Loadfile.",
+    "GLB é listado e passado ao preview; renderizar GLB depende do preview aceitar GLB."
+  ]
+}

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; img-src 'self' file: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src http://127.0.0.1:11434;" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Noelle Companion</title>
+  <link rel="stylesheet" href="styles/noelle.css" />
+  <link rel="stylesheet" href="./styles/noelle_avatar_tab_v19_8_2.css">
+  
+
+  <link rel="stylesheet" href="./styles/noelle_ui_polish_v19_8_9a.css">
+  <link rel="stylesheet" href="./styles/noelle_themes_v19_8_10.css" data-noelle-theme-v19-8-10="true">
+  
+  <link rel="stylesheet" href="./styles/noelle_avatar_microfix_v19_8_14.css" data-noelle-avatar-microfix-v19-8-14="true">
+  
+  <link rel="stylesheet" href="./styles/noelle_avatar_canvas_fix_v19_8_15.css" data-noelle-avatar-fix-v19-8-15="true">
+  <link rel="stylesheet" href="./styles/noelle_avatar_target_v19_8_17.css" data-noelle-avatar-target-v19-8-17="true">
+  <link rel="stylesheet" href="./styles/noelle_avatar_fit_viewport_v19_8_18.css" data-noelle-avatar-fit-v19-8-18="true">
+  <link rel="stylesheet" href="./styles/noelle_avatar_compact_import_v19_8_20.css" data-noelle-avatar-compact-import-v19-8-20="true">
+  <link rel="stylesheet" href="./styles/noelle_add_avatar_button_v19_8_21.css" data-noelle-add-avatar-v19-8-21="true">
+  <link rel="stylesheet" href="./styles/noelle_stream_v19_8_29.css" data-noelle-stream-v19-8-29="true">
+<!-- disabled global_layout_v35.css by layout_revert_v35_1 -->
+<link rel="stylesheet" href="./renderer/pages/avatar/avatar_design_v39_4.css">
+</head>
+<body class="theme-noelle">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">♛</div>
+        <div>
+          <h1>Noelle</h1>
+          <p>Companion 2026</p>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="Navegação principal">
+        <button class="nav-item active" data-target="home"><span>⌂</span>Principal</button>
+        <button class="nav-item" data-target="avatar"><span>◉</span>Avatar</button>
+        <button class="nav-item" data-target="chat"><span>♛</span>Chat IA</button>
+        <button class="nav-item" data-target="emotes"><span>☺</span>Emotes</button>
+        <button class="nav-item" data-target="inventory"><span>◇</span>Inventário</button>
+        <button class="nav-item" data-target="settings"><span>⚙</span>Configurações</button>
+        <button class="nav-item" data-target="about"><span>ⓘ</span>Sobre</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-dot" id="globalStatusDot"></div>
+        <span id="globalStatus">Iniciando...</span>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <strong id="topTitle">Principal</strong>
+          <span id="topSubtitle">Noelle Companion 2026</span>
+        </div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="refreshStatusBtn">Status</button>
+          <button class="primary-btn" id="openAvatarBtnTop">Abrir Widget</button>
+        </div>
+      </header>
+
+      <section class="page active" data-page="home">
+        <div class="hero-card">
+          <div>
+            <span class="eyebrow">Base restaurada</span>
+            <h2>Noelle com boot automático, chat, avatar, emotes e inventário conectados.</h2>
+            <p>A opção 1 do iniciar.bat abre a Noelle sem aplicar reparos. Diagnóstico e manutenção ficam nas outras opções do menu.</p>
+          </div>
+          <div class="hero-badge">2026</div>
+        </div>
+
+        <div class="grid two">
+          <article class="card">
+            <h3>Resumo dos assets</h3>
+            <div class="asset-summary" id="assetSummary">
+              <span>Expressões: ...</span>
+              <span>Motions VRMA: ...</span>
+              <span>Itens GLB: ...</span>
+              <span>Avatares VRM: ...</span>
+            </div>
+          </article>
+          <article class="card">
+            <h3>Ações rápidas</h3>
+            <div class="button-grid compact">
+              <button data-avatar-action="open">Abrir Widget</button>
+              <button data-avatar-camera="face">Rosto</button>
+              <button data-avatar-camera="bust">Busto</button>
+              <button data-avatar-camera="full">Corpo inteiro</button>
+              <button id="repeatLastMotionBtn">Repetir emote</button>
+              <button id="saveAvatarPosBtn">Salvar posição</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" data-page="avatar">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Widget VRM</span>
+            <h2>Avatar da Noelle</h2>
+            <p>Usa os arquivos reais em <code>src/assets/Noelle.vrm</code> e <code>src/assets/avatars/*.vrm</code>.</p>
+          </div>
+          <button class="primary-btn" id="openAvatarBtn">Abrir Widget</button>
+        </div>
+
+        <div class="grid two">
+          <article class="card avatar-preview-card">
+            <div class="avatar-preview" id="avatarPreview">♛</div>
+            <h3>Avatar ativo</h3>
+            <p id="avatarPathLabel">Carregando...</p>
+            <div class="button-row">
+              <button data-avatar-camera="face">Rosto</button>
+              <button data-avatar-camera="bust">Busto</button>
+              <button data-avatar-camera="half">Meio corpo</button>
+              <button data-avatar-camera="full">Corpo inteiro</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Controles do widget</h3>
+            <div class="button-grid compact">
+              <button id="avatarTopBtn">Sempre no topo</button>
+              <button id="avatarCenterBtn">Centralizar</button>
+              <button id="saveAvatarPosBtn2">Salvar posição</button>
+              <button data-avatar-action="pause">Pausar</button>
+              <button data-avatar-action="stop">Parar</button>
+              <button data-avatar-action="reload">Recarregar</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page chat-page" data-page="chat">
+        <div class="chat-layout">
+          <div class="chat-panel">
+            <header class="chat-header">
+              <div>
+                <h2>Chat IA</h2>
+                <p>NoelleCore local com Ollama</p>
+              </div>
+              <span class="pill" id="chatStatusPill">IA aguardando</span>
+            </header>
+
+            <div class="chat-log" id="chatLog" aria-live="polite"></div>
+
+            <form class="composer" id="chatForm">
+              <textarea id="chatInput" rows="1" placeholder="Mensagem para Noelle..."></textarea>
+              <button type="button" class="icon-btn" id="micBtn" title="STT preparado">🎙</button>
+              <button type="submit" class="send-btn" title="Enviar">➤</button>
+            </form>
+          </div>
+
+          <aside class="inspector">
+            <h3>Configurações do Chat IA</h3>
+            <label>Modelo
+              <select id="modelSelect">
+                <option value="qwen3:0.6b">Qwen3 0.6B Fast</option>
+                <option value="gemma3:1b">Gemma 3 1B</option>
+                <option value="hermes3:3b">Hermes 3B</option>
+              </select>
+            </label>
+            <label>Perfil
+              <select id="profileSelect">
+                <option value="turbo">Turbo</option>
+                <option value="rapido">Rápido</option>
+                <option value="economico">Econômico</option>
+              </select>
+            </label>
+            <label>Persona
+              <select id="personaSelect">
+                <option value="nobre">Nobre rica</option>
+                <option value="direta">Direta</option>
+                <option value="fofa">Fofa</option>
+                <option value="seria">Séria</option>
+              </select>
+            </label>
+            <button id="statusBtn">Diagnóstico rápido</button>
+            <button id="clearChatBtn">Limpar conversa</button>
+            <button id="saveMemoryBtn">Salvar última resposta como memória</button>
+            <p class="muted" id="chatDetailStatus">Pronto.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" data-page="emotes">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Emotes reais</span>
+            <h2>Expressões PNG + animações VRMA</h2>
+            <p>Esta aba lê <code>src/assets/expressions</code> e <code>src/assets/motions</code>. Não usa mais placeholders fixos.</p>
+          </div>
+          <button class="primary-btn" data-avatar-action="open">Abrir Widget</button>
+        </div>
+
+        <div class="grid two">
+          <article class="card">
+            <h3>Expressões da Noelle</h3>
+            <div class="asset-grid" id="expressionsGrid"></div>
+          </article>
+          <article class="card">
+            <h3>Emotes / motions VRMA</h3>
+            <div class="asset-grid motions" id="motionsGrid"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" data-page="inventory">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Inventário real</span>
+            <h2>Itens 3D</h2>
+            <p>Lê <code>src/assets/item_manifest.json</code> e arquivos <code>.glb/.gltf</code>.</p>
+          </div>
+        </div>
+        <div class="asset-grid inventory" id="itemsGrid"></div>
+      </section>
+
+      <section class="page" data-page="settings">
+        <div class="grid two">
+          <article class="card">
+            <h3>Tema e interface</h3>
+            <label>Tema
+              <select id="themeSelect">
+                <option value="noelle">Noelle Roxo</option>
+                <option value="pbv">Preto/Vermelho/Branco</option>
+                <option value="dark">Escuro</option>
+                <option value="light">Claro</option>
+              </select>
+            </label>
+            <div class="button-row">
+              <button id="resetUiBtn">Resetar interface</button>
+              <button id="copyDiagBtn">Copiar diagnóstico</button>
+            </div>
+          </article>
+          <article class="card">
+            <h3>Áudio essencial</h3>
+            <p>O áudio usa Piper quando houver voz .onnx configurada. Se não houver, usa fallback Windows SAPI. Use Testar TTS para verificar.</p>
+            <div class="button-row">
+              <button id="testTtsBtn">Testar TTS</button>
+              <button id="refreshAssetsBtn">Recarregar assets</button>
+            </div>
+            <p class="muted" id="ttsStatus">Aguardando teste.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" data-page="about">
+        <article class="card prose">
+          <h2>Noelle Companion V16</h2>
+          <p>Versão de restauração de integração: mantém Chat IA estável e reconecta avatar VRM, emotes VRMA, expressões PNG, inventário GLB e TTS/STT.</p>
+          <ul>
+            <li><strong>Avatar:</strong> <code>src/assets/Noelle.vrm</code> e <code>src/assets/avatars/*.vrm</code></li>
+            <li><strong>Emotes:</strong> <code>src/assets/motions/*.vrma</code></li>
+            <li><strong>Expressões:</strong> <code>src/assets/expressions/*.png</code></li>
+            <li><strong>Itens:</strong> <code>src/assets/items/*.glb</code></li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="mobile-nav">
+    <button class="nav-item active" data-target="home">⌂</button>
+    <button class="nav-item" data-target="avatar">◉</button>
+    <button class="nav-item" data-target="chat">♛</button>
+    <button class="nav-item" data-target="emotes">☺</button>
+    <button class="nav-item" data-target="inventory">◇</button>
+    <button class="nav-item" data-target="settings">⚙</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="./renderer/modules/noelle_renderer_core_v19_8_27.js" defer data-noelle-core-v19-8-27="true"></script>
+  <script src="./renderer/modules/noelle_status_assets_v19_8_28.js" defer data-noelle-status-assets-v19-8-28="true"></script>
+  <script src="./renderer/pages/noelle_stream_page_v19_8_29.js" defer data-noelle-stream-v19-8-29="true"></script>
+  <script src="./renderer/modules/noelle_stream_audio_capture_v19_8_30.js" defer data-noelle-stream-mic-v19-8-30="true"></script>
+  <script src="./renderer/modules/noelle_stream_vad_v19_8_31.js" defer data-noelle-stream-vad-v19-8-31="true"></script>
+  <script src="./renderer/modules/noelle_stream_segment_recorder_v19_8_32.js" defer data-noelle-stream-segment-v19-8-32="true"></script>
+<script src="renderer/controls_window_app.js"></script>
+  <script src="./renderer/modules/noelle_stream_tab_recover_v19_8_30c.js" defer data-noelle-stream-recover-v19-8-30c="true"></script>
+<script src="./renderer/avatar_lab_launcher_v19_6.js"></script>
+<script id="noelle-v19-7-6-avatar-clean-tab-direct" src="./renderer/noelle_avatar_clean_tab_v19_7_6.js" defer></script>
+  <!-- legacy avatar loader removed by avatar_legacy_cleanup_v27 -->
+  
+
+  <script defer src="./renderer/noelle_ui_polish_v19_8_9a.js"></script>
+  <script src="./renderer/noelle_theme_manager_v19_8_10.js" defer data-noelle-theme-v19-8-10="true"></script>
+  <script src="./renderer/noelle_avatar_target_guard_v19_8_17.js" defer data-noelle-avatar-target-v19-8-17="true"></script>
+  <script src="./renderer/noelle_avatar_fit_viewport_v19_8_18.js" defer data-noelle-avatar-fit-v19-8-18="true"></script>
+  <script src="./renderer/noelle_avatar_compact_import_v19_8_20.js" defer data-noelle-avatar-compact-import-v19-8-20="true"></script>
+  <script src="./renderer/noelle_add_avatar_button_v19_8_21.js" defer data-noelle-add-avatar-v19-8-21="true"></script>
+  <script src="./renderer/modules/noelle_tabs_structure_guard_v19_8_36.js" defer></script>
+<script src="./renderer/modules/noelle_stream_segment_exporter_v20.js"></script>`n<script src="./renderer/modules/noelle_stream_transcribe_button_runtime_v20.js"></script>`n<!-- disabled avatar_legacy_blocker_v27.js by restore_loadfile_v19_8_3_working -->
+<!-- disabled avatar_renderer_restore_v27_1.js by avatar_runtime_v31 -->
+<script src="./renderer/services/config/avatar_config_service_v31.js"></script>
+<script src="./renderer/modules/avatar/avatar_legacy_blocker_v31.js"></script>
+<!-- disabled avatar_carousel_mount_v31.js by restore_loadfile_v19_8_3_working -->
+<!-- disabled avatar_page_v31.js by restore_loadfile_v19_8_3_working -->
+<!-- disabled avatar_assets_bridge_v31_2.js by restore_loadfile_v19_8_3_working -->
+<!-- disabled avatar_restore_loadfile_v19_8_3.js by avatar_single_render_owner_v38 -->
+<!-- disabled avatar_loadfile_layout_v33.js by avatar_single_render_owner_v38 -->
+<!-- disabled global_layout_runtime_v35.js by layout_revert_v35_1 -->
+<script src="./renderer/services/layout/layout_revert_v35_1.js"></script>
+<!-- disabled avatar_loadfile_fixed_sizes_v36.js by avatar_single_render_owner_v38 -->
+<!-- disabled avatar_render_owner_v38.js by avatar_megapack_design_v39_2 -->
+<!-- disabled avatar_design_owner_v39_2.js by avatar_design_v39_4 -->
+<!-- disabled avatar_design_owner_v39_4.js by avatar_v39_6 -->
+<!-- disabled avatar_design_owner_v39_6.js by avatar_v39_6 -->
+<!-- disabled avatar_design_owner_v39_6.js by avatar_v39_7 -->
+<!-- disabled avatar_design_owner_v39_7.js by avatar_v39_7 -->
+<!-- disabled avatar_design_owner_v39_7.js by avatar_v39_7 -->
+<!-- disabled avatar_design_owner_v39_7.js by avatar_v39_7 -->
+<script src="./renderer/pages/avatar/avatar_design_owner_v39_7.js"></script>
+</body>
+</html>

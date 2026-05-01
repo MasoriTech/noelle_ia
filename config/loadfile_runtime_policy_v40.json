@@ -1,0 +1,36 @@
+{
+  "version": "loadfile_v40_guarded_bridge",
+  "preview_html": "src/avatar_loadfile_preview_v19_8_3.html",
+  "preview_app": "src/renderer/avatar_loadfile_preview_v19_8_3_app.mjs",
+  "default_avatar": {
+    "name": "Noelle",
+    "path": "assets/Noelle.vrm",
+    "type": "vrm"
+  },
+  "avatars_scan": [
+    "src/assets",
+    "src/assets/avatars"
+  ],
+  "scenes_scan": [
+    "src/assets/scenes"
+  ],
+  "avatar_renderable_ext": [
+    ".vrm"
+  ],
+  "avatar_listed_ext": [
+    ".vrm",
+    ".glb",
+    ".gltf"
+  ],
+  "scene_ext": [
+    ".glb",
+    ".gltf"
+  ],
+  "enable_glb_avatar": false,
+  "scene_support_in_preview": false,
+  "rules": [
+    "Nezuko = avatar/personagem",
+    "naruto_sala_examen_chunnin = scene/arena",
+    "GLB avatar bloqueado por padrão no Loadfile VRM"
+  ]
+}

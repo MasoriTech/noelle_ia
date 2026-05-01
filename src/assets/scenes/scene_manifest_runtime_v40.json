@@ -1,0 +1,16 @@
+{
+  "version": "loadfile-v40",
+  "generatedAt": "2026-05-01T15:48:36.845Z",
+  "scenes": [
+    {
+      "name": "Arena Chunin",
+      "path": "assets/scenes/naruto_sala_examen_chunnin.glb",
+      "type": "glb",
+      "kind": "scene",
+      "exists": true,
+      "renderable": false,
+      "enabled": false,
+      "reason": "cenário listado; preview VRM ainda não aplica scene GLB"
+    }
+  ]
+}

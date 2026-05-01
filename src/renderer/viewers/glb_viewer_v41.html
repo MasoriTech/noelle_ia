@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>GLB Viewer V41</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: file:;">
+  <link rel="stylesheet" href="./viewer_v41.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../../../node_modules/three/build/three.module.js",
+      "three/addons/": "../../../node_modules/three/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body data-mode="glb">
+  <main id="viewerRoot">
+    <div id="canvasMount"></div>
+    <div id="hud">
+      <span id="modeBadge" class="badge">GLB</span>
+      <span id="nameBadge" class="badge">Modelo</span>
+    </div>
+    <div id="message">Inicializando viewer...</div>
+  </main>
+  <script type="module" src="./model_viewer_v41_app.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "version": "v41",
+  "principle": "Loadfile antigo fica intocável e rápido. Troca de modelo usa viewers separados.",
+  "fastLoadfile": {
+    "html": "src/avatar_loadfile_preview_v19_8_3.html",
+    "app": "src/renderer/avatar_loadfile_preview_v19_8_3_app.mjs",
+    "iframeSrc": "./avatar_loadfile_preview_v19_8_3.html",
+    "allowQueryPatch": false
+  },
+  "viewers": {
+    "vrm": "src/renderer/viewers/vrm_viewer_v41.html",
+    "glbAvatar": "src/renderer/viewers/glb_viewer_v41.html",
+    "scene": "src/renderer/viewers/scene_viewer_v41.html"
+  },
+  "assets": {
+    "avatarsDir": "src/assets/avatars",
+    "scenesDir": "src/assets/scenes",
+    "narutoSalaExamenChunninKind": "scene"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": "avatar_v41_restore_fast_loadfile_plus_viewers",
+  "rule": "Loadfile antigo nunca recebe query/manifest/bridge.",
+  "owner": "src/renderer/pages/avatar/avatar_page_owner_v41.js",
+  "viewers": [
+    "src/renderer/viewers/vrm_viewer_v41.html",
+    "src/renderer/viewers/glb_viewer_v41.html",
+    "src/renderer/viewers/scene_viewer_v41.html"
+  ],
+  "included_assets": [
+    "src/assets/avatars/nezuko_kamado.glb",
+    "src/assets/scenes/naruto_sala_examen_chunnin.glb"
+  ]
+}
