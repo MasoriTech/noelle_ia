@@ -1,0 +1,17 @@
+{
+  "version": "stream_v19_8_37_vad_5s_existing_only",
+  "target": "src/renderer/modules/noelle_stream_vad_v19_8_31.js",
+  "change": {
+    "silenceToFinishMs": 5000,
+    "uiText": "5 segundos de silêncio"
+  },
+  "does_not_touch": [
+    "Avatar",
+    "Loadfile",
+    "viewers 3D",
+    "Stream page replacement",
+    "STT backend",
+    "Ollama",
+    "TTS"
+  ]
+}

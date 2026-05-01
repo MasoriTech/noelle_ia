@@ -1,0 +1,34 @@
+{
+  "version": "v19.8.39",
+  "enabled": false,
+  "name": "custom-stt",
+  "command": "",
+  "args": [
+    "{input}"
+  ],
+  "notes": [
+    "Rode CONFIGURAR_STT.bat para preencher automaticamente.",
+    "Placeholders: {input}, {output}, {outputBase}, {outputDir}.",
+    "Para whisper.cpp normalmente use: -f {input} -otxt -of {outputBase}."
+  ],
+  "examples": {
+    "whisper_cpp": {
+      "command": "tools/whisper/whisper-cli.exe",
+      "args": [
+        "-f",
+        "{input}",
+        "-otxt",
+        "-of",
+        "{outputBase}"
+      ]
+    },
+    "python_wrapper": {
+      "command": "py",
+      "args": [
+        "tools/stt/noelle_stream_stt_python_wrapper_v19_8_39.py",
+        "{input}",
+        "{output}"
+      ]
+    }
+  }
+}

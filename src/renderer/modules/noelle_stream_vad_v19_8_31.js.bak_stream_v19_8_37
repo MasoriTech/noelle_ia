@@ -1,13 +1,11 @@
 "use strict";
-// STREAM_VAD_5S_V19_8_38: silenceToFinishMs ajustado para 5000ms.
-// STREAM_VAD_5S_V19_8_37: silenceToFinishMs ajustado para 5000ms.
 /* Noelle/Yoru V19.8.33 — Stream VAD Simple Fix
  - detecta fala/silêncio pelo nível emitido pelo microfone;
  - NÃO transcreve, NÃO chama IA, NÃO gera voz.
 */
 (() => {
   const VERSION = "19.8.33-stream-vad-simple-fix-2026";
-  const config = { speechThreshold: 0.12, releaseThreshold: 0.07, minSpeechMs: 180, silenceToFinishMs: 5000 };
+  const config = { speechThreshold: 0.12, releaseThreshold: 0.07, minSpeechMs: 180, silenceToFinishMs: 950 };
   const state = { enabled: true, micActive: false, speaking: false, level: 0, candidateSpeechAt: 0, speechStartedAt: 0, lastLoudAt: 0, lastEventAt: 0, lastSegmentMs: 0, segments: 0 };
   const qs = (selector, root = document) => root.querySelector(selector);
   const now = () => new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
@@ -54,7 +52,7 @@
   function startSpeech(ts) {
     state.speaking = true; state.speechStartedAt = ts; state.lastLoudAt = ts; state.segments += 1;
     setStatus("Fala detectada", "VAD detectou início de fala. Ainda não há transcrição.", "ready_to_answer");
-    updatePanel("Fala detectada", "Continue falando. O trecho fecha depois de 5 segundos de silêncio.");
+    updatePanel("Fala detectada", "Continue falando. O trecho fecha depois de quase 1 segundo de silêncio.");
     addLog("vad", "Fala detectada."); emit("noelle-stream-vad-start-v19831", { level: state.level, at: ts });
   }
   function finishSpeech(ts) {

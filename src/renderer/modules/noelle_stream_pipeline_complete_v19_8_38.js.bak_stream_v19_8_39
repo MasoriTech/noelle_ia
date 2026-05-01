@@ -1,0 +1,440 @@
+(() => {
+  "use strict";
+
+  const VERSION = "19.8.38-complete-missing-existing-only-2026";
+
+  const state = {
+    installed: false,
+    lastSegment: null,
+    lastTranscript: "",
+    lastAnswer: "",
+    autoPipeline: false,
+    autoVoice: false,
+    busy: false,
+    retryTimer: null
+  };
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const normalize = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+
+  function log(...args) {
+    console.log("[stream-complete-v19.8.38]", ...args);
+  }
+
+  function getStreamPage() {
+    return $('.page[data-page="stream"]') || $("#streamPageV19829") || document.body || document;
+  }
+
+  function setStatus(message, kind = "info") {
+    const el = $("#streamPipelineStatusV19838");
+    if (!el) return;
+    el.textContent = message;
+    el.dataset.kind = kind;
+  }
+
+  function addLog(kind, message) {
+    const logEl = $("#streamLog");
+    if (!logEl) {
+      log(kind, message);
+      return;
+    }
+
+    const empty = logEl.querySelector(".muted");
+    if (empty) logEl.innerHTML = "";
+
+    const item = document.createElement("div");
+    item.className = "stream-v19829-log-item";
+    const now = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    item.textContent = `${now} ${kind} ${message}`;
+    logEl.prepend(item);
+  }
+
+  function setTranscript(text) {
+    const value = normalize(text);
+    state.lastTranscript = value;
+
+    const targets = [
+      $("#streamLastTranscript"),
+      $('[data-stream-transcript="true"]'),
+      $('[data-noelle-stream-transcript="true"]')
+    ];
+
+    for (const el of targets) {
+      if (!el) continue;
+      if ("value" in el) el.value = value;
+      else el.textContent = value || "Nenhuma fala ainda.";
+    }
+
+    const manual = $("#streamManualTranscript");
+    if (manual && "value" in manual) manual.value = value;
+
+    window.dispatchEvent(new CustomEvent("noelle:stream-transcript-ready", {
+      detail: { version: VERSION, text: value, transcript: value }
+    }));
+  }
+
+  function setAnswer(text) {
+    const value = normalize(text);
+    state.lastAnswer = value;
+
+    const targets = [
+      $("#streamAIReplyText"),
+      $("#streamAIReply"),
+      $("#streamFutureAnswer"),
+      $('[data-stream-ai-answer="true"]'),
+      $('[data-noelle-stream-answer="true"]')
+    ];
+
+    for (const el of targets) {
+      if (!el) continue;
+      if ("value" in el) el.value = value;
+      else el.textContent = value || "Sem resposta.";
+    }
+
+    window.dispatchEvent(new CustomEvent("noelle:stream-ai-reply-ready", {
+      detail: { version: VERSION, text: value, answer: value }
+    }));
+  }
+
+  function getGuardDecision(text) {
+    try {
+      const streamApi = window.NoelleStreamPageV19829;
+      if (streamApi && typeof streamApi.shouldRespond === "function") return streamApi.shouldRespond(text);
+    } catch {}
+
+    const t = normalize(text).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const hasWake = /\b(noelle|yoru)\b/i.test(t);
+    const looksQuestion = /\?/.test(text || "") || /\b(como|por que|porque|o que|qual|quando|onde|quem|pode|consegue|devo|faco|fazer|explica|me ajuda|ajuda)\b/i.test(t);
+
+    if (!hasWake) return { ok: false, reason: "bloqueado: não chamou Noelle/Yoru" };
+    if (!looksQuestion) return { ok: false, reason: "bloqueado: não parece pergunta" };
+    return { ok: true, reason: "aprovado: pergunta direcionada" };
+  }
+
+  function extractChatText(result) {
+    if (!result) return "";
+    if (typeof result === "string") return result;
+
+    const candidates = [
+      result.text,
+      result.reply,
+      result.answer,
+      result.message,
+      result.response,
+      result.data?.text,
+      result.data?.reply,
+      result.data?.answer,
+      result.data?.message,
+      result.data?.response,
+      result.result?.text,
+      result.result?.reply,
+      result.result?.answer
+    ];
+
+    for (const item of candidates) {
+      const value = normalize(item);
+      if (value) return value;
+    }
+
+    return "";
+  }
+
+  function getNoelleAPI() {
+    return window.noelleAPI || null;
+  }
+
+  function getBridge() {
+    return window.noelleStreamBridgeV19838 || window.noelleStreamBridge || null;
+  }
+
+  async function transcribeLastSegment() {
+    if (state.busy) return { ok: false, error: "pipeline ocupado" };
+
+    const segment = state.lastSegment;
+    if (!segment?.blob) {
+      setStatus("Nenhum trecho de áudio pronto.", "warn");
+      return { ok: false, error: "no_segment" };
+    }
+
+    const bridge = getBridge();
+    if (!bridge || typeof bridge.transcribeAudio !== "function") {
+      setStatus("Bridge STT indisponível no preload.", "error");
+      return { ok: false, error: "missing_bridge" };
+    }
+
+    try {
+      state.busy = true;
+      setStatus("Transcrevendo último trecho...", "info");
+      addLog("stt", "Transcrevendo trecho em memória.");
+
+      const audioBuffer = await segment.blob.arrayBuffer();
+      const result = await bridge.transcribeAudio(audioBuffer, {
+        mimeType: segment.mimeType || segment.blob.type || "audio/webm",
+        durationMs: segment.durationMs || 0,
+        sizeBytes: segment.sizeBytes || segment.blob.size || audioBuffer.byteLength || 0,
+        source: "stream-v19.8.38"
+      });
+
+      if (!result?.ok) {
+        const error = result?.error || "STT não retornou texto.";
+        setStatus("STT falhou: " + error, "error");
+        addLog("stt", "Falha: " + error);
+        return { ok: false, error, result };
+      }
+
+      const transcript = normalize(result.text || result.transcript || "");
+      if (!transcript) {
+        setStatus("STT terminou sem texto.", "warn");
+        return { ok: false, error: "empty_transcript", result };
+      }
+
+      setTranscript(transcript);
+      setStatus("Transcrição pronta.", "ok");
+      addLog("stt", "Transcrição: " + transcript);
+
+      window.dispatchEvent(new CustomEvent("noelle:stream-segment-transcribed", {
+        detail: { version: VERSION, text: transcript, transcript, stt: result }
+      }));
+
+      return { ok: true, text: transcript, result };
+    } catch (err) {
+      const error = err?.message || String(err);
+      setStatus("Erro ao transcrever: " + error, "error");
+      addLog("stt", "Erro: " + error);
+      return { ok: false, error };
+    } finally {
+      state.busy = false;
+    }
+  }
+
+  async function answerTranscript(textOverride = "") {
+    const transcript = normalize(textOverride || state.lastTranscript || $("#streamManualTranscript")?.value || $("#streamLastTranscript")?.textContent || "");
+    if (!transcript) {
+      setStatus("Nada para enviar à IA.", "warn");
+      return { ok: false, error: "empty_transcript" };
+    }
+
+    const decision = getGuardDecision(transcript);
+    if (!decision.ok) {
+      setStatus(decision.reason, "warn");
+      addLog("guard", decision.reason + ": " + transcript);
+      setAnswer("Bloqueado.\nA IA não responderia.");
+      return { ok: false, error: "guard_blocked", decision };
+    }
+
+    const api = getNoelleAPI();
+    if (!api || typeof api.chat !== "function") {
+      setStatus("noelleAPI.chat indisponível.", "error");
+      return { ok: false, error: "missing_chat_api" };
+    }
+
+    try {
+      state.busy = true;
+      setStatus("Enviando para IA...", "info");
+      addLog("ia", "Pergunta aprovada; enviando para Noelle.");
+
+      const result = await api.chat({ message: transcript, source: "stream", mode: "stream_guard", stream: true });
+      const answer = extractChatText(result);
+
+      if (!answer) {
+        setStatus("IA respondeu sem texto.", "warn");
+        setAnswer("Sem resposta textual.");
+        return { ok: false, error: "empty_answer", result };
+      }
+
+      setAnswer(answer);
+      setStatus("Resposta da IA pronta.", "ok");
+      addLog("ia", "Resposta pronta.");
+
+      window.dispatchEvent(new CustomEvent("noelle:stream-ai-reply", {
+        detail: { version: VERSION, text: answer, answer, transcript, result }
+      }));
+
+      if (state.autoVoice) await speakAnswer(answer);
+      return { ok: true, answer, result };
+    } catch (err) {
+      const error = err?.message || String(err);
+      setStatus("Erro na IA: " + error, "error");
+      addLog("ia", "Erro: " + error);
+      return { ok: false, error };
+    } finally {
+      state.busy = false;
+    }
+  }
+
+  async function speakAnswer(textOverride = "") {
+    const answer = normalize(textOverride || state.lastAnswer || $("#streamFutureAnswer")?.textContent || "");
+    if (!answer || /bloqueado|sem resposta|a ia ainda não responde/i.test(answer)) {
+      setStatus("Nada válido para falar.", "warn");
+      return { ok: false, error: "invalid_answer" };
+    }
+
+    const api = getNoelleAPI();
+    if (!api || typeof api.speak !== "function") {
+      setStatus("noelleAPI.speak indisponível.", "error");
+      return { ok: false, error: "missing_speak_api" };
+    }
+
+    try {
+      setStatus("Falando resposta...", "info");
+      const result = await api.speak(answer);
+      setStatus("Voz enviada.", "ok");
+      return { ok: true, result };
+    } catch (err) {
+      const error = err?.message || String(err);
+      setStatus("Erro no TTS: " + error, "error");
+      return { ok: false, error };
+    }
+  }
+
+  async function runPipeline() {
+    if (state.busy) return { ok: false, error: "pipeline_busy" };
+    const stt = await transcribeLastSegment();
+    if (!stt.ok) return stt;
+    return await answerTranscript(stt.text);
+  }
+
+  function ensurePanel() {
+    const page = getStreamPage();
+    if (!page || $("#streamPipelinePanelV19838")) return;
+
+    const anchor =
+      $("#streamHistoryPanelV19836") ||
+      $("#streamTTSPanelV19835") ||
+      $("#streamAIReplyPanel") ||
+      $("#streamSegmentPanelV19832") ||
+      $("#streamFutureAnswer")?.closest?.("section, .card, div") ||
+      $("#streamLog")?.closest?.("section, .card, div") ||
+      page;
+
+    const panel = document.createElement("section");
+    panel.id = "streamPipelinePanelV19838";
+    panel.setAttribute("data-noelle-stream-complete", VERSION);
+    panel.style.marginTop = "14px";
+    panel.style.padding = "14px";
+    panel.style.border = "1px solid rgba(255,255,255,.10)";
+    panel.style.borderRadius = "14px";
+    panel.style.background = "rgba(255,255,255,.035)";
+
+    panel.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <strong style="display:block;font-size:15px;">Pipeline da Stream</strong>
+          <span id="streamPipelineStatusV19838" data-kind="info" style="font-size:12px;opacity:.72;">Aguardando trecho de áudio.</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="streamTranscribeRealBtnV19838" type="button">Transcrever trecho</button>
+          <button id="streamAnswerRealBtnV19838" type="button">Responder com IA</button>
+          <button id="streamSpeakRealBtnV19838" type="button">Falar resposta</button>
+          <button id="streamAutoPipelineBtnV19838" type="button">Auto pipeline: não</button>
+          <button id="streamAutoVoicePipelineBtnV19838" type="button">Auto voz: não</button>
+        </div>
+      </div>
+      <p style="margin:10px 0 0;font-size:12px;opacity:.66;">Completa STT → StreamGuard → IA → TTS sem recriar a aba. Auto começa desligado.</p>
+    `;
+
+    if (anchor === page) page.appendChild(panel);
+    else anchor.insertAdjacentElement("afterend", panel);
+  }
+
+  function updateButtons() {
+    const autoBtn = $("#streamAutoPipelineBtnV19838");
+    const autoVoiceBtn = $("#streamAutoVoicePipelineBtnV19838");
+    if (autoBtn) autoBtn.textContent = "Auto pipeline: " + (state.autoPipeline ? "sim" : "não");
+    if (autoVoiceBtn) autoVoiceBtn.textContent = "Auto voz: " + (state.autoVoice ? "sim" : "não");
+  }
+
+  function bindControls() {
+    if (document.__streamCompleteV19838Bound) return;
+    document.__streamCompleteV19838Bound = true;
+
+    document.addEventListener("click", async (event) => {
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (!target) return;
+
+      if (target.id === "streamTranscribeRealBtnV19838" || target.id === "streamTranscribeLastBtnV19833") await transcribeLastSegment();
+      if (target.id === "streamAnswerRealBtnV19838") await answerTranscript();
+      if (target.id === "streamSpeakRealBtnV19838") await speakAnswer();
+
+      if (target.id === "streamAutoPipelineBtnV19838") {
+        state.autoPipeline = !state.autoPipeline;
+        updateButtons();
+        setStatus("Auto pipeline " + (state.autoPipeline ? "ligado." : "desligado."), "info");
+      }
+
+      if (target.id === "streamAutoVoicePipelineBtnV19838") {
+        state.autoVoice = !state.autoVoice;
+        updateButtons();
+        setStatus("Auto voz " + (state.autoVoice ? "ligada." : "desligada."), "info");
+      }
+    }, true);
+  }
+
+  function bindEvents() {
+    if (window.__streamCompleteV19838Events) return;
+    window.__streamCompleteV19838Events = true;
+
+    window.addEventListener("noelle-stream-segment-ready-v19832", (event) => {
+      const detail = event.detail || {};
+      if (!detail.blob) return;
+
+      state.lastSegment = {
+        blob: detail.blob,
+        blobUrl: detail.blobUrl || "",
+        durationMs: detail.durationMs || 0,
+        sizeBytes: detail.sizeBytes || detail.blob.size || 0,
+        mimeType: detail.mimeType || detail.blob.type || "audio/webm"
+      };
+
+      setStatus("Trecho pronto para transcrever.", "ok");
+      addLog("pipeline", "Trecho pronto para STT.");
+
+      if (state.autoPipeline) {
+        clearTimeout(state.retryTimer);
+        state.retryTimer = setTimeout(runPipeline, 300);
+      }
+    });
+
+    window.addEventListener("noelle:stream-transcript-ready", (event) => {
+      const value = normalize(event?.detail?.text || event?.detail?.transcript || "");
+      if (value) state.lastTranscript = value;
+    });
+
+    window.addEventListener("noelle:stream-ai-reply-ready", (event) => {
+      const value = normalize(event?.detail?.answer || event?.detail?.text || "");
+      if (value) state.lastAnswer = value;
+    });
+  }
+
+  function ensure() {
+    ensurePanel();
+    updateButtons();
+    bindControls();
+    bindEvents();
+  }
+
+  function boot() {
+    if (state.installed) return;
+    state.installed = true;
+
+    ensure();
+    setTimeout(ensure, 250);
+    setTimeout(ensure, 800);
+    setTimeout(ensure, 1500);
+
+    window.NoelleStreamCompleteV19838 = Object.freeze({
+      version: VERSION,
+      ensure,
+      transcribeLastSegment,
+      answerTranscript,
+      speakAnswer,
+      runPipeline,
+      getState: () => ({ ...state, lastSegment: state.lastSegment ? { ...state.lastSegment, blob: "[Blob]" } : null })
+    });
+
+    log("ativo");
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
+})();

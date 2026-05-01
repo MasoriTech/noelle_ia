@@ -1,0 +1,48 @@
+NODE --CHECK
+[OK] src/main/stream_stt_bridge_v19_8_39.cjs
+[OK] src/preload_stream_stt_bridge_v19_8_39.cjs
+[OK] src/renderer/modules/noelle_stream_stt_backend_status_v19_8_39.js
+[OK] scripts/configure_stream_stt_v19_8_39.js
+[OK] scripts/checkup_stream_stt_backend_v19_8_39.js
+[OK] scripts/patch_stream_main_stt_v19_8_39.js
+[OK] scripts/patch_stream_preload_stt_v19_8_39.js
+[OK] scripts/patch_stream_pipeline_prefer_v39_v19_8_39.js
+[OK] scripts/patch_stream_controls_stt_status_v19_8_39.js
+[OK] scripts/apply_stream_v19_8_39.js
+[OK] scripts/rollback_stream_v19_8_39.js
+[OK] scripts/selftest_stream_v19_8_39.js
+
+SELFTEST
+Selftest Stream V19.8.39
+========================
+[OK] existe src/main/stream_stt_bridge_v19_8_39.cjs
+[OK] existe src/preload_stream_stt_bridge_v19_8_39.cjs
+[OK] existe src/renderer/modules/noelle_stream_stt_backend_status_v19_8_39.js
+[OK] existe tools/stt/noelle_stream_stt_python_wrapper_v19_8_39.py
+[OK] existe scripts/configure_stream_stt_v19_8_39.js
+[OK] existe scripts/checkup_stream_stt_backend_v19_8_39.js
+[OK] existe scripts/patch_stream_main_stt_v19_8_39.js
+[OK] existe scripts/patch_stream_preload_stt_v19_8_39.js
+[OK] existe scripts/patch_stream_pipeline_prefer_v39_v19_8_39.js
+[OK] existe scripts/patch_stream_controls_stt_status_v19_8_39.js
+[OK] existe scripts/apply_stream_v19_8_39.js
+[OK] existe scripts/rollback_stream_v19_8_39.js
+[OK] node --check src/main/stream_stt_bridge_v19_8_39.cjs
+[OK] node --check src/preload_stream_stt_bridge_v19_8_39.cjs
+[OK] node --check src/renderer/modules/noelle_stream_stt_backend_status_v19_8_39.js
+[OK] node --check scripts/configure_stream_stt_v19_8_39.js
+[OK] node --check scripts/checkup_stream_stt_backend_v19_8_39.js
+[OK] node --check scripts/patch_stream_main_stt_v19_8_39.js
+[OK] node --check scripts/patch_stream_preload_stt_v19_8_39.js
+[OK] node --check scripts/patch_stream_pipeline_prefer_v39_v19_8_39.js
+[OK] node --check scripts/patch_stream_controls_stt_status_v19_8_39.js
+[OK] node --check scripts/apply_stream_v19_8_39.js
+[OK] node --check scripts/rollback_stream_v19_8_39.js
+[OK] main handler v39
+[OK] config v39
+[OK] salva audio quando sem backend
+[OK] preload bridge v39
+[OK] painel status
+[OK] sttStatus
+
+SELFTEST_EXIT=0

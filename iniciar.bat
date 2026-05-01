@@ -1,16 +1,12 @@
 @echo off
-title Stream V19.8.36 Turn History Existing Only
+title Stream V19.8.39 STT Backend Setup
 
 echo ========================================
-echo  Stream V19.8.36 Turn History Existing Only
+echo  Stream V19.8.39 STT Backend Setup
 echo ========================================
 echo.
 
-node scripts\apply_stream_v19_8_36.js
-
-echo.
-echo [checkup stream v19.8.36]
-node scripts\checkup_stream_v19_8_36.js
+node scripts\apply_stream_v19_8_39.js
 
 echo.
 echo Iniciando aplicativo...

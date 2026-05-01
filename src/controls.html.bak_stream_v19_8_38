@@ -324,7 +324,5 @@
 <script src="./renderer/modules/noelle_stream_ai_reply_runtime_v19_8_34.js"></script>
 <!-- disabled noelle_stream_tts_runtime_v19_8_35.js by stream_v19_8_35 -->
 <script src="./renderer/modules/noelle_stream_tts_runtime_v19_8_35.js"></script>
-<script src="./renderer/modules/noelle_stream_pipeline_complete_v19_8_38.js"></script>
-<script src="./renderer/modules/noelle_stream_stt_backend_status_v19_8_39.js"></script>
 </body>
 </html>

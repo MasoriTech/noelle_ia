@@ -1,0 +1,47 @@
+NODE --CHECK
+[OK] src/renderer/modules/noelle_stream_pipeline_complete_v19_8_38.js
+[OK] src/main/stream_stt_bridge_v19_8_38.cjs
+[OK] src/preload_stream_stt_bridge_v19_8_38.cjs
+[OK] scripts/patch_stream_vad_5s_v19_8_38.js
+[OK] scripts/patch_stream_main_stt_v19_8_38.js
+[OK] scripts/patch_stream_preload_stt_v19_8_38.js
+[OK] scripts/patch_stream_controls_v19_8_38.js
+[OK] scripts/apply_stream_v19_8_38.js
+[OK] scripts/checkup_stream_v19_8_38.js
+[OK] scripts/rollback_stream_v19_8_38.js
+[OK] scripts/selftest_stream_v19_8_38.js
+
+SELFTEST
+Selftest Stream V19.8.38
+========================
+[OK] existe src/renderer/modules/noelle_stream_pipeline_complete_v19_8_38.js
+[OK] existe src/main/stream_stt_bridge_v19_8_38.cjs
+[OK] existe src/preload_stream_stt_bridge_v19_8_38.cjs
+[OK] existe scripts/patch_stream_vad_5s_v19_8_38.js
+[OK] existe scripts/patch_stream_main_stt_v19_8_38.js
+[OK] existe scripts/patch_stream_preload_stt_v19_8_38.js
+[OK] existe scripts/patch_stream_controls_v19_8_38.js
+[OK] existe scripts/apply_stream_v19_8_38.js
+[OK] existe scripts/checkup_stream_v19_8_38.js
+[OK] existe scripts/rollback_stream_v19_8_38.js
+[OK] node --check src/renderer/modules/noelle_stream_pipeline_complete_v19_8_38.js
+[OK] node --check src/main/stream_stt_bridge_v19_8_38.cjs
+[OK] node --check src/preload_stream_stt_bridge_v19_8_38.cjs
+[OK] node --check scripts/patch_stream_vad_5s_v19_8_38.js
+[OK] node --check scripts/patch_stream_main_stt_v19_8_38.js
+[OK] node --check scripts/patch_stream_preload_stt_v19_8_38.js
+[OK] node --check scripts/patch_stream_controls_v19_8_38.js
+[OK] node --check scripts/apply_stream_v19_8_38.js
+[OK] node --check scripts/checkup_stream_v19_8_38.js
+[OK] node --check scripts/rollback_stream_v19_8_38.js
+[OK] runtime transcreve último trecho
+[OK] runtime envia para IA
+[OK] runtime fala resposta
+[OK] runtime usa StreamGuard
+[OK] auto pipeline
+[OK] main handler STT
+[OK] main suporta NOELLE_STT_CMD
+[OK] preload expõe bridge
+[OK] preload transcribeAudio
+
+SELFTEST_EXIT=0

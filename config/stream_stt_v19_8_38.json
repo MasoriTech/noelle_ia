@@ -1,0 +1,26 @@
+{
+  "version": "v19.8.38",
+  "enabled": false,
+  "name": "custom-stt",
+  "command": "",
+  "args": [
+    "{input}"
+  ],
+  "notes": [
+    "Configure command/args para seu backend STT local.",
+    "Placeholders suportados: {input}, {output}, {outputBase}, {outputDir}.",
+    "Alternativa: defina NOELLE_STT_CMD e NOELLE_STT_ARGS no ambiente."
+  ],
+  "examples": {
+    "whisper_cpp": {
+      "command": "tools/whisper/whisper-cli.exe",
+      "args": [
+        "-f",
+        "{input}",
+        "-otxt",
+        "-of",
+        "{outputBase}"
+      ]
+    }
+  }
+}

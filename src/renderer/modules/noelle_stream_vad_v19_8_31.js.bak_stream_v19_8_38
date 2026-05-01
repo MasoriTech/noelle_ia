@@ -1,5 +1,4 @@
 "use strict";
-// STREAM_VAD_5S_V19_8_38: silenceToFinishMs ajustado para 5000ms.
 // STREAM_VAD_5S_V19_8_37: silenceToFinishMs ajustado para 5000ms.
 /* Noelle/Yoru V19.8.33 — Stream VAD Simple Fix
  - detecta fala/silêncio pelo nível emitido pelo microfone;

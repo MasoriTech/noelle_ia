@@ -1,0 +1,17 @@
+{
+  "version": "stream_v19_8_38_complete_missing_existing_only",
+  "touches": [
+    "main.js via script",
+    "preload.js via script",
+    "src/controls.html via script",
+    "src/renderer/modules/noelle_stream_pipeline_complete_v19_8_38.js",
+    "src/renderer/modules/noelle_stream_vad_v19_8_31.js via script"
+  ],
+  "does_not_touch": [
+    "Avatar",
+    "Loadfile",
+    "viewers 3D"
+  ],
+  "autoPipelineDefault": false,
+  "autoVoiceDefault": false
+}

@@ -1,0 +1,25 @@
+NODE --CHECK
+[OK] scripts/patch_stream_vad_5s_v19_8_37.js
+[OK] scripts/checkup_stream_v19_8_37.js
+[OK] scripts/apply_stream_v19_8_37.js
+[OK] scripts/rollback_stream_v19_8_37.js
+[OK] scripts/selftest_stream_v19_8_37.js
+
+SELFTEST
+Selftest Stream V19.8.37
+========================
+[OK] existe scripts/patch_stream_vad_5s_v19_8_37.js
+[OK] existe scripts/checkup_stream_v19_8_37.js
+[OK] existe scripts/apply_stream_v19_8_37.js
+[OK] existe scripts/rollback_stream_v19_8_37.js
+[OK] node --check scripts/patch_stream_vad_5s_v19_8_37.js
+[OK] node --check scripts/checkup_stream_v19_8_37.js
+[OK] node --check scripts/apply_stream_v19_8_37.js
+[OK] node --check scripts/rollback_stream_v19_8_37.js
+[OK] target 5000ms
+[OK] patch mira silenceToFinishMs
+[OK] texto 5 segundos
+[OK] node check após patch
+[OK] rollback automático se falhar
+
+SELFTEST_EXIT=0
