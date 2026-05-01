@@ -1,15 +1,17 @@
 @echo off
-title Yoru Agent Runtime V24
+title Yoru Renderer Restructure V30
 
-echo ================================
-echo Agent Identity Runtime Boot
-echo ================================
+echo ========================================
+echo  Yoru Renderer Restructure V30
+echo ========================================
+echo.
 
-echo Verificando ambiente Node...
+node scripts\apply_renderer_restructure_v30.js
 
-if not exist node_modules (
-  npm install
-)
+echo.
+echo [diagnostico renderer]
+node scripts\diagnose_renderer_structure_v30.js
 
+echo.
 echo Iniciando aplicativo...
 npm start
