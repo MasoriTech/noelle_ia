@@ -1,0 +1,10 @@
+.app-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.sidebar { background: #0d0d11; border-right: 1px solid var(--border); padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.brand { font-size: 22px; font-weight: 800; margin-bottom: 14px; }
+.main-panel { display: grid; grid-template-rows: 1fr auto; min-width: 0; }
+.page { padding: 28px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; margin-top: 14px; }
+.status-bar { border-top: 1px solid var(--border); padding: 10px 16px; color: var(--muted); background: var(--panel); }
+.log-box { background: #0f0f14; border: 1px solid var(--border); border-radius: 12px; min-height: 160px; padding: 12px; white-space: pre-wrap; overflow: auto; }
+.button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.error-box { border: 1px solid #ff6b6b; background: rgba(255,0,0,.08); padding: 12px; border-radius: 12px; }

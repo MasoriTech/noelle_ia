@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noelle v20</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/noelle_theme.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">N</div>
+        <div>
+          <h1>Noelle v20</h1>
+          <p>Chat Texto Ollama</p>
+        </div>
+      </div>
+      <button class="nav-btn active" data-page="chat">Chat</button>
+      <button class="nav-btn" data-page="voice">Voz IA</button>
+      <button class="nav-btn" data-page="avatar">Avatar</button>
+      <button class="nav-btn" data-page="stream">Stream</button>
+      <button class="nav-btn" data-page="settings">Config</button>
+      <div class="sidebar-footer">
+        <span id="appStatusDot" class="dot warn"></span>
+        <span id="appStatusText">iniciando</span>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <section class="topbar">
+        <div>
+          <h2 id="pageTitle">Chat</h2>
+          <p id="pageSubtitle">Base limpa para validar Ollama antes de voz/avatar.</p>
+        </div>
+        <button id="diagBtn" class="ghost-btn">Diagnosticar Ollama</button>
+      </section>
+
+      <section id="pageRoot" class="page-root"></section>
+    </main>
+  </div>
+  <script src="pages/chat_page.js"></script>
+  <script src="pages/settings_page.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

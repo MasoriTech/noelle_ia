@@ -1,0 +1,37 @@
+Noelle v20 - Pack Chat Texto + Diagnostico Ollama
+
+Objetivo:
+- Criar uma base Electron limpa em noelle_app/
+- Adicionar chat texto com Ollama
+- Adicionar diagnostico do Ollama
+- Manter voz/avatar/stream como placeholders para nao quebrar nada
+
+Modo seguro:
+- Nao apaga arquivos antigos.
+- Faz backup dos arquivos que seriam sobrescritos em backups/v20_chat_texto_YYYYMMDD_HHMMSS/
+- O alvo padrao e a pasta noelle_app dentro da pasta onde voce extrair este pack.
+
+Como usar:
+1) Crie uma branch:
+   git checkout -b noelle-v20-chat-texto
+
+2) Extraia este zip na raiz do projeto.
+
+3) Rode:
+   APLICAR_CHAT_TEXTO_V20.bat
+
+4) Depois rode:
+   cd noelle_app
+   iniciar.bat
+
+5) Teste no app:
+   - Botao Diagnosticar Ollama
+   - Enviar mensagem no chat texto
+
+Ollama:
+- URL padrao: http://127.0.0.1:11434
+- Modelo padrao: qwen3:0.6b
+- Voce pode trocar em config/models_config.json
+
+Se quiser aplicar em outra pasta:
+   APLICAR_CHAT_TEXTO_V20.bat --target caminho\da\pasta

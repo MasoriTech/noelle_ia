@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "phase": "proxima",
+  "vad_silence_ms": 5000,
+  "stt_backend": "not_configured",
+  "tts_backend": "not_configured"
+}

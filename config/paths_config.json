@@ -1,0 +1,7 @@
+{
+  "avatars": "assets/avatars",
+  "scenes": "assets/scenes",
+  "items": "assets/items",
+  "logs": "data/logs",
+  "memory": "data/memory"
+}

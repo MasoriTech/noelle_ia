@@ -1,0 +1,6 @@
+{
+  "ollamaHost": "http://127.0.0.1:11434",
+  "fastModel": "qwen3:0.6b",
+  "smartModel": "hermes3:latest",
+  "defaultMode": "fast"
+}

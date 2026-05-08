@@ -1,0 +1,23 @@
+:root {
+  --bg: #09090b;
+  --panel: #121216;
+  --panel-2: #19191f;
+  --text: #f8f8fb;
+  --muted: #a4a4ad;
+  --line: rgba(255,255,255,0.09);
+  --red: #ef233c;
+  --red-2: #9d0208;
+  --ok: #20c997;
+  --warn: #ffd166;
+  --bad: #ff5c7a;
+  --shadow: 0 18px 60px rgba(0,0,0,0.45);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Segoe UI, Arial, sans-serif;
+  background: radial-gradient(circle at top left, rgba(239,35,60,0.22), transparent 38%), var(--bg);
+  color: var(--text);
+}
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }

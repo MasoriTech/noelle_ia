@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noelle v20</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/noelle_theme.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">Noelle v20</div>
+      <button data-page="chat">Chat</button>
+      <button data-page="voice">Voz IA</button>
+      <button data-page="avatar">Avatar</button>
+      <button data-page="stream">Stream</button>
+      <button data-page="settings">Config</button>
+    </aside>
+    <main class="main-panel">
+      <section id="page-root" class="page"></section>
+      <footer id="status-bar" class="status-bar">Inicializando...</footer>
+    </main>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

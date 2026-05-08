@@ -1,0 +1,7 @@
+{
+  "mode": "manual_button",
+  "vadSilenceSeconds": 5,
+  "sttBackend": "env:NOELLE_STT_CMD",
+  "ttsBackend": "disabled_until_configured",
+  "fallbackToText": true
+}

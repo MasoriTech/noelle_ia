@@ -1,0 +1,17 @@
+{
+  "name": "noelle-v20-chat-texto",
+  "version": "20.0.0",
+  "private": true,
+  "description": "Noelle v20 skeleton com chat texto Ollama e diagnostico.",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:v20": "electron .",
+    "diagnostico:v20": "node scripts/diagnostico.cjs",
+    "preflight:v20": "node scripts/preflight.cjs",
+    "limpar:v20": "node scripts/limpar.cjs"
+  },
+  "devDependencies": {
+    "electron": "^30.5.1"
+  }
+}
