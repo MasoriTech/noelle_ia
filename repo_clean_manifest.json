@@ -1,0 +1,22 @@
+{
+  "name": "Noelle Yoru Chat Clean Pack",
+  "version": "1.8.44-repoorganized-2026",
+  "copy_to": "noelle_ia/yoru_chat",
+  "main_entry": "python -m yoru_bridge embedded",
+  "patch": "node yoru_chat/noelle_kobold_replace/apply_noelle_kobold_replace_2026.cjs",
+  "diagnostic": "node yoru_chat/noelle_kobold_replace/diagnostico_noelle_kobold_replace_2026.cjs",
+  "kept_docs": [
+    "README.md",
+    "yoru_chat/README_YORU_CHAT.md",
+    "yoru_chat/docs/INTEGRACAO_NOELLE_KOBOLD.md",
+    "yoru_chat/docs/COMANDOS.md",
+    "yoru_chat/docs/CHANGELOG.md"
+  ],
+  "removed_noise": [
+    "old per-version changelogs",
+    "legacy HTTP integration docs",
+    "pycache/pyc",
+    "runtime JSON files",
+    "duplicate requirements"
+  ]
+}

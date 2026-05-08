@@ -1545,3 +1545,98 @@ try {
 })();
 // NOELLE_STREAM_STT_MAIN_V19_8_39_END
 
+
+
+// YORU_KOBOLD_REPLACE_2026_BEGIN
+(() => {
+  let __yoruKoboldChat = null;
+  function getYoruKoboldChat() {
+    if (!__yoruKoboldChat) {
+      const { YoruKoboldEmbeddedClient } = require("./src/main/yoru_kobold_embedded_client.cjs");
+      __yoruKoboldChat = new YoruKoboldEmbeddedClient({ root: path.join(__dirname, "yoru_chat"), timeoutMs: 180000 });
+    }
+    return __yoruKoboldChat;
+  }
+  function normalizeYoruResult(res, secondsFallback = null) {
+    const text = String(res?.message || res?.text || res?.reply || "").trim();
+    return {
+      ok: !!res?.ok,
+      message: text,
+      text,
+      reply: text,
+      seconds: res?.elapsed_sec || res?.elapsedSec || secondsFallback,
+      model: res?.model || "koboldcpp/yoru",
+      profile: res?.profile || "auto",
+      persona: "yoru",
+      route: res?.route || null,
+      state: res?.state || "idle",
+      backend: "koboldcpp_via_yoru",
+      replaced: "ollama",
+      source: "yoru_kobold_embedded",
+      raw: res
+    };
+  }
+  async function yoruKoboldChatHandler(_event, payload = {}) {
+    const start = Date.now();
+    try {
+      const userText = String(payload?.message || payload?.text || payload?.prompt || "").trim();
+      if (!userText) return { ok: false, error: "Mensagem vazia.", backend: "koboldcpp_via_yoru", replaced: "ollama" };
+      runtime.lastStatus = "gerando_kobold";
+      updateTrayMenu?.();
+      const res = await getYoruKoboldChat().chat({ ...payload, message: userText, speak: false });
+      const out = normalizeYoruResult(res, ((Date.now() - start) / 1000).toFixed(2));
+      runtime.lastChatSeconds = out.seconds;
+      runtime.lastStatus = out.ok ? "pronto_kobold" : "erro_kobold";
+      runtime.lastError = out.ok ? null : (out.raw?.error || "Erro Yoru/Kobold");
+      runtime.lastSuccessAt = out.ok ? new Date().toISOString() : runtime.lastSuccessAt;
+      updateTrayMenu?.();
+      return out.ok ? out : { ...out, error: out.raw?.error || "Falha no Yoru/Kobold" };
+    } catch (err) {
+      const msg = String(err?.message || err);
+      runtime.lastStatus = "erro_kobold";
+      runtime.lastError = msg;
+      updateTrayMenu?.();
+      return { ok: false, error: msg, backend: "koboldcpp_via_yoru", replaced: "ollama" };
+    }
+  }
+  async function yoruKoboldStatusHandler() {
+    let yoru = null;
+    try { yoru = await getYoruKoboldChat().status(); } catch (err) { yoru = { ok: false, error: String(err?.message || err) }; }
+    let state = {};
+    let assets = null;
+    try { state = typeof loadState === "function" ? loadState() : {}; } catch (_) {}
+    try { assets = typeof scanAssets === "function" ? scanAssets() : null; } catch (_) {}
+    return {
+      ok: true,
+      year: typeof APP_YEAR !== "undefined" ? APP_YEAR : 2026,
+      app: "Noelle Companion",
+      backend: "koboldcpp_via_yoru",
+      chat: { backend: "koboldcpp_via_yoru", transport: "stdio_jsonl", yoru },
+      kobold: yoru,
+      ollama: { ok: false, disabled: true, replacedBy: "koboldcpp_via_yoru" },
+      runtime,
+      state,
+      assets: assets ? { counts: assets.counts, required: assets.required } : null,
+      options: {
+        models: { "koboldcpp/yoru": { label: "Yoru + KoboldCpp", note: "Chat principal substituindo Ollama." } },
+        profiles: { auto: { label: "Auto" }, fast: { label: "FAST" }, think: { label: "THINK" } },
+        personas: { yoru: { label: "Yoru" } }
+      }
+    };
+  }
+  function installYoruKoboldReplacement() {
+    try { ipcMain.removeHandler("noelle:chat"); } catch (_) {}
+    ipcMain.handle("noelle:chat", yoruKoboldChatHandler);
+    try { ipcMain.removeHandler("noelle:status"); } catch (_) {}
+    ipcMain.handle("noelle:status", yoruKoboldStatusHandler);
+    try { ipcMain.removeHandler("noelle:kobold-status"); } catch (_) {}
+    ipcMain.handle("noelle:kobold-status", async () => getYoruKoboldChat().status());
+    appendLog?.("yoru_kobold_replace_enabled", { channel: "noelle:chat", backend: "koboldcpp_via_yoru" });
+    console.log("[NoelleKoboldReplace] noelle:chat agora usa Yoru + KoboldCpp. Ollama não é mais usado no chat.");
+  }
+  try { installYoruKoboldReplacement(); } catch (err) { console.warn("[NoelleKoboldReplace] instalação inicial falhou:", err?.message || err); }
+  try { app.whenReady().then(() => setTimeout(installYoruKoboldReplacement, 300)); } catch (_) {}
+  setTimeout(() => { try { installYoruKoboldReplacement(); } catch (_) {} }, 1500);
+  try { app.on("before-quit", () => { try { if (__yoruKoboldChat) __yoruKoboldChat.stop(); } catch (_) {} }); } catch (_) {}
+})();
+// YORU_KOBOLD_REPLACE_2026_END

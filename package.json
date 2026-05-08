@@ -54,7 +54,8 @@
     "auto:v19.8.31-stream-vad": "node scripts/apply_v19_8_31_auto_2026.cjs",
     "repair:v19.8.32-stream-segment": "node scripts/repair_v19_8_32_stream_segment_recorder_2026.cjs",
     "diagnostico:v19.8.32-stream-segment": "node scripts/diagnostico_v19_8_32_stream_segment_recorder_2026.cjs",
-    "auto:v19.8.32-stream-segment": "node scripts/apply_v19_8_32_auto_2026.cjs"
+    "auto:v19.8.32-stream-segment": "node scripts/apply_v19_8_32_auto_2026.cjs",
+    "diagnostico:yoru-kobold": "node yoru_chat/noelle_kobold_replace/diagnostico_noelle_kobold_replace_2026.cjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.2",
@@ -79,7 +80,9 @@
       "src/**/*",
       "tools/**/*",
       "scripts/**/*",
-      "requirements.txt"
+      "requirements.txt",
+      "yoru_chat/**/*",
+      "src/main/yoru_kobold_embedded_client.cjs"
     ],
     "win": {
       "target": [

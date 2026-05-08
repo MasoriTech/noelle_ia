@@ -1,0 +1,10 @@
+# Yoru runtime/cache
+/yoru_chat/data/runtime_state.json
+/yoru_chat/data/avatar_events.jsonl
+/yoru_chat/data/apps_inventory.json
+/yoru_chat/data/apps_prefs.json
+/yoru_chat/data/tasks.json
+/yoru_chat/data/tts/
+/yoru_chat/data/screenshots/
+/yoru_chat/**/__pycache__/
+/yoru_chat/**/*.pyc

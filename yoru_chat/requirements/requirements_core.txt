@@ -1,0 +1,1 @@
+# Core da Yoru usa biblioteca padrão do Python.
