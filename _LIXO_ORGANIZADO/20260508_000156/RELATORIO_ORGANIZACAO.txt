@@ -1,0 +1,12 @@
+﻿Relatorio de organizacao Noelle IA
+Data: 05/08/2026 00:02:10
+Repo: C:\Users\Administrator\Downloads\chat\noelle_ia
+Destino: C:\Users\Administrator\Downloads\chat\noelle_ia\_LIXO_ORGANIZADO\20260508_000156
+
+MOVED: .noelle_v15_bootstrap.json -> _LIXO_ORGANIZADO\20260508_000156\.noelle_v15_bootstrap.json
+MOVED: main.js.bak_stream_v19_8_39 -> _LIXO_ORGANIZADO\20260508_000156\main.js.bak_stream_v19_8_39
+MOVED: preload.js.bak_stream_v19_8_39 -> _LIXO_ORGANIZADO\20260508_000156\preload.js.bak_stream_v19_8_39
+MOVED: README_ORGANIZACAO_YORU.md -> _LIXO_ORGANIZADO\20260508_000156\README_ORGANIZACAO_YORU.md
+DELETED CACHE: C:\Users\Administrator\Downloads\chat\noelle_ia\yoru_chat\src\yoru_bridge\__pycache__
+DELETED CACHE: C:\Users\Administrator\Downloads\chat\noelle_ia\yoru_chat\src\yoru_bridge\core\__pycache__
+CREATED: README_ORGANIZACAO_REPO.md
