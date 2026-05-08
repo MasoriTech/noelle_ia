@@ -1,0 +1,13 @@
+Coloque seu modelo 2B aqui (nome recomendado):
+
+C:\IA_MODELOS\Qwen3.5-2B-Q4_K_M.gguf
+
+Se o nome do arquivo for diferente, edite config.json:
+
+model_paths.think_model_path
+
+Ou rode no CMD dentro do pack:
+
+python scripts\trocar_think_model.py qwen35_2b "C:\IA_MODELOS\SEU_ARQUIVO.gguf"
+
+Depois gere os BATs novamente pelo menu.

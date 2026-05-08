@@ -1,0 +1,4 @@
+# Dependências opcionais para skills de desktop/OCR
+Pillow>=10.0.0
+psutil>=5.9.0
+pytesseract>=0.3.10

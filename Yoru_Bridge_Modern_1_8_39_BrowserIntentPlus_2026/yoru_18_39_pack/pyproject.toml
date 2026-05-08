@@ -1,0 +1,8 @@
+[project]
+name = "yoru-bridge-modern"
+version = "1.8.39"
+description = "Yoru Bridge Modern 1.8 - Chat Texto, Voz, Stream, Skills e Download Center"
+requires-python = ">=3.10"
+
+[tool.py_compile]
+strict = true
