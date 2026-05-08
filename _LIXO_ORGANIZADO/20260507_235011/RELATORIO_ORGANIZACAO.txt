@@ -1,0 +1,9 @@
+﻿Relatorio de organizacao Noelle/Yoru
+Data: 07/05/2026 23:50:22
+Raiz: C:\Users\Administrator\Downloads\chat\noelle_ia
+Backup: C:\Users\Administrator\Downloads\chat\noelle_ia\_LIXO_ORGANIZADO\20260507_235011
+
+MOVIDO  diagnostics -> _LIXO_ORGANIZADO\20260507_235011\pastas_legado\diagnostics
+MOVIDO  yoru_chat\data\screenshots -> _LIXO_ORGANIZADO\20260507_235011\yoru_runtime\screenshots
+
+README criado: C:\Users\Administrator\Downloads\chat\noelle_ia\README_ORGANIZACAO_YORU.md
