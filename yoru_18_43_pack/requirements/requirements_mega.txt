@@ -1,0 +1,11 @@
+# Mega Pack 1.8.32 - dependências principais e opcionais
+edge-tts>=7.0.0
+pygame>=2.6.0
+Pillow>=10.0.0
+psutil>=5.9.0
+pytesseract>=0.3.10
+faster-whisper>=1.1.0
+sounddevice>=0.4.6
+numpy>=1.24
+ctranslate2>=4.4
+keyboard>=0.13.5

@@ -1,0 +1,8 @@
+edge-tts>=7.0.0
+faster-whisper>=1.1.0
+sounddevice>=0.4.6
+numpy>=1.24
+keyboard>=0.13.5
+
+ctranslate2>=4.4
+pygame>=2.6.0

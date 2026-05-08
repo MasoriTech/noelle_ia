@@ -1,0 +1,1 @@
+# Core usa apenas biblioteca padrão do Python

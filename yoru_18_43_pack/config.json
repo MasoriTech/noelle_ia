@@ -1,0 +1,541 @@
+{
+  "version": "1.8.43-noellekoboldreplace-2026",
+  "vault_path": "%USERPROFILE%\\Documents\\Yoru_ia",
+  "koboldcpp_exe": "C:\\KoboldCpp\\koboldcpp_oldpc.exe",
+  "models": {
+    "fast": {
+      "label": "Yoru FAST - Qwen3.5 0.8B FastBrain",
+      "api_url": "http://127.0.0.1:5001/v1",
+      "model": "koboldcpp",
+      "temperature": 0.24,
+      "max_tokens": 72,
+      "prompt_profile": "fast_companion",
+      "top_p": 0.88,
+      "top_k": 40,
+      "min_p": 0.04,
+      "repeat_penalty": 1.08,
+      "presence_penalty": 0.0,
+      "note": "FAST padrão: menor prompt, sem memória, baixa temperatura e limite curto para conversa ao vivo."
+    },
+    "think": {
+      "label": "Yoru THINK - Qwen3.5 2B ContractsCore",
+      "api_url": "http://127.0.0.1:5002/v1",
+      "model": "koboldcpp",
+      "temperature": 0.28,
+      "max_tokens": 320,
+      "prompt_profile": "technical",
+      "top_p": 0.82,
+      "top_k": 30,
+      "min_p": 0.0,
+      "repeat_penalty": 1.03,
+      "presence_penalty": 0.15,
+      "note": "ContractsCore: permite resposta completa quando pedida, mas filtra rigorosamente o escopo para não gastar tokens explicando o que não foi pedido."
+    }
+  },
+  "model_paths": {
+    "fast_model_path": "C:\\IA_MODELOS\\Qwen3.5-0.8B-Q4_K_M.gguf",
+    "think_model_path": "C:\\IA_MODELOS\\Qwen3.5-2B-Q4_K_M.gguf",
+    "think_backup_qwen25_3b_path": "C:\\IA_MODELOS\\qwen2.5-3b-instruct-q4_k_m.gguf",
+    "fast_alt_qwen3_17b_path": "C:\\IA_MODELOS\\Qwen3-1.7B-Q4_K_M.gguf",
+    "fast_alt_gemma3_1b_path": "C:\\IA_MODELOS\\gemma-3-1b-it-qat-q4_0.gguf"
+  },
+  "model_profiles": {
+    "think_qwen35_2b": {
+      "label": "Yoru THINK - Qwen3.5 2B",
+      "path": "C:\\IA_MODELOS\\Qwen3.5-2B-Q4_K_M.gguf",
+      "port": 5002,
+      "temperature": 0.27,
+      "max_tokens": 150,
+      "note": "Novo THINK leve para substituir Qwen2.5 3B em PC antigo."
+    },
+    "think_qwen25_3b_backup": {
+      "label": "Yoru THINK BACKUP - Qwen2.5 3B",
+      "path": "C:\\IA_MODELOS\\qwen2.5-3b-instruct-q4_k_m.gguf",
+      "port": 5002,
+      "temperature": 0.28,
+      "max_tokens": 150,
+      "note": "Backup mais pesado/antigo."
+    },
+    "fast_qwen35_08b_turbo": {
+      "label": "Yoru FAST TURBO - Qwen3.5 0.8B",
+      "path": "C:\\IA_MODELOS\\Qwen3.5-0.8B-Q4_K_M.gguf",
+      "port": 5001,
+      "temperature": 0.24,
+      "max_tokens": 72,
+      "top_p": 0.88,
+      "top_k": 40,
+      "min_p": 0.04,
+      "repeat_penalty": 1.08,
+      "note": "Padrão recomendado para PC antigo: menor latência e respostas curtas."
+    },
+    "fast_qwen3_17b_balanced": {
+      "label": "Yoru FAST+ - Qwen3 1.7B",
+      "path": "C:\\IA_MODELOS\\Qwen3-1.7B-Q4_K_M.gguf",
+      "port": 5001,
+      "temperature": 0.22,
+      "max_tokens": 96,
+      "top_p": 0.9,
+      "top_k": 40,
+      "min_p": 0.03,
+      "repeat_penalty": 1.06,
+      "note": "Alternativa mais inteligente que 0.8B, ainda leve; exige mais RAM/VRAM."
+    },
+    "fast_gemma3_1b_alt": {
+      "label": "Yoru FAST ALT - Gemma 3 1B",
+      "path": "C:\\IA_MODELOS\\gemma-3-1b-it-qat-q4_0.gguf",
+      "port": 5001,
+      "temperature": 0.25,
+      "max_tokens": 80,
+      "top_p": 0.9,
+      "top_k": 40,
+      "min_p": 0.03,
+      "repeat_penalty": 1.08,
+      "note": "Alternativa experimental; exige GGUF com metadados corretos para evitar problemas de EOT/repetição."
+    }
+  },
+  "runtime": {
+    "history_turns": 1,
+    "fast_history_turns": 0,
+    "think_history_turns": 1,
+    "default_model": "auto",
+    "fallback_to_fast": false,
+    "request_timeout_sec": 120,
+    "fast_timeout_sec": 35,
+    "think_timeout_sec": 45,
+    "stream_retry_same_model": false,
+    "model_fail_cooldown_sec": 25,
+    "speed_mode": "fastbrain",
+    "local_first": true,
+    "skip_memory_for_fast": true,
+    "prompt_token_budget_chars": 1300,
+    "stream_model_output": true,
+    "response_cache_enabled": true,
+    "response_cache_ttl_sec": 900,
+    "fastlane_min_chars": 2,
+    "turbo_skip_tts_for_fast": false,
+    "autospeed_enabled": false,
+    "autospeed_latency_sec": 18,
+    "autospeed_decay_sec": 120,
+    "think_to_fast_on_latency": false,
+    "print_perf_breakdown": true,
+    "unknown_slash_guard": true,
+    "stream_empty_retry_nonstream": true,
+    "prompt_no_markdown": true,
+    "brain_mode": "auto",
+    "brain_switch_enabled": true,
+    "dual_brain_strategy": "fast_draft_then_think_final",
+    "dual_brain_note": "auto roteia; fast usa FAST 0.8B otimizado; think usa 2B; dual usa FAST como rascunho e THINK como resposta final.",
+    "search_mode_enabled": false,
+    "strict_think_no_fast_fallback": true,
+    "fast_brain_preset": "fast_qwen35_08b_turbo",
+    "fast_force_short_prompt": true,
+    "fast_max_input_chars": 900,
+    "fast_auto_escalate_to_think": true,
+    "fast_auto_escalate_chars": 360,
+    "fast_answer_max_chars": 520,
+    "fast_strip_think_blocks": true,
+    "fast_quality_guard": true,
+    "response_cache_max_items": 120,
+    "safe_idle_after_response": true,
+    "mega_pack_audit_enabled": true,
+    "answer_scope_enabled": true,
+    "answer_scope_strict_by_default": true,
+    "answer_scope_keep_lists_clean": true,
+    "answer_scope_detail_only_on_request": true,
+    "answer_scope_yes_no_first": true,
+    "answer_scope_date_first": true,
+    "answer_scope_list_max_extra_lines": 1,
+    "answer_scope_web_reduce_extras": true,
+    "think_max_tokens_scope_default": 320,
+    "think_max_tokens_scope_detail": 420,
+    "think_max_tokens_scope_list": 260,
+    "think_max_tokens_scope_fact": 180,
+    "scope_debug": false,
+    "skills_upgrade_enabled": true,
+    "skill_router_strict": true,
+    "skill_status_verbose": true,
+    "contracts_core_enabled": true,
+    "contracts_mode": "normal",
+    "think_max_tokens_scope_code": 520,
+    "think_max_tokens_scope_comparison": 420,
+    "think_max_tokens_scope_how_to": 420,
+    "browser_intent_plus_enabled": true,
+    "app_intent_fallback_enabled": true,
+    "browser_known_site_guard": true,
+    "embedded_chat_enabled": true,
+    "api_bridge_legacy_optional": true
+  },
+  "tts": {
+    "enabled": true,
+    "engine": "edge",
+    "edge_voice": "pt-BR-FranciscaNeural",
+    "fallback_engine": "windows",
+    "speak_local": true,
+    "speak_model": true,
+    "max_chars": 260,
+    "rate": "+0%",
+    "volume": "+0%",
+    "auto_disable_after_errors": 8,
+    "audio_cache_enabled": false,
+    "audio_cache_max_files": 80,
+    "speak_fast_model": true,
+    "speak_think_model": true,
+    "voice_persistence_mode": true,
+    "max_queue": 6,
+    "drop_old_when_queue_full": false,
+    "min_seconds_between_speech": 0.35,
+    "edge_timeout_sec": 35,
+    "windows_timeout_sec": 25,
+    "print_tts_debug": false,
+    "last_spoken_file_policy": "unique_per_turn",
+    "strip_markdown_for_tts": true,
+    "speak_markdown_symbols": false,
+    "player": "pygame",
+    "internal_player_enabled": true,
+    "pygame_fallback_to_external": true,
+    "pygame_poll_ms": 80,
+    "pygame_play_timeout_sec": 90,
+    "emit_avatar_events": true,
+    "note": "Edge TTS continua como voz pt-BR feminina; pygame é o player interno/controlável. 1.8.40 esconde banner pygame e mantém TTSControl.",
+    "speaking_event_after_audio_ready": true,
+    "stop_race_guard": true
+  },
+  "stt": {
+    "enabled": true,
+    "engine": "faster_whisper",
+    "model_size": "tiny",
+    "device": "cpu",
+    "compute_type": "int8",
+    "sample_rate": 16000,
+    "record_seconds": 4,
+    "language": "pt",
+    "beam_size": 1,
+    "cpu_threads": 2,
+    "num_workers": 1,
+    "condition_on_previous_text": false,
+    "temperature": 0.0,
+    "vad_filter": true,
+    "vad_min_silence_ms": 350,
+    "vad_speech_pad_ms": 120,
+    "initial_prompt": "Transcrição curta em português do Brasil. Não invente texto quando houver silêncio."
+  },
+  "stream": {
+    "enabled": true,
+    "vad": "energy_adaptive",
+    "sample_rate": 16000,
+    "chunk_ms": 30,
+    "energy_threshold": 0.012,
+    "min_speech_ms": 300,
+    "silence_end_ms": 650,
+    "max_segment_sec": 7,
+    "cooldown_after_tts_sec": 1.0,
+    "require_wake_word": true,
+    "wake_words": [
+      "yoru",
+      "ioru",
+      "yoro"
+    ],
+    "respond_to_questions": true,
+    "continuous_mode": false,
+    "mode": "ct2_fast",
+    "auto_calibrate": true,
+    "calibration_sec": 1.2,
+    "noise_multiplier": 3.2,
+    "min_energy_threshold": 0.008,
+    "max_energy_threshold": 0.055,
+    "prebuffer_ms": 300,
+    "min_transcript_chars": 3,
+    "ignore_repeated_transcript_sec": 4,
+    "delete_segments_after_transcribe": false,
+    "print_energy_debug": false,
+    "route_transcript_through_bridge": true,
+    "default_model_for_stream": "auto"
+  },
+  "browser": {
+    "enabled": true,
+    "safe_sites_file": "data/custom_sites.json",
+    "open_search_in_browser": true,
+    "intent_router_version": "1.8.42",
+    "note": "AppIntentFix: comandos de site continuam no navegador; comandos como \"abra hydra\" viram app local quando não são site conhecido."
+  },
+  "memory": {
+    "max_chars_per_file": 260,
+    "cache_ttl_sec": 180,
+    "strategy": "selective",
+    "files": [
+      "05_MEMORIA/memoria_base.md",
+      "05_MEMORIA/skills_ativas.md",
+      "05_MEMORIA/regras_de_verdade.md",
+      "05_MEMORIA/preferencias_do_usuario.md",
+      "05_MEMORIA/correcoes_de_conhecimento.md",
+      "05_MEMORIA/ajustes_de_personalidade.md"
+    ],
+    "profile_files": {
+      "companion": [
+        "05_MEMORIA/memoria_base.md",
+        "05_MEMORIA/ajustes_de_personalidade.md"
+      ],
+      "project": [
+        "05_MEMORIA/memoria_base.md",
+        "05_MEMORIA/skills_ativas.md",
+        "05_MEMORIA/preferencias_do_usuario.md",
+        "05_MEMORIA/regras_de_verdade.md"
+      ],
+      "knowledge": [
+        "05_MEMORIA/correcoes_de_conhecimento.md"
+      ],
+      "technical": [
+        "05_MEMORIA/memoria_base.md",
+        "05_MEMORIA/regras_de_verdade.md",
+        "05_MEMORIA/correcoes_de_conhecimento.md"
+      ],
+      "creative": [
+        "05_MEMORIA/ajustes_de_personalidade.md",
+        "05_MEMORIA/preferencias_do_usuario.md"
+      ]
+    }
+  },
+  "web_knowledge": {
+    "enabled": true,
+    "auto_web_fallback": true,
+    "auto_search_current_questions": true,
+    "save_summaries_to_obsidian": true,
+    "cache_file": "data/web_knowledge_cache.json",
+    "cache_ttl_sec": 21600,
+    "cache_max_items": 80,
+    "max_results": 5,
+    "timeout_sec": 8,
+    "max_download_bytes": 600000,
+    "open_browser_if_search_fails": true,
+    "note": "Pesquisa leve com ContractsCore: responde com fontes, mas sem resumo/histórico quando o usuário pediu só lista, data ou sim/não.",
+    "list_max_results": 8
+  },
+  "apps": {
+    "enabled": true,
+    "inventory_file": "data/apps_inventory.json",
+    "auto_scan_if_missing": true,
+    "scan_start_menu": true,
+    "scan_registry": true,
+    "scan_program_files": false,
+    "note": "App Inventory abre apps por /apps abrir nome, abra o programa nome e também fallback seguro tipo \"abra hydra\" quando não for site conhecido.",
+    "apps_prefs_file": "data/apps_prefs.json",
+    "recent_limit": 12,
+    "generic_open_fallback_enabled": true
+  },
+  "skills": {
+    "enabled": true,
+    "commands": [
+      "/api docs",
+      "/api manifest",
+      "/api status",
+      "/api token gerar",
+      "/baixar deps",
+      "/baixar kobold",
+      "/baixar modelos",
+      "/baixar status",
+      "/baixar tudo",
+      "/capacidades",
+      "/comandos",
+      "/contratos exemplos",
+      "/contratos modo rigido",
+      "/contratos status",
+      "/contratos testar texto",
+      "/funcoes",
+      "/habilidades",
+      "/noelle docs",
+      "/noelle status",
+      "/skills",
+      "/skills buscar termo",
+      "/skills comandos",
+      "/skills exemplos",
+      "/skills status"
+    ],
+    "natural_language_enabled": true,
+    "show_app_inventory_status": true,
+    "note": "SkillHub 1.8.42: inclui chat embutido por STDIO para o Noelle Companion substituir o chat antigo sem API HTTP.",
+    "show_skill_status": true,
+    "show_command_examples": true
+  },
+  "capabilities": {
+    "note": "SkillHub 1.8.43: inclui NoelleKoboldReplace por STDIO; sem API HTTP; KoboldCpp/Yoru no lugar do Ollama."
+  },
+  "desktop_context": {
+    "enabled": true,
+    "screenshots_dir": "data/screenshots",
+    "tasks_file": "data/tasks.json",
+    "project_state_file": "data/project_state.json",
+    "routines_file": "data/routines.json",
+    "file_roots": [
+      "Downloads",
+      "Documents",
+      "Desktop"
+    ],
+    "model_ports": [
+      5001,
+      5002
+    ],
+    "safe_mode": true,
+    "note": "Skills locais de contexto do PC: tela, diagnóstico, modelo, arquivos, clipboard, tarefas, memória, projeto e rotinas. 1.8.38 melhora tarefas/projeto e integração com SkillHub."
+  },
+  "missing_skills": {
+    "enabled": true,
+    "screenshots_dir": "data/screenshots",
+    "confirm_token": "--confirmar",
+    "ocr_enabled": true,
+    "ocr_lang": "por+eng",
+    "note": "Skills complementares: OCR opcional de tela, controle seguro de janelas, arquivos com confirmação, clipboard write e ping API do modelo."
+  },
+  "avatar_bridge": {
+    "enabled": true,
+    "mode": "file_events",
+    "event_log_path": "data/avatar_events.jsonl",
+    "max_event_log_lines": 800,
+    "max_text_event_chars": 1200,
+    "record_user_messages": false,
+    "note": "Ponte local por arquivo JSONL para janela/avatar externo. 1.8.38 mantém eventos TTS/avatar e integra status ao SkillHub."
+  },
+  "runtime_state": {
+    "enabled": true,
+    "state_file": "data/runtime_state.json",
+    "allowed_states": [
+      "idle",
+      "listening",
+      "thinking",
+      "responding",
+      "speaking",
+      "error"
+    ],
+    "note": "Estado central da Yoru para uma janela externa consumir. Evita sobrescrever speaking com idle enquanto o TTS ainda está tocando."
+  },
+  "mega_pack": {
+    "enabled": true,
+    "version": "1.8.42",
+    "focus": "NoelleEmbeddedChat: STDIO JSONL para substituir o chat do Companion pelo backend Yoru embutido.",
+    "commands": [
+      "/mega status",
+      "/mega check",
+      "/diagnostico pack"
+    ],
+    "note": "Camada de diagnóstico local + ScopeCore + SkillHub + ContractsCore para respostas mais fiéis e comandos mais fáceis de descobrir."
+  },
+  "answer_scope": {
+    "enabled": true,
+    "strict_by_default": true,
+    "commands": [
+      "/scope status",
+      "/scope on",
+      "/scope off",
+      "/scope exemplos",
+      "/scope debug on",
+      "/scope debug off"
+    ],
+    "note": "Alias do ContractsCore: lista vira lista; sim/não começa com sim/não; data começa com data; detalhe só quando o usuário pede."
+  },
+  "skills_upgrade": {
+    "enabled": true,
+    "version": "1.8.42",
+    "focus": "melhorar skills existentes sem criar automação perigosa",
+    "features": [
+      "skillhub",
+      "apps_favorites",
+      "apps_recent",
+      "task_remove_clear",
+      "project_next_updated"
+    ],
+    "note": "Upgrade incremental mantido; 1.8.38 adiciona ContractsCore por cima do SkillHub."
+  },
+  "contracts": {
+    "enabled": true,
+    "version": "1.8.42",
+    "mode": "normal",
+    "debug": false,
+    "commands": [
+      "/contratos status",
+      "/contratos exemplos",
+      "/contratos testar texto",
+      "/contratos on",
+      "/contratos off",
+      "/contratos modo rigido",
+      "/contratos modo normal",
+      "/contratos debug on",
+      "/contratos debug off"
+    ],
+    "kinds": [
+      "list_only",
+      "yes_no_fact",
+      "date_fact",
+      "detail_requested",
+      "comparison",
+      "how_to",
+      "code_debug",
+      "short_fact",
+      "direct"
+    ],
+    "note": "Contratos de resposta por intenção: o modelo deve responder completo quando pedido, mas não explicar o que o usuário não pediu."
+  },
+  "downloads": {
+    "enabled": true,
+    "version": "1.8.42",
+    "models_dir": "C:\\IA_MODELOS",
+    "kobold_dir": "C:\\KoboldCpp",
+    "deps_requirements": [
+      "requirements_mega.txt"
+    ],
+    "note": "Download Center: /baixar status verifica o que já existe; /baixar tudo instala deps e baixa KoboldCpp, FAST e THINK faltantes.",
+    "models": {
+      "fast": {
+        "label": "FAST - Qwen3.5 0.8B Q4_K_M",
+        "url": "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf?download=true",
+        "target": "C:\\IA_MODELOS\\Qwen3.5-0.8B-Q4_K_M.gguf",
+        "min_bytes": 300000000
+      },
+      "think": {
+        "label": "THINK - Qwen3.5 2B Q4_K_M",
+        "url": "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-Q4_K_M.gguf?download=true",
+        "target": "C:\\IA_MODELOS\\Qwen3.5-2B-Q4_K_M.gguf",
+        "min_bytes": 700000000
+      }
+    },
+    "koboldcpp": {
+      "enabled": true,
+      "target": "C:\\KoboldCpp\\koboldcpp_oldpc.exe",
+      "github_api": "https://api.github.com/repos/LostRuins/koboldcpp/releases/latest",
+      "preferred_asset_keywords": [
+        "oldcpu",
+        "oldpc",
+        "nocuda",
+        "koboldcpp.exe"
+      ],
+      "min_bytes": 20000000
+    }
+  },
+  "embedded_chat": {
+    "enabled": true,
+    "protocol": "stdio_jsonl",
+    "entrypoint": "python -m yoru_bridge embedded",
+    "default_speak": false,
+    "max_stdout_chars": 12000,
+    "include_text_aliases": true,
+    "notes": "Noelle Companion inicia a Yoru como processo filho Python por STDIO JSONL. Sem API HTTP."
+  },
+  "noelle_companion": {
+    "version": "1.8.42",
+    "focus": "NoelleEmbeddedChat: substituir o chat antigo do Companion pelo processo Python/Yoru via STDIO JSONL, sem API HTTP como caminho principal.",
+    "transport": "stdio_jsonl",
+    "http_api": "legacy_optional",
+    "entrypoint": "python -m yoru_bridge embedded"
+  },
+  "noelle_kobold_replace": {
+    "enabled": true,
+    "version": "1.8.43",
+    "purpose": "Substituir completamente o chat/Ollama do Noelle Companion pelo chat Yoru usando KoboldCpp.",
+    "backend": "koboldcpp_via_yoru",
+    "transport": "embedded_stdio_jsonl",
+    "entrypoint": "python -m yoru_bridge embedded",
+    "chat_channel_to_replace": "noelle:chat",
+    "status_channel_to_replace": "noelle:status",
+    "ollama_policy": "disabled_for_chat",
+    "no_http_api": true,
+    "recommended_repo_folder": "yoru_chat"
+  }
+}
